@@ -1,0 +1,17 @@
+CREATE TABLE {{table}} (
+{% for column in table.columns %}
+    {{ column.name }} {{ column.data_type }}
+    {% if column.primary_key %}PRIMARY KEY AUTOINCREMENT{% endif %}
+    {% if column.unique %}UNIQUE{% endif %}
+    {% if not loop.last %},{% endif %}
+{% endfor %}
+{% if not table.primary_key_column %}
+    , PRIMARY KEY ({{ table.foreign_key_columns | join(', ', attribute='name') }})
+{% endif %}
+{% for foreign_key_column in table.foreign_key_columns %}
+    {% if loop.first %},{% endif %}
+    FOREIGN KEY ({{ foreign_key_column.name }})
+    REFERENCES {{ foreign_key_column.reference_column.table }}({{ foreign_key_column.reference_column.name }})
+    {% if not loop.last %},{% endif %}
+{% endfor %}
+);

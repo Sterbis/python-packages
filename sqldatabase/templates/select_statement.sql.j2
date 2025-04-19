@@ -1,0 +1,45 @@
+SELECT
+{% if distinct %}DISTINCT{% endif %}
+{% if items %}
+    {% for item in items %}
+        {{ item }}
+        {% if not loop.last %},{% endif %}
+    {% endfor %}
+{% else %}
+    *
+{% endif %}
+FROM {{ table }}
+{% if joins %}
+    {% for join in joins %}
+        {{ join }}
+    {% endfor %}
+{% endif %}
+{% if where_condition is defined and where_condition is not none %}
+    WHERE {{ where_condition }}
+{% endif %}
+{% if group_by_columns %}
+    GROUP BY
+    {% for column in group_by_columns %}
+        {{ column }}
+        {% if not loop.last %},{% endif %}
+    {% endfor %}
+{% endif %}
+{% if having_condition is defined and having_condition is not none %}
+    HAVING {{ having_condition }}
+{% endif %}
+{% if order_by_columns %}
+    ORDER BY
+    {% for column in order_by_columns %}
+        {{ column }}
+        {% if not loop.last %},{% endif %}
+    {% endfor %}
+{% endif %}
+{% if limit is defined and limit is not none %}
+    LIMIT {{ limit }}
+{% endif %}
+{% if offset is defined and offset is not none %}
+    OFFSET {{ offset }}
+{% endif %}
+{% if not is_subquery %}
+;
+{% endif %}
