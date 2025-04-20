@@ -10,8 +10,10 @@ class GitRepository:
     def run_git_command(
         self, command: List[str], capture_output: bool = True
     ) -> subprocess.CompletedProcess:
+        command = ["git"] + command
+        print(f"Running git command: {' '.join(command)}")
         process = subprocess.run(
-            ["git"] + command,
+            command,
             cwd=self.path,
             text=True,
             capture_output=capture_output,
@@ -23,16 +25,36 @@ class GitRepository:
                 print(f"Error: {process.stderr.strip()}")
         return process
 
-    def get_staged_files(self) -> List[Path]:
-        process = self.run_git_command(["diff", "--cached", "--name-only"])
-        staged_files = []
-        if process.returncode == 0:
-            for file in process.stdout.strip().splitlines():
-                staged_files.append(self.path / file)
-        return staged_files
+    def _get_files(
+        self, command: list[str], dir_path: str | Path | None = None
+    ) -> list[Path]:
+        command = command.copy()
+        if dir_path:
+            command.append(str(dir_path))
+        process = self.run_git_command(command)
+        if process.returncode != 0:
+            return []
+        return [self.path / file for file in process.stdout.strip().splitlines()]
 
-    def add(self, *files: str) -> bool:
-        process = self.run_git_command(["add"] + list(files), capture_output=False)
+    def get_staged_files(self, dir_path: str | Path | None = None) -> list[Path]:
+        return self._get_files(["diff", "--cached", "--name-only"], dir_path)
+
+    def get_unstaged_files(self, dir_path: str | Path | None = None) -> list[Path]:
+        return self._get_files(["diff", "--name-only"], dir_path)
+
+    def get_changed_files(self, dir_path: str | Path | None = None) -> list[Path]:
+        return self._get_files(["diff", "HEAD", "--name-only"], dir_path)
+
+    def get_tracked_files(self, dir_path: str | Path | None = None) -> list[Path]:
+        return self._get_files(["ls-files"], dir_path)
+
+    def get_untracked_files(self, dir_path: str | Path | None = None) -> list[Path]:
+        return self._get_files(["ls-files", "--others", "--exclude-standard"], dir_path)
+
+    def add(self, *files: str | Path) -> bool:
+        process = self.run_git_command(
+            ["add"] + list(map(str, files)), capture_output=False
+        )
         return process.returncode == 0
 
     def commit(self, message: str) -> bool:
@@ -44,4 +66,4 @@ if __name__ == "__main__":
     repository = GitRepository()
     print("Staged files:")
     for staged_file in repository.get_staged_files():
-        print(staged_file)
+        print(f"    {staged_file}")
