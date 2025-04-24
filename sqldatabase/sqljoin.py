@@ -1,5 +1,6 @@
 from .sqlbase import SqlBase, SqlBaseEnum
 from .sqlcolumn import SqlColumn
+from .sqlcondition import SqlCondition
 from .sqloperator import ESqlComparisonOperator
 from .sqltable import SqlTable
 
@@ -24,21 +25,25 @@ class SqlJoin(SqlBase):
         self.columns = columns
         self.type = type_
         self.operator = operator
+        # self.condition = SqlCondition(columns[0], *columns[1:], operator)
 
     def to_sql(self) -> str:
-        sql = f"{self.type} JOIN {self.table} ON "
+        # return f"{self.type} JOIN {self.table.fully_qualified_name} ON {self.condition.to_sql()}"
+        sql = f"{self.type} JOIN {self.table.fully_qualified_name} ON "
         if self.operator in (
             ESqlComparisonOperator.IS_NULL,
             ESqlComparisonOperator.IS_NOT_NULL,
         ):
-            return sql + f"{self.columns[0]} {self.operator}"
+            return sql + f"{self.columns[0].fully_qualified_name} {self.operator}"
         elif self.operator in (
             ESqlComparisonOperator.IS_BETWEEN,
             ESqlComparisonOperator.IS_NOT_BETWEEN,
         ):
             return (
                 sql
-                + f"{self.columns[0]} {self.operator} {self.columns[1]} AND {self.columns[2]}"
+                + f"{self.columns[0].fully_qualified_name}"
+                + f" {self.operator} {self.columns[1].fully_qualified_name}"
+                + f" AND {self.columns[2].fully_qualified_name}"
             )
         elif self.operator in (
             ESqlComparisonOperator.IS_IN,
@@ -46,7 +51,12 @@ class SqlJoin(SqlBase):
         ):
             return (
                 sql
-                + f"{self.columns[0]} {self.operator} ({', '.join(f'{column}' for column in self.columns[1:])})"
+                + f"{self.columns[0].fully_qualified_name} {self.operator}"
+                + f" ({', '.join(f'{column.fully_qualified_name}' for column in self.columns[1:])})"
             )
         else:
-            return sql + f"{self.columns[0]} {self.operator} {self.columns[1]}"
+            return (
+                sql
+                + f"{self.columns[0].fully_qualified_name}"
+                + f" {self.operator} {self.columns[1].fully_qualified_name}"
+            )

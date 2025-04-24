@@ -1,7 +1,7 @@
 UPDATE {{ table }}
 SET
-{% for column in columns %}
-    {{ column }} = :{{ column.parameter_name }}
+{% for column, parameter in columns_with_parameters %}
+    {{ column }} = :{{ parameter }}
     {% if not loop.last %},{% endif %}
 {% endfor %}
 WHERE {{ where_condition }}

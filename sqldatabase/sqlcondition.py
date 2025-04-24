@@ -28,36 +28,81 @@ class SqlCondition(SqlBaseCondition):
         *values: Any,
         operator: ESqlComparisonOperator = ESqlComparisonOperator.IS_EQUAL,
     ) -> None:
-        from .sqlcolumn import SqlColumn
-        from .sqlstatement import SqlSelectStatement
-
         self.item = item
         self.values = values
         self.operator = operator
-        self.parameters = {
-            f"{self.item.parameter_name}_value_{index}": value
-            for index, value in enumerate(values)
-            if not isinstance(value, (SqlColumn, SqlSelectStatement))
-        }
-        if isinstance(item, SqlSelectStatement):
-            self.parameters.update(item.parameters)
-        if len(self.values) == 1 and isinstance(self.values[0], SqlSelectStatement):
-            self.parameters.update(self.values[0].parameters)
+        self.values_to_sql: list[str] = []
+        self.parameters: dict[str, Any] = {}
+        self._verify_value_count()
+        self._parse_values()
+        if isinstance(self.item, SqlSelectStatement):
+            self.parameters.update(self.item.parameters)
+
+    def _verify_value_count(self) -> None:
+        if self.operator in (
+            ESqlComparisonOperator.IS_NULL,
+            ESqlComparisonOperator.IS_NOT_NULL,
+        ):
+            required_value_count = 0
+        elif self.operator in (
+            ESqlComparisonOperator.IS_BETWEEN,
+            ESqlComparisonOperator.IS_NOT_BETWEEN,
+        ):
+            required_value_count = 2
+        elif self.operator in (
+            ESqlComparisonOperator.IS_IN,
+            ESqlComparisonOperator.IS_NOT_IN,
+        ):
+            required_value_count = None
+        else:
+            required_value_count = 1
+        assert (
+            required_value_count is None or len(self.values) == required_value_count
+        ), (
+            f"Expected exactly {required_value_count} values for {self.operator} operator,"
+            f" {len(self.values)} were given."
+        )
+
+    def _parse_values(self) -> None:
+        from .sqlcolumn import SqlColumn
+        from .sqlstatement import SqlSelectStatement
+
+        item = (
+            self.item.items[0]
+            if isinstance(self.item, SqlSelectStatement)
+            else self.item
+        )
+        adapter = item.adapter
+        for value in self.values:
+            if isinstance(value, SqlColumn):
+                self.values_to_sql.append(value.fully_qualified_name)
+            elif isinstance(value, SqlAggregateFunction):
+                self.values_to_sql.append(value.to_sql())
+            elif isinstance(value, SqlSelectStatement):
+                self.values_to_sql.append(f"({value.to_sql()})")
+                self.parameters.update(value.parameters)
+            else:
+                parameter = self.item.parameter_name
+                if adapter is not None:
+                    value = adapter(value)
+                self.values_to_sql.append(f":{parameter}")
+                self.parameters[parameter] = value
 
     def to_sql(self) -> str:
         from .sqlcolumn import SqlColumn
         from .sqlstatement import SqlSelectStatement
 
-        if isinstance(self.item, SqlSelectStatement):
-            sql = f"({self.item}) {self.operator}"
+        if isinstance(self.item, SqlColumn):
+            sql = self.item.fully_qualified_name
+        elif isinstance(self.item, SqlAggregateFunction):
+            sql = self.item.to_sql()
+        elif isinstance(self.item, SqlSelectStatement):
+            sql = f"({self.item.to_sql()})"
         else:
-            sql = f"{self.item} {self.operator}"
+            assert False, f"Invalid item: {self.item}."
 
-        if len(self.values) == 1 and isinstance(self.values[0], SqlColumn):
-            return sql + f" {self.values[0]}"
-        elif len(self.values) == 1 and isinstance(self.values[0], SqlSelectStatement):
-            return sql + f" ({self.values[0]})"
-        elif self.operator in (
+        sql += f" {self.operator}"
+        if self.operator in (
             ESqlComparisonOperator.IS_NULL,
             ESqlComparisonOperator.IS_NOT_NULL,
         ):
@@ -66,21 +111,15 @@ class SqlCondition(SqlBaseCondition):
             ESqlComparisonOperator.IS_BETWEEN,
             ESqlComparisonOperator.IS_NOT_BETWEEN,
         ):
-            if len(self.parameters) != 2:
-                raise ValueError("Expected exactly two parameters for BETWEEN operator.")
-            lower_parameter, upper_parameter = self.parameters
-            return sql + f" :{lower_parameter} AND :{upper_parameter}"
+            lower_value, upper_value = self.values_to_sql
+            return sql + f" {lower_value} AND {upper_value}"
         elif self.operator in (
             ESqlComparisonOperator.IS_IN,
             ESqlComparisonOperator.IS_NOT_IN,
         ):
-            return (
-                sql
-                + f" ({', '.join(f':{parameter}' for parameter in self.parameters)})"
-            )
+            return sql + f" ({', '.join(self.values_to_sql)})"
         else:
-            parameter, *_ = self.parameters
-            return sql + f" :{parameter}"
+            return sql + f" {self.values_to_sql[0]}"
 
 
 class SqlCompoundCondition(SqlBaseCondition):

@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
 
@@ -12,13 +13,13 @@ from .sqltable import SqlTable
 
 
 class SqlStatement(SqlBase):
+    _environment = Environment(
+        loader=FileSystemLoader(Path(__file__).parent / "templates")
+    )
     template_file: str
 
     def __init__(self, parameters: dict[str, Any]) -> None:
         self.parameters = parameters
-        self._environment = Environment(
-            loader=FileSystemLoader(Path(__file__).parent / "templates")
-        )
 
     def _render_template(self, template_file: str, **context) -> str:
         template = self._environment.get_template(template_file)
@@ -70,7 +71,10 @@ class SqlInsertIntoStatement(SqlStatement):
         record: dict[SqlColumn, Any],
     ) -> None:
         parameters = {
-            f"{column.parameter_name}": value for column, value in record.items()
+            column.parameter_name: (
+                value if column.adapter is None else column.adapter(value)
+            )
+            for column, value in record.items()
         }
         SqlStatement.__init__(self, parameters)
         self.table = table
@@ -78,7 +82,10 @@ class SqlInsertIntoStatement(SqlStatement):
 
     def to_sql(self) -> str:
         return self._render_template(
-            self.template_file, table=self.table, columns=self.columns
+            self.template_file,
+            table=self.table,
+            columns=self.columns,
+            parameters=self.parameters,
         )
 
 
@@ -88,7 +95,12 @@ class SqlSelectStatement(SqlStatement):
     def __init__(
         self,
         table: SqlTable,
-        items: list[SqlColumn | SqlAggregateFunction] | None = None,
+        items: (
+            SqlColumn
+            | SqlAggregateFunction
+            | Sequence[SqlColumn | SqlAggregateFunction]
+            | None
+        ) = None,
         where_condition: SqlBaseCondition | None = None,
         joins: list[SqlJoin] | None = None,
         group_by_columns: list[SqlColumn] | None = None,
@@ -106,7 +118,12 @@ class SqlSelectStatement(SqlStatement):
             parameters.update(having_condition.parameters)
         SqlStatement.__init__(self, parameters)
         self.table = table
-        self.items = items
+        if items is None:
+            self.items: list[SqlColumn | SqlAggregateFunction] = list(table.columns)
+        elif isinstance(items, Sequence):
+            self.items = list(items)
+        else:
+            self.items = [items]
         self.where_condition = where_condition
         self.joins = joins
         self.group_by_columns = group_by_columns
@@ -151,7 +168,10 @@ class SqlUpdateStatement(SqlStatement):
         where_condition: SqlBaseCondition,
     ) -> None:
         parameters = {
-            f"{column.parameter_name}": value for column, value in record.items()
+            column.parameter_name: (
+                value if column.adapter is None else column.adapter(value)
+            )
+            for column, value in record.items()
         }
         parameters.update(where_condition.parameters)
         SqlStatement.__init__(self, parameters)
@@ -163,6 +183,6 @@ class SqlUpdateStatement(SqlStatement):
         return self._render_template(
             self.template_file,
             table=self.table,
-            columns=self.columns,
+            columns_with_parameters=list(zip(self.columns, self.parameters)),
             where_condition=self.where_condition,
         )

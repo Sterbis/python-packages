@@ -55,8 +55,6 @@ class IsNotLikeColumnFilter(ValueColumnFilter):
 
 
 class ValuesColumnFilter(SqlColumnFilter):
-    operator: Literal[ESqlComparisonOperator.IS_IN, ESqlComparisonOperator.IS_NOT_IN]
-
     def __init__(self, column: SqlColumn, values: Iterable) -> None:
         SqlColumnFilter.__init__(self, column, *values)
 
@@ -70,10 +68,6 @@ class IsNotInColumnFilter(ValuesColumnFilter):
 
 
 class BetweenColumnFilter(SqlColumnFilter):
-    operator: Literal[
-        ESqlComparisonOperator.IS_BETWEEN, ESqlComparisonOperator.IS_NOT_BETWEEN
-    ]
-
     def __init__(self, column: SqlColumn, lower_value: Any, upper_value: Any):
         SqlColumnFilter.__init__(self, column, lower_value, upper_value)
         self.lower_value = lower_value
@@ -89,10 +83,6 @@ class IsNotBetweenColumnFilter(BetweenColumnFilter):
 
 
 class NullColumnFilter(SqlColumnFilter):
-    operator: Literal[
-        ESqlComparisonOperator.IS_NULL, ESqlComparisonOperator.IS_NOT_NULL
-    ]
-
     def __init__(self, column: SqlColumn):
         SqlColumnFilter.__init__(self, column)
 

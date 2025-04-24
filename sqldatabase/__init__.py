@@ -1,8 +1,8 @@
-from .sqlcolumn import SqlColumn, SqlColumns
+from .sqlcolumn import SqlColumn, SqlColumns, SqlColumnsWithID
 from .sqlcondition import SqlCondition
 from .sqldatabase import SqlDatabase
-from .sqldatatype import ESqlDataType
-from .sqlfunction import SqlAvg, SqlCount, SqlMax, SqlMin, SqlSum
+from .sqldatatype import SqlDataType, SqlDataTypes
+from .sqlfunction import SqlFunctions
 from .sqljoin import ESqlJoinType, SqlJoin
 from .sqloperator import ESqlComparisonOperator, ESqlLogicalOperator
 from .sqlstatement import (

@@ -1,10 +1,10 @@
-INSERT INTO {{ table.name }} (
+INSERT INTO {{ table }} (
     {% for column in columns %}
         {{ column }}{% if not loop.last %},{% endif %}
     {% endfor %}
 )
 VALUES (
-    {% for column in columns %}
-        :{{ column.parameter_name }}{% if not loop.last %},{% endif %}
+    {% for parameter in parameters %}
+        :{{ parameter }}{% if not loop.last %},{% endif %}
     {% endfor %}
 );
