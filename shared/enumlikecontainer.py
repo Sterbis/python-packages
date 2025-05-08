@@ -9,7 +9,6 @@ class EnumLikeContainer(Generic[T]):
     item_type: Type[T]
 
     def __init__(self) -> None:
-        print(f"Initialize {self.__class__.__name__}")
         self._items: dict[str, T] = {}
         for base in reversed(self.__class__.__mro__):
             for name, value in base.__dict__.items():
