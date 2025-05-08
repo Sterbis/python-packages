@@ -1,0 +1,51 @@
+{
+    "words": [
+      { "id": 1, "word": "run", "pronunciation": "rʌn" },
+      { "id": 2, "word": "book", "pronunciation": "bʊk" },
+      { "id": 3, "word": "light", "pronunciation": "laɪt" }
+    ],
+    "meanings": [
+      { "id": 1, "word_id": 1, "definition": "move at a speed faster than a walk", "part_of_speech": "verb" },
+      { "id": 2, "word_id": 1, "definition": "manage or operate", "part_of_speech": "verb" },
+      { "id": 3, "word_id": 2, "definition": "a set of pages bound together", "part_of_speech": "noun" },
+      { "id": 4, "word_id": 2, "definition": "to reserve", "part_of_speech": "verb" },
+      { "id": 5, "word_id": 3, "definition": "visible radiant energy", "part_of_speech": "noun" },
+      { "id": 6, "word_id": 3, "definition": "not heavy", "part_of_speech": "adjective" }
+    ],
+    "examples": [
+      { "id": 1, "meaning_id": 1, "example": "He can run very fast." },
+      { "id": 2, "meaning_id": 2, "example": "She runs the company." },
+      { "id": 3, "meaning_id": 3, "example": "He read a book." },
+      { "id": 4, "meaning_id": 4, "example": "I booked a flight." },
+      { "id": 5, "meaning_id": 5, "example": "The light is bright." },
+      { "id": 6, "meaning_id": 6, "example": "This bag is light." }
+    ],
+    "tags": [
+      { "id": 1, "tag": "action" },
+      { "id": 2, "tag": "business" },
+      { "id": 3, "tag": "everyday" },
+      { "id": 4, "tag": "science" },
+      { "id": 5, "tag": "weight" }
+    ],
+    "meaning_tags": [
+      { "meaning_id": 1, "tag_id": 1 },
+      { "meaning_id": 2, "tag_id": 2 },
+      { "meaning_id": 3, "tag_id": 3 },
+      { "meaning_id": 4, "tag_id": 2 },
+      { "meaning_id": 5, "tag_id": 4 },
+      { "meaning_id": 6, "tag_id": 5 }
+    ],
+    "users": [
+      { "id": 1, "username": "alice", "email": "alice@example.com" },
+      { "id": 2, "username": "bob", "email": "bob@example.com" }
+    ],
+    "user_progress": [
+      { "user_id": 1, "meaning_id": 1, "attempts": 3, "correct": 2, "last_seen": "2024-01-01" },
+      { "user_id": 1, "meaning_id": 2, "attempts": 1, "correct": 1, "last_seen": "2024-01-05" },
+      { "user_id": 1, "meaning_id": 4, "attempts": 2, "correct": 2, "last_seen": "2024-01-10" },
+      { "user_id": 2, "meaning_id": 3, "attempts": 1, "correct": 0, "last_seen": "2024-01-02" },
+      { "user_id": 2, "meaning_id": 5, "attempts": 2, "correct": 1, "last_seen": "2024-01-03" },
+      { "user_id": 2, "meaning_id": 6, "attempts": 1, "correct": 1, "last_seen": "2024-01-07" }
+    ]
+  }
+  

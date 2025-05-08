@@ -1,0 +1,10 @@
+[
+    [
+        "CREATE TABLE users (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  timestamp REAL DEFAULT 0.1,\n  username TEXT NOT NULL UNIQUE,\n  email TEXT NOT NULL UNIQUE,\n  photo BLOB,\n  admin INTEGER NOT NULL,\n  birth_date TEXT,\n  last_login TEXT,\n  automatic_logout TEXT\n)",
+        "sqlite"
+    ],
+    [
+        "CREATE TABLE users (\n  id INTEGER PRIMARY KEY IDENTITY,\n  timestamp FLOAT DEFAULT 0.1,\n  username VARCHAR(MAX) NOT NULL UNIQUE,\n  email VARCHAR(MAX) NOT NULL UNIQUE,\n  photo VARBINARY,\n  admin BIT NOT NULL,\n  birth_date DATE,\n  last_login DATETIME,\n  automatic_logout TIME\n)",
+        "tsql"
+    ]
+]

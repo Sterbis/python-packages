@@ -1,0 +1,98 @@
+[
+    [
+        "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (:first_name, :last_name, :email)",
+        null,
+        "sqlite",
+        "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (@first_name, @last_name, @email)",
+        null,
+        "tsql"
+    ],
+    [
+        "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (:first_name, :last_name, :email)",
+        null,
+        "sqlite",
+        "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  ($1, $2, $3)",
+        null,
+        "postgres"
+    ],
+    [
+        "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (:first_name, :last_name, :email)",
+        null,
+        "sqlite",
+        "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (?, ?, ?)",
+        null,
+        "mysql"
+    ],
+    [
+        "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (@first_name, @last_name, @email)",
+        null,
+        "tsql",
+        "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (:first_name, :last_name, :email)",
+        null,
+        "sqlite"
+    ],
+    [
+        "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (@first_name, @last_name, @email)",
+        null,
+        "tsql",
+        "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  ($1, $2, $3)",
+        null,
+        "postgres"
+    ],
+    [
+        "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (@first_name, @last_name, @email)",
+        null,
+        "tsql",
+        "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (?, ?, ?)",
+        null,
+        "mysql"
+    ],
+    [
+        "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  ($1, $2, $3)",
+        null,
+        "postgres",
+        "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (:parameter_1, :parameter_2, :parameter_3)",
+        null,
+        "sqlite"
+    ],
+    [
+        "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  ($1, $2, $3)",
+        null,
+        "postgres",
+        "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (@parameter_1, @parameter_2, @parameter_3)",
+        null,
+        "tsql"
+    ],
+    [
+        "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  ($1, $2, $3)",
+        null,
+        "postgres",
+        "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (?, ?, ?)",
+        null,
+        "mysql"
+    ],
+    [
+        "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (?, ?, ?)",
+        null,
+        "mysql",
+        "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (:parameter_1, :parameter_2, :parameter_3)",
+        null,
+        "sqlite"
+    ],
+    [
+        "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (?, ?, ?)",
+        null,
+        "mysql",
+        "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (@parameter_1, @parameter_2, @parameter_3)",
+        null,
+        "tsql"
+    ],
+    [
+        "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (?, ?, ?)",
+        null,
+        "mysql",
+        "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  ($1, $2, $3)",
+        null,
+        "postgres"
+    ]
+]

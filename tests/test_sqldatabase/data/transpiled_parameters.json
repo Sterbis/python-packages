@@ -1,0 +1,98 @@
+[
+    [
+        "SELECT\n  *\nFROM users\nWHERE\n  users.name = :users_name\n  AND users.age BETWEEN :users_age_lower AND :users_age_upper",
+        {"users_age_lower": 18, "users_age_upper": 65, "users_name": "John"},
+        "sqlite",
+        null,
+        {"users_name": "John", "users_age_lower": 18, "users_age_upper": 65},
+        "tsql"
+    ],
+    [
+        "SELECT\n  *\nFROM users\nWHERE\n  users.name = :users_name\n  AND users.age BETWEEN :users_age_lower AND :users_age_upper",
+        {"users_age_lower": 18, "users_age_upper": 65, "users_name": "John"},
+        "sqlite",
+        null,
+        ["John", 18, 65],
+        "postgres"
+    ],
+    [
+        "SELECT\n  *\nFROM users\nWHERE\n  users.name = :users_name\n  AND users.age BETWEEN :users_age_lower AND :users_age_upper",
+        {"users_age_lower": 18, "users_age_upper": 65, "users_name": "John"},
+        "sqlite",
+        null,
+        ["John", 18, 65],
+        "mysql"
+    ],
+    [
+        "SELECT\n  *\nFROM users\nWHERE\n  users.name = @users_name\n  AND users.age BETWEEN @users_age_lower AND @users_age_upper",
+        {"users_age_lower": 18, "users_age_upper": 65, "users_name": "John"},
+        "tsql",
+        null,
+        {"users_name": "John", "users_age_lower": 18, "users_age_upper": 65},
+        "sqlite"
+    ],
+    [
+        "SELECT\n  *\nFROM users\nWHERE\n  users.name = @users_name\n  AND users.age BETWEEN @users_age_lower AND @users_age_upper",
+        {"users_age_lower": 18, "users_age_upper": 65, "users_name": "John"},
+        "tsql",
+        null,
+        ["John", 18, 65],
+        "postgres"
+    ],
+    [
+        "SELECT\n  *\nFROM users\nWHERE\n  users.name = @users_name\n  AND users.age BETWEEN @users_age_lower AND @users_age_upper",
+        {"users_age_lower": 18, "users_age_upper": 65, "users_name": "John"},
+        "tsql",
+        null,
+        ["John", 18, 65],
+        "mysql"
+    ],
+    [
+        "SELECT\n  *\nFROM users\nWHERE\n  users.name = $3\n  AND users.age BETWEEN $2 AND $1",
+        [65, 18, "John"],
+        "postgres",
+        null,
+        {"parameter_1": "John", "parameter_2": 18, "parameter_3": 65},
+        "sqlite"
+    ],
+    [
+        "SELECT\n  *\nFROM users\nWHERE\n  users.name = $3\n  AND users.age BETWEEN $2 AND $1",
+        [65, 18, "John"],
+        "postgres",
+        null,
+        {"parameter_1": "John", "parameter_2": 18, "parameter_3": 65},
+        "tsql"
+    ],
+    [
+        "SELECT\n  *\nFROM users\nWHERE\n  users.name = $3\n  AND users.age BETWEEN $2 AND $1",
+        [65, 18, "John"],
+        "postgres",
+        null,
+        ["John", 18, 65],
+        "mysql"
+    ],
+    [
+        "SELECT\n  *\nFROM users\nWHERE\n  users.name = ?\n  AND users.age BETWEEN ? AND ?",
+        ["John", 18, 65],
+        "mysql",
+        null,
+        {"parameter_1": "John", "parameter_2": 18, "parameter_3": 65},
+        "sqlite"
+    ],
+    [
+        "SELECT\n  *\nFROM users\nWHERE\n  users.name = ?\n  AND users.age BETWEEN ? AND ?",
+        ["John", 18, 65],
+        "mysql",
+        null,
+        {"parameter_1": "John", "parameter_2": 18, "parameter_3": 65},
+        "tsql"
+    ],
+    [
+        "SELECT\n  *\nFROM users\nWHERE\n  users.name = ?\n  AND users.age BETWEEN ? AND ?",
+        ["John", 18, 65],
+        "mysql",
+        null,
+        ["John", 18, 65],
+        "postgres"
+    ]
+]
