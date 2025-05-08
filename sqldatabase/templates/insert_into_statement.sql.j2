@@ -7,4 +7,8 @@ VALUES (
     {% for parameter in parameters %}
         :{{ parameter }}{% if not loop.last %},{% endif %}
     {% endfor %}
-);
+)
+{% if 'id' in table.columns | map(attribute='name') %}
+    RETURNING id
+{% endif %}
+;

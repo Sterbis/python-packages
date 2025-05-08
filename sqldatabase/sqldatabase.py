@@ -1,21 +1,23 @@
+from __future__ import annotations
 import pprint
-import re
 import sqlite3
+import textwrap
 from collections.abc import Sequence
-from pathlib import Path
 from typing import Any, Generic, TypeVar
 
-import sqlparse  # type: ignore
+import pyodbc  # type: ignore
 
-from .sqlbase import SqlBase, value_to_sql
+from .sqlbase import SqlBase
 from .sqlcolumn import SqlColumn
-from .sqlcondition import SqlBaseCondition
+from .sqlcondition import SqlCondition
+from .sqldatatype import SqlDataTypes
 from .sqlfunction import (
     SqlAggregateFunction,
     SqlAggregateFunctionWithMandatoryColumn,
     SqlFunctions,
 )
 from .sqljoin import SqlJoin
+from .sqlrecord import SqlRecord
 from .sqlstatement import (
     SqlCreateTableStatement,
     SqlDeleteStatement,
@@ -25,69 +27,77 @@ from .sqlstatement import (
     SqlUpdateStatement,
 )
 from .sqltable import SqlTable, SqlTables
+from .sqltranspiler import ESqlDialect
 
 
 T = TypeVar("T", bound=SqlTables)
 
 
 class SqlDatabase(SqlBase, Generic[T]):
-    name = "main"
+    data_types: SqlDataTypes
+    dialect: ESqlDialect
     tables: T
 
     def __init__(
         self,
-        path: str | Path | None = None,
-        name: str | None = None,
+        name: str,
+        connection: sqlite3.Connection | pyodbc.Connection,
         tables: T | None = None,
-        autocommit: bool = False,
     ) -> None:
-        if name is not None:
-            self.name = name
+        self.name = name
+        self._connection = connection
         if tables is None:
             assert hasattr(self, "tables"), (
                 "Database tables must be specified either as class attribute"
                 "or passed when instance is created."
             )
+            self.tables = self.tables
         else:
             self.tables = tables
-        self.path = Path(f"{self.name}.db").resolve() if path is None else Path(path)
-        database_exists = self.path.is_file()
-        self._connection = sqlite3.connect(
-            self.path, detect_types=sqlite3.PARSE_DECLTYPES, autocommit=autocommit
-        )
-        self._connection.row_factory = self._record_factory
-        if not database_exists:
-            self._create_tables()
+        for data_type in self.data_types:
+            data_type.database = self
         for table in self.tables:
             table.database = self
+            for column in table.columns:
+                column.data_type = self.data_types(column.data_type.name)
         self.functions = SqlFunctions()
+        self.attached_databases: dict[str, SqlDatabase] = {}
 
-    def __eq__(self, other: Any) -> bool:
-        return isinstance(other, SqlDatabase) and self.path == other.path
+    @property
+    def autocommit(self) -> bool:
+        return bool(self._connection.autocommit)
 
-    def __hash__(self):
-        return hash(self.path)
-
-    def _record_factory(
-        self, cursor: sqlite3.Cursor, row: tuple
-    ) -> dict[SqlColumn | SqlAggregateFunction, Any]:
-        def parse_alias(alias: str) -> tuple[str | None, str | None, str | None]:
-            function_name = table_name = column_name = None
+    def _fetch_records(self, cursor: sqlite3.Cursor | pyodbc.Cursor) -> list[SqlRecord]:
+        def parse_alias(
+            alias: str,
+        ) -> tuple[str | None, str | None, str | None, str | None]:
+            function_name = database_name = table_name = column_name = None
             alias_parts = alias.split(".")
             if alias_parts[0] == "FUNCTION":
                 function_name = alias_parts[1]
-                if len(alias_parts) == 5:
-                    column_name = alias_parts[3]
+                if len(alias_parts) == 6:
+                    database_name = alias_parts[3]
                     table_name = alias_parts[4]
+                    column_name = alias_parts[5]
             elif alias_parts[0] == "COLUMN":
-                column_name = alias_parts[1]
+                database_name = alias_parts[1]
                 table_name = alias_parts[2]
-            return function_name, table_name, column_name
+                column_name = alias_parts[3]
+            return function_name, database_name, table_name, column_name
 
         def get_item(alias) -> SqlColumn | SqlAggregateFunction:
-            function_name, table_name, column_name = parse_alias(alias)
-            if table_name is not None and column_name is not None:
-                column = self.tables(table_name).columns(column_name)
+            function_name, database_name, table_name, column_name = parse_alias(alias)
+            if (
+                database_name is not None
+                and table_name is not None
+                and column_name is not None
+            ):
+                database = (
+                    self
+                    if database_name == self.name
+                    else self.attached_databases[database_name]
+                )
+                column = database.tables(table_name).columns(column_name)
             else:
                 column = None
             if function_name is not None:
@@ -102,59 +112,50 @@ class SqlDatabase(SqlBase, Generic[T]):
             elif column is not None:
                 item = column
             else:
-                raise ValueError(f"Invalid alias format: {alias}")
+                assert False, f"Invalid alias format: {alias}"
             return item
 
-        aliases = [description[0] for description in cursor.description]
-        record = {}
-        for index, alias in enumerate(aliases):
-            item = get_item(alias)
-            value = row[index]
-            if item.converter is not None:
-                value = item.converter(value)
-            record[item] = value
-        return record
+        records: list[SqlRecord] = []
+        if cursor.description is not None:
+            aliases = [description[0] for description in cursor.description]
+            for row in cursor.fetchall():
+                record = SqlRecord()
+                for alias, value in zip(aliases, row):
+                    item = get_item(alias)
+                    if (
+                        item.data_type is not None
+                        and item.data_type.converter is not None
+                    ):
+                        value = item.data_type.converter(value)
+                    if item.converter is not None:
+                        value = item.converter(value)
+                    record[item] = value
+                records.append(record)
+        return records
 
-    def _create_table(self, table: SqlTable) -> None:
-        create_table_statement = SqlCreateTableStatement(table)
-        self._execute_statement(create_table_statement)
-
-    def _create_tables(self) -> None:
-        for table in self.tables:
-            self._create_table(table)
-        self._connection.commit()
-
-    def _replace_sql_parameters(self, sql: str, parameters: dict[str, Any]) -> str:
-        def get_value(match: re.Match) -> str:
-            parameter = match.group("PARAMETER")
-            if parameter not in parameters:
-                raise ValueError(
-                    f"Missing value for SQL parameter: {parameter}\n{sql}\n{parameters=}"
-                )
-            return value_to_sql(parameters[parameter])
-
-        return re.sub(r":(?P<PARAMETER>\w+)", get_value, sql)
-
-    def _format_sql(self, sql: str, parameters: dict[str, Any]) -> str:
-        sql = self._replace_sql_parameters(sql, parameters)
-        return sqlparse.format(sql, keyword_case="upper", reindent=True)
-
-    def _execute_statement(self, statement: SqlStatement) -> sqlite3.Cursor:
-        sql = statement.to_sql()
-        parameters = statement.parameters
-        return self.execute(sql, parameters)
+    def _execute_statement(
+        self, statement: SqlStatement
+    ) -> sqlite3.Cursor | pyodbc.Cursor:
+        return self.execute(statement.sql, statement.parameters)
 
     def to_sql(self) -> str:
         return self.name
 
     def execute(
-        self, sql: str, parameters: dict[str, Any] | None = None
-    ) -> sqlite3.Cursor:
-        parameters = parameters or {}
-        print(self._format_sql(sql, parameters))  # Debugging: Uncomment if needed
-        print("-" * 100)
-        print(f"parameters = {pprint.pformat(parameters)}")
-        print("=" * 100)
+        self,
+        sql: str,
+        parameters: dict[str, Any] | Sequence = (),
+    ) -> sqlite3.Cursor | pyodbc.Cursor:
+        print("=" * 80)
+        print("Executing SQL:")
+        print("-" * 80)
+        print(textwrap.indent(sql, "  "))
+        print()
+        print(
+            textwrap.indent(
+                f"parameters = {pprint.pformat(parameters, sort_dicts=False)}", "  "
+            )
+        )
         return self._connection.execute(sql, parameters)
 
     def commit(self) -> None:
@@ -166,25 +167,39 @@ class SqlDatabase(SqlBase, Generic[T]):
     def close(self) -> None:
         self._connection.close()
 
-    def delete_records(
+    def create_table(self, table: SqlTable, if_not_exists: bool = False) -> None:
+        create_table_statement = SqlCreateTableStatement(
+            self.dialect, table, if_not_exists
+        )
+        self._execute_statement(create_table_statement)
+
+    def create_all_tables(self, if_not_exists: bool = False) -> None:
+        for table in self.tables:
+            self.create_table(table, if_not_exists)
+        self.commit()
+
+    def insert_records(
         self,
         table: SqlTable,
-        where_condition: SqlBaseCondition,
+        records: SqlRecord | Sequence[SqlRecord],
     ) -> list[int] | None:
-        delete_statement = SqlDeleteStatement(
-            table=table, where_condition=where_condition
-        )
-        cursor = self._execute_statement(delete_statement)
-        if cursor.description is not None:
-            return [row[0] for row in cursor.fetchall()]
-        return None
+        if isinstance(records, SqlRecord):
+            records = [records]
 
-    def insert_record(
-        self, table: SqlTable, record: dict[SqlColumn, Any]
-    ) -> int | None:
-        insert_statement = SqlInsertIntoStatement(table=table, record=record)
-        cursor = self._execute_statement(insert_statement)
-        return cursor.lastrowid
+        insert_statement = SqlInsertIntoStatement(self.dialect, table, records[0])
+        ids = []
+        for index, record in enumerate(records):
+            if index > 0 and insert_statement._template_parameters is not None:
+                for parameter, value in zip(
+                    insert_statement._template_parameters.keys(), record.values()
+                ):
+                    insert_statement._template_parameters[parameter] = value
+            cursor = self._execute_statement(insert_statement)
+            if cursor.description is not None:
+                row = cursor.fetchone()
+                if row is not None:
+                    ids.append(row[0])
+        return ids if len(ids) else None
 
     def select_records(
         self,
@@ -195,16 +210,17 @@ class SqlDatabase(SqlBase, Generic[T]):
             | Sequence[SqlColumn | SqlAggregateFunction]
             | None
         ) = None,
-        where_condition: SqlBaseCondition | None = None,
+        where_condition: SqlCondition | None = None,
         joins: list[SqlJoin] | None = None,
         group_by_columns: list[SqlColumn] | None = None,
-        having_condition: SqlBaseCondition | None = None,
+        having_condition: SqlCondition | None = None,
         order_by_columns: list[SqlColumn] | None = None,
         distinct: bool = False,
         limit: int | None = None,
         offset: int | None = None,
-    ) -> list[dict[SqlColumn | SqlAggregateFunction, Any]]:
+    ) -> list[SqlRecord]:
         select_statement = SqlSelectStatement(
+            self.dialect,
             table,
             items,
             where_condition,
@@ -217,15 +233,16 @@ class SqlDatabase(SqlBase, Generic[T]):
             offset,
         )
         cursor = self._execute_statement(select_statement)
-        return cursor.fetchall()
+        return self._fetch_records(cursor)
 
     def update_records(
         self,
         table: SqlTable,
-        record: dict[SqlColumn, Any],
-        where_condition: SqlBaseCondition,
+        record: SqlRecord,
+        where_condition: SqlCondition,
     ) -> list[int] | None:
         update_statement = SqlUpdateStatement(
+            self.dialect,
             table,
             record,
             where_condition,
@@ -234,3 +251,19 @@ class SqlDatabase(SqlBase, Generic[T]):
         if cursor.description is not None:
             return [row[0] for row in cursor.fetchall()]
         return None
+
+    def delete_records(
+        self,
+        table: SqlTable,
+        where_condition: SqlCondition,
+    ) -> list[int] | None:
+        delete_statement = SqlDeleteStatement(self.dialect, table, where_condition)
+        cursor = self._execute_statement(delete_statement)
+        if cursor.description is not None:
+            return [row[0] for row in cursor.fetchall()]
+        return None
+
+    def record_count(self, table: SqlTable) -> int:
+        count_function = self.functions.COUNT()
+        records = self.select_records(table, count_function)
+        return records[0][count_function]

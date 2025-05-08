@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, Callable
 from shared import EnumLikeClassContainer
 
 from .sqlbase import SqlBase
+from .sqldatatype import SqlDataType
 
 if TYPE_CHECKING:
     from .sqlcolumn import SqlColumn
@@ -22,12 +23,11 @@ class SqlAggregateFunction(SqlBase):
     def __eq__(self, other: Any) -> bool:
         return (
             isinstance(other, SqlAggregateFunction)
-            and self.name == other.name
-            and self.column == other.column
+            and self.fully_qualified_name == other.fully_qualified_name
         )
 
     def __hash__(self):
-        return hash(self.name) + hash(self.column)
+        return hash(self.fully_qualified_name)
 
     @property
     def alias(self) -> str:
@@ -49,11 +49,23 @@ class SqlAggregateFunction(SqlBase):
         return None
 
     @property
-    def parameter_name(self) -> str:
+    def data_type(self) -> SqlDataType | None:
+        if self.column is not None:
+            return self.column.data_type
+        return None
+
+    @property
+    def fully_qualified_name(self) -> str:
+        if self.column is None:
+            return f"{self.name.upper()}(*)"
+        else:
+            return f"{self.name.upper()}({self.column.fully_qualified_name})"
+
+    def generate_parameter_name(self) -> str:
         if self.column is None:
             return f"{self.name}_{uuid.uuid4().hex[:8]}"
         else:
-            return f"{self.name}_{self.column.parameter_name}"
+            return f"{self.name}_{self.column.generate_parameter_name()}"
 
     def to_sql(self) -> str:
         if self.column is None:

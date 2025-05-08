@@ -1,4 +1,6 @@
-CREATE TABLE {{table.name}} (
+CREATE TABLE
+{% if if_not_exists %}IF NOT EXISTS{% endif %}
+{{table.name}} (
 {% for column in table.columns %}
     {{ column }} {{ column.data_type }}
     {% if column.primary_key %}PRIMARY KEY{% endif %}

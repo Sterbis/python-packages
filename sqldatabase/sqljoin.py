@@ -25,10 +25,10 @@ class SqlJoin(SqlBase):
         self.columns = columns
         self.type = type_
         self.operator = operator
-        # self.condition = SqlCondition(columns[0], *columns[1:], operator)
+        # self.condition = SqlCondition(columns[0], operator, *columns[1:])
 
     def to_sql(self) -> str:
-        # return f"{self.type} JOIN {self.table.fully_qualified_name} ON {self.condition.to_sql()}"
+        # return f"{self.type} JOIN {self.table.fully_qualified_name} ON {self.condition}"
         sql = f"{self.type} JOIN {self.table.fully_qualified_name} ON "
         if self.operator in (
             ESqlComparisonOperator.IS_NULL,

@@ -1,3 +1,4 @@
+from __future__ import annotations
 from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
@@ -6,94 +7,96 @@ from jinja2 import Environment, FileSystemLoader
 
 from .sqlbase import SqlBase
 from .sqlcolumn import SqlColumn
-from .sqlcondition import SqlBaseCondition
+from .sqlcondition import SqlCondition
 from .sqlfunction import SqlAggregateFunction
 from .sqljoin import SqlJoin
+from .sqlrecord import SqlRecord
 from .sqltable import SqlTable
+from .sqltranspiler import ESqlDialect, SqlTranspiler
 
 
 class SqlStatement(SqlBase):
     _environment = Environment(
         loader=FileSystemLoader(Path(__file__).parent / "templates")
     )
-    template_file: str
+    _template_dialect = ESqlDialect.SQLITE
+    _template_file: str
 
-    def __init__(self, parameters: dict[str, Any]) -> None:
-        self.parameters = parameters
+    def __init__(
+        self,
+        dialect: ESqlDialect,
+        parameters: dict[str, Any] | None = None,
+        **context,
+    ) -> None:
+        self.dialect = dialect
+        self.context = context
+        self.context["parameters"] = parameters
+        self._template_parameters = parameters
+        self._template_sql = self._render_template()
 
-    def _render_template(self, template_file: str, **context) -> str:
-        template = self._environment.get_template(template_file)
-        return template.render(context)
+    @property
+    def sql(self) -> str:
+        return SqlTranspiler(self.dialect).transpile_sql(
+            self._template_sql,
+            self._template_dialect,
+            pretty=True,
+        )
+
+    @property
+    def parameters(self) -> dict[str, Any] | Sequence:
+        return SqlTranspiler(self.dialect).transpile_parameters(
+            self._template_sql,
+            self._template_parameters,
+            self._template_dialect,
+        )
+
+    def _render_template(self) -> str:
+        template = self._environment.get_template(self._template_file)
+        template_sql = template.render(self.context)
+        template_sql = "\n".join(
+            line for line in template_sql.splitlines() if line.strip()
+        )
+        return template_sql
+
+    def to_sql(self) -> str:
+        return self.sql
 
 
 class SqlCreateTableStatement(SqlStatement):
-    template_file = "create_table_statement.sql.j2"
-
-    def __init__(self, table: SqlTable) -> None:
-        parameters: dict[str, Any] = {}
-        SqlStatement.__init__(self, parameters)
-        self.table = table
-
-    def to_sql(self) -> str:
-        return self._render_template(
-            self.template_file,
-            table=self.table,
-        )
-
-
-class SqlDeleteStatement(SqlStatement):
-    template_file = "delete_statement.sql.j2"
+    _template_file = "create_table_statement.sql.j2"
 
     def __init__(
-        self,
-        table: SqlTable,
-        where_condition: SqlBaseCondition,
+        self, dialect: ESqlDialect, table: SqlTable, if_not_exists: bool = False
     ) -> None:
-        parameters = where_condition.parameters
-        SqlStatement.__init__(self, parameters)
-        self.table = table
-        self.where_condition = where_condition
-
-    def to_sql(self) -> str:
-        return self._render_template(
-            self.template_file,
-            table=self.table,
-            where_condition=self.where_condition,
-        )
+        SqlStatement.__init__(self, dialect, table=table, if_not_exists=if_not_exists)
 
 
 class SqlInsertIntoStatement(SqlStatement):
-    template_file = "insert_into_statement.sql.j2"
+    _template_file = "insert_into_statement.sql.j2"
 
     def __init__(
         self,
+        dialect: ESqlDialect,
         table: SqlTable,
-        record: dict[SqlColumn, Any],
+        record: SqlRecord,
     ) -> None:
-        parameters = {
-            column.parameter_name: (
-                value if column.adapter is None else column.adapter(value)
-            )
-            for column, value in record.items()
-        }
-        SqlStatement.__init__(self, parameters)
-        self.table = table
-        self.columns = list(record)
-
-    def to_sql(self) -> str:
-        return self._render_template(
-            self.template_file,
-            table=self.table,
-            columns=self.columns,
-            parameters=self.parameters,
+        parameters = record.generate_parameters()
+        columns = list(record.keys())
+        SqlStatement.__init__(
+            self,
+            dialect,
+            parameters,
+            table=table,
+            columns=columns,
         )
 
 
 class SqlSelectStatement(SqlStatement):
-    template_file = "select_statement.sql.j2"
+    _template_file = "select_statement.sql.j2"
 
     def __init__(
         self,
+        dialect: ESqlDialect,
         table: SqlTable,
         items: (
             SqlColumn
@@ -101,10 +104,10 @@ class SqlSelectStatement(SqlStatement):
             | Sequence[SqlColumn | SqlAggregateFunction]
             | None
         ) = None,
-        where_condition: SqlBaseCondition | None = None,
+        where_condition: SqlCondition | None = None,
         joins: list[SqlJoin] | None = None,
         group_by_columns: list[SqlColumn] | None = None,
-        having_condition: SqlBaseCondition | None = None,
+        having_condition: SqlCondition | None = None,
         order_by_columns: list[SqlColumn] | None = None,
         distinct: bool = False,
         limit: int | None = None,
@@ -116,73 +119,73 @@ class SqlSelectStatement(SqlStatement):
             parameters.update(where_condition.parameters)
         if having_condition:
             parameters.update(having_condition.parameters)
-        SqlStatement.__init__(self, parameters)
-        self.table = table
         if items is None:
-            self.items: list[SqlColumn | SqlAggregateFunction] = list(table.columns)
+            items = list(table.columns)
         elif isinstance(items, Sequence):
-            self.items = list(items)
+            items = list(items)
         else:
-            self.items = [items]
-        self.where_condition = where_condition
-        self.joins = joins
-        self.group_by_columns = group_by_columns
-        self.having_condition = having_condition
-        self.order_by_columns = order_by_columns
-        self.distinct = distinct
-        self.limit = limit
-        self.offset = offset
-        self.is_subquery = is_subquery
-
-    @property
-    def parameter_name(self) -> str:
-        assert (
-            self.items is not None and len(self.items) == 1
-        ), "Select statement must return exactly one value when compared with parameter value."
-        return f"SELECT_{self.items[0].parameter_name}"
-
-    def to_sql(self) -> str:
-        return self._render_template(
-            self.template_file,
-            table=self.table,
-            items=self.items,
-            where_condition=self.where_condition,
-            joins=self.joins,
-            group_by_columns=self.group_by_columns,
-            having_condition=self.having_condition,
-            order_by_columns=self.order_by_columns,
-            distinct=self.distinct,
-            limit=self.limit,
-            offset=self.offset,
-            is_subquery=self.is_subquery,
+            items = [items]
+        SqlStatement.__init__(
+            self,
+            dialect,
+            parameters,
+            table=table,
+            items=items,
+            where_condition=where_condition,
+            joins=joins,
+            group_by_columns=group_by_columns,
+            having_condition=having_condition,
+            order_by_columns=order_by_columns,
+            distinct=distinct,
+            limit=limit,
+            offset=offset,
+            is_subquery=is_subquery,
         )
+
+    def generate_parameter_name(self) -> str:
+        assert (
+            len(self.context["items"]) == 1
+        ), "Select statement must return exactly one value when compared with parameter value."
+        return f"SELECT_{self.context['items'][0].generate_parameter_name()}"
 
 
 class SqlUpdateStatement(SqlStatement):
-    template_file = "update_statement.sql.j2"
+    _template_file = "update_statement.sql.j2"
 
     def __init__(
         self,
+        dialect: ESqlDialect,
         table: SqlTable,
-        record: dict[SqlColumn, Any],
-        where_condition: SqlBaseCondition,
+        record: SqlRecord,
+        where_condition: SqlCondition,
     ) -> None:
-        parameters = {
-            column.parameter_name: (
-                value if column.adapter is None else column.adapter(value)
-            )
-            for column, value in record.items()
-        }
+        parameters = record.generate_parameters()
         parameters.update(where_condition.parameters)
-        SqlStatement.__init__(self, parameters)
-        self.table = table
-        self.where_condition = where_condition
-        self.columns = list(record)
+        columns = list(record.keys())
+        SqlStatement.__init__(
+            self,
+            dialect,
+            parameters,
+            table=table,
+            where_condition=where_condition,
+            columns=columns,
+        )
 
-    def to_sql(self) -> str:
-        return self._render_template(
-            self.template_file,
-            table=self.table,
-            columns_with_parameters=list(zip(self.columns, self.parameters)),
-            where_condition=self.where_condition,
+
+class SqlDeleteStatement(SqlStatement):
+    _template_file = "delete_statement.sql.j2"
+
+    def __init__(
+        self,
+        dialect: ESqlDialect,
+        table: SqlTable,
+        where_condition: SqlCondition,
+    ) -> None:
+        parameters = where_condition.parameters
+        SqlStatement.__init__(
+            self,
+            dialect,
+            parameters,
+            table=table,
+            where_condition=where_condition,
         )

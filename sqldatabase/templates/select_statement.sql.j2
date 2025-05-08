@@ -2,7 +2,7 @@ SELECT
 {% if distinct %}DISTINCT{% endif %}
 {% if items %}
     {% for item in items %}
-        {{ item | attr('fully_qualified_name') | default(item) }}
+        {{ item.fully_qualified_name }}
         AS '{{ item.alias }}'
         {% if not loop.last %},{% endif %}
     {% endfor %}
@@ -35,10 +35,10 @@ FROM {{ table.fully_qualified_name }}
         {% if not loop.last %},{% endif %}
     {% endfor %}
 {% endif %}
-{% if limit is defined and limit is not none %}
+{% if limit is not none %}
     LIMIT {{ limit }}
 {% endif %}
-{% if offset is defined and offset is not none %}
+{% if offset is not none %}
     OFFSET {{ offset }}
 {% endif %}
 {% if not is_subquery %}

@@ -1,6 +1,6 @@
 UPDATE {{ table }}
 SET
-{% for column, parameter in columns_with_parameters %}
+{% for column, parameter in columns_and_parameters %}
     {{ column }} = :{{ parameter }}
     {% if not loop.last %},{% endif %}
 {% endfor %}

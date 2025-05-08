@@ -1,14 +1,15 @@
 from __future__ import annotations
 import copy
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, Any, Generic, Generator, TypeVar
+from typing import TYPE_CHECKING, Generic, TypeVar
 
 from shared import EnumLikeContainer
 
 from .sqlbase import SqlBase
 from .sqlcolumn import SqlColumn, SqlColumns
-from .sqlcondition import SqlBaseCondition
+from .sqlcondition import SqlCondition
 from .sqlfunction import SqlAggregateFunction
+from .sqlrecord import SqlRecord
 
 if TYPE_CHECKING:
     from .sqldatabase import SqlDatabase
@@ -36,19 +37,13 @@ class SqlTable(SqlBase, Generic[T]):
                 "Table columns must be specified either as class attribute"
                 " or passed when instance is created."
             )
+            self.columns = self.columns
         else:
             self.columns = columns
         for column in self.columns:
             column.table = self
 
-    def __eq__(self, other: Any) -> bool:
-        return (
-            isinstance(other, SqlTable)
-            and self.name == other.name
-            and self.database == other.database
-        )
-
-    def __deepcopy__(self, memo):
+    def __deepcopy__(self, memo) -> SqlTable:
         cls = self.__class__
         table = cls.__new__(cls)
         memo[id(self)] = table
@@ -58,9 +53,6 @@ class SqlTable(SqlBase, Generic[T]):
         for column in table.columns:
             column.table = table
         return table
-
-    def __hash__(self):
-        return hash(self.name) + hash(self.database)
 
     @property
     def primary_key_column(self) -> SqlColumn | None:
@@ -80,14 +72,11 @@ class SqlTable(SqlBase, Generic[T]):
     def to_sql(self) -> str:
         return self.name
 
-    def delete_records(
+    def insert_records(
         self,
-        where_condition: SqlBaseCondition,
+        records: SqlRecord | Sequence[SqlRecord],
     ) -> list[int] | None:
-        return self.database.delete_records(self, where_condition)
-
-    def insert_record(self, record: dict[SqlColumn, Any]) -> int | None:
-        return self.database.insert_record(self, record)
+        return self.database.insert_records(self, records)
 
     def select_records(
         self,
@@ -97,15 +86,15 @@ class SqlTable(SqlBase, Generic[T]):
             | Sequence[SqlColumn | SqlAggregateFunction]
             | None
         ) = None,
-        where_condition: SqlBaseCondition | None = None,
+        where_condition: SqlCondition | None = None,
         joins: list[SqlJoin] | None = None,
         group_by_columns: list[SqlColumn] | None = None,
-        having_condition: SqlBaseCondition | None = None,
+        having_condition: SqlCondition | None = None,
         order_by_columns: list[SqlColumn] | None = None,
         distinct: bool = False,
         limit: int | None = None,
         offset: int | None = None,
-    ) -> list[dict[SqlColumn | SqlAggregateFunction, Any]]:
+    ) -> list[SqlRecord]:
         return self.database.select_records(
             self,
             items,
@@ -120,9 +109,18 @@ class SqlTable(SqlBase, Generic[T]):
         )
 
     def update_records(
-        self, record: dict[SqlColumn, Any], where_condition: SqlBaseCondition
+        self, record: SqlRecord, where_condition: SqlCondition
     ) -> list[int] | None:
         return self.database.update_records(self, record, where_condition)
+
+    def delete_records(
+        self,
+        where_condition: SqlCondition,
+    ) -> list[int] | None:
+        return self.database.delete_records(self, where_condition)
+
+    def record_count(self) -> int:
+        return self.database.record_count(self)
 
 
 class SqlTables(EnumLikeContainer[SqlTable]):

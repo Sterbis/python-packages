@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Any, Iterable, Literal
+from typing import TYPE_CHECKING, Any, Iterable
 
 from .sqlcondition import SqlCondition
 from .sqloperator import ESqlComparisonOperator
@@ -12,7 +12,7 @@ class SqlColumnFilter(SqlCondition):
     operator: ESqlComparisonOperator
 
     def __init__(self, column: SqlColumn, *values) -> None:
-        SqlCondition.__init__(self, column, *values, operator=self.operator)
+        SqlCondition.__init__(self, column, self.operator, *values)
         self.column = column
 
 

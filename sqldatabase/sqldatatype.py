@@ -1,13 +1,18 @@
+from __future__ import annotations
 import datetime
-import sqlite3
-from typing import Any, Callable
+from typing import TYPE_CHECKING, Any, Callable
 
 from shared import EnumLikeContainer
 
 from .sqlbase import SqlBase
 
+if TYPE_CHECKING:
+    from .sqldatabase import SqlDatabase
+
 
 class SqlDataType(SqlBase):
+    database: SqlDatabase
+
     def __init__(
         self,
         name: str,
@@ -20,47 +25,114 @@ class SqlDataType(SqlBase):
         self.adapter = adapter
         self.converter = converter
 
-    def is_native_type(self) -> bool:
-        return self.type in (bytes, int, type(None), float, str)
-
     def to_sql(self) -> str:
         return self.name
+
+
+class SqlIntegerDataType(SqlDataType):
+    def __init__(self) -> None:
+        SqlDataType.__init__(self, "INTEGER", int)
+
+
+class SqlFloatDataType(SqlDataType):
+    def __init__(self) -> None:
+        SqlDataType.__init__(self, "REAL", float)
+
+
+class SqlTextDataType(SqlDataType):
+    def __init__(self) -> None:
+        SqlDataType.__init__(self, "TEXT", str)
+
+
+class SqlBlobDataType(SqlDataType):
+    def __init__(self) -> None:
+        SqlDataType.__init__(self, "BLOB", bytes)
+
+
+class SqlBooleanDataType(SqlDataType):
+    def __init__(self) -> None:
+        SqlDataType.__init__(self, "BOOLEAN", bool, self._adapt, self._convert)
+
+    def _adapt(self, value: bool) -> bool | int:
+        from .sqlitedatabase import SqliteDatabase
+
+        return int(value) if isinstance(self.database, SqliteDatabase) else value
+
+    def _convert(self, value: bool | int) -> bool:
+        return bool(value)
+
+    def to_sql(self) -> str:
+        from .sqlitedatabase import SqliteDatabase
+
+        return "INTEGER" if isinstance(self.database, SqliteDatabase) else "BOOLEAN"
+
+
+class SqlDateDataType(SqlDataType):
+    def __init__(self) -> None:
+        SqlDataType.__init__(self, "DATE", datetime.date, self._adapt, self._convert)
+
+    def _adapt(self, value: datetime.date) -> datetime.date | str:
+        from .sqlitedatabase import SqliteDatabase
+
+        return value.isoformat() if isinstance(self.database, SqliteDatabase) else value
+
+    def _convert(self, value: datetime.date | str) -> datetime.date:
+        return datetime.date.fromisoformat(value) if isinstance(value, str) else value
+
+    def to_sql(self) -> str:
+        from .sqlitedatabase import SqliteDatabase
+
+        return "TEXT" if isinstance(self.database, SqliteDatabase) else "DATE"
+
+
+class SqlTimeDataType(SqlDataType):
+    def __init__(self) -> None:
+        SqlDataType.__init__(self, "TIME", datetime.date, self._adapt, self._convert)
+
+    def _adapt(self, value: datetime.time) -> datetime.time | str:
+        from .sqlitedatabase import SqliteDatabase
+
+        return value.isoformat() if isinstance(self.database, SqliteDatabase) else value
+
+    def _convert(self, value: datetime.time | str) -> datetime.time:
+        return datetime.time.fromisoformat(value) if isinstance(value, str) else value
+
+    def to_sql(self) -> str:
+        from .sqlitedatabase import SqliteDatabase
+
+        return "TEXT" if isinstance(self.database, SqliteDatabase) else "TIME"
+
+
+class SqlDateTimeDataType(SqlDataType):
+    def __init__(self) -> None:
+        SqlDataType.__init__(
+            self, "DATETIME", datetime.date, self._adapt, self._convert
+        )
+
+    def _adapt(self, value: datetime.datetime) -> datetime.datetime | str:
+        from .sqlitedatabase import SqliteDatabase
+
+        return value.isoformat() if isinstance(self.database, SqliteDatabase) else value
+
+    def _convert(self, value: datetime.datetime | str) -> datetime.datetime:
+        return (
+            datetime.datetime.fromisoformat(value) if isinstance(value, str) else value
+        )
+
+    def to_sql(self) -> str:
+        from .sqlitedatabase import SqliteDatabase
+
+        return "TEXT" if isinstance(self.database, SqliteDatabase) else "DATETIME"
 
 
 class SqlDataTypes(EnumLikeContainer[SqlDataType]):
     item_type = SqlDataType
 
-    BLOB = SqlDataType("BLOB", bytes)
-    BOOLEAN = SqlDataType(
-        "BOOLEAN", bool, lambda value: 1 if value else 0, lambda value: bool(int(value))
-    )
-    DATE = SqlDataType(
-        "DATE",
-        datetime.date,
-        lambda value: value.isoformat(),
-        lambda value: datetime.date.fromisoformat(value.decode()),
-    )
-    DATETIME = SqlDataType(
-        "DATETIME",
-        datetime.datetime,
-        lambda value: value.isoformat(),
-        lambda value: datetime.datetime.fromisoformat(value.decode()),
-    )
-    INTEGER = SqlDataType("INTEGER", int)
-    NULL = SqlDataType("NULL", type(None))
-    REAL = SqlDataType("REAL", float)
-    TEXT = SqlDataType("TEXT", str)
-    TIMESTAMP = SqlDataType(
-        "TIMESTAMP",
-        datetime.datetime,
-        lambda value: value.timestamp(),
-        lambda value: datetime.datetime.fromtimestamp(float(value)),
-    )
-
-    def __init__(self) -> None:
-        EnumLikeContainer.__init__(self)
-        for data_type in self:
-            if data_type.adapter is not None:
-                sqlite3.register_adapter(data_type.type, data_type.adapter)
-            if data_type.converter is not None:
-                sqlite3.register_converter(data_type.name, data_type.converter)
+    BLOB = SqlBlobDataType()
+    BOOLEAN = SqlBooleanDataType()
+    DATE = SqlDateDataType()
+    DATETIME = SqlDateTimeDataType()
+    FLOAT = SqlFloatDataType()
+    INTEGER = SqlIntegerDataType()
+    TEXT = SqlTextDataType()
+    TIME = SqlTimeDataType()

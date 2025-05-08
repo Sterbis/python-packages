@@ -50,15 +50,11 @@ class SqlColumn(SqlBase):
             self.adapter = lambda value: value.value
             self.converter = self.values
         self.filters = SqlColumnFilters(self)
+        self._foreign_keys: list[SqlColumn] = []
+        if self.reference is not None:
+            self.reference._foreign_keys.append(self)
 
-    def __eq__(self, other: Any) -> bool:
-        return (
-            isinstance(other, SqlColumn)
-            and self.name == other.name
-            and self.table == other.table
-        )
-
-    def __deepcopy__(self, memo):
+    def __deepcopy__(self, memo) -> SqlColumn:
         if id(self) in memo:
             return memo[id(self)]
 
@@ -66,27 +62,29 @@ class SqlColumn(SqlBase):
         column = cls.__new__(cls)
         memo[id(self)] = column
         for name, value in self.__dict__.items():
-            if name not in ("filters", "reference", "table"):
+            if name not in ("_foreign_keys", "filters", "reference", "table"):
                 setattr(column, name, copy.deepcopy(value, memo))
 
-        column.reference = self.reference
         column.filters = SqlColumnFilters(column)
+        column.reference = self.reference
+        if column.reference is not None:
+            column.reference._foreign_keys.remove(self)
+            column.reference._foreign_keys.append(column)
+        column._foreign_keys = copy.copy(self._foreign_keys)
+        for foreign_key in column._foreign_keys:
+            foreign_key.reference = column
         return column
-
-    def __hash__(self):
-        return hash(self.name) + hash(self.table)
 
     @property
     def alias(self) -> str:
-        return f"COLUMN.{self.table.name}.{self.name}"
-
-    @property
-    def parameter_name(self) -> str:
-        return f"{self.fully_qualified_name.replace('.', '_')}_{uuid.uuid4().hex[:8]}"
+        return f"COLUMN.{self.fully_qualified_name}"
 
     @property
     def fully_qualified_name(self) -> str:
         return f"{self.table.fully_qualified_name}.{self.name}"
+
+    def generate_parameter_name(self) -> str:
+        return f"{self.fully_qualified_name.replace('.', '_')}_{uuid.uuid4().hex[:8]}"
 
     def to_sql(self) -> str:
         return self.name

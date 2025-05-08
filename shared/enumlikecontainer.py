@@ -9,9 +9,9 @@ class EnumLikeContainer(Generic[T]):
     item_type: Type[T]
 
     def __init__(self) -> None:
-        cls = self.__class__
+        print(f"Initialize {self.__class__.__name__}")
         self._items: dict[str, T] = {}
-        for base in reversed(cls.__mro__):
+        for base in reversed(self.__class__.__mro__):
             for name, value in base.__dict__.items():
                 if self._condition(value, self.item_type):
                     item = copy.deepcopy(value, memo={})
@@ -24,7 +24,7 @@ class EnumLikeContainer(Generic[T]):
     def __getitem__(self, key: str) -> T:
         return self._items[key]
 
-    def __call__(self, name: str) -> Any:
+    def __call__(self, name: str) -> T:
         for item in self:
             if getattr(item, "name", None) == name:
                 return item
