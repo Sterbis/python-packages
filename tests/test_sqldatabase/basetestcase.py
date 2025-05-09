@@ -21,8 +21,8 @@ class BaseTestCase(unittest.TestCase):
     @classmethod
     def tearDownClass(cls) -> None:
         if cls.get_temp_dir_path().is_dir():
-            # shutil.rmtree(cls.get_temp_dir_path())
-            pass
+            shutil.rmtree(cls.get_temp_dir_path())
+            # pass
 
     @classmethod
     def get_temp_dir_path(cls) -> Path:

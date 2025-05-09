@@ -6,12 +6,12 @@ from typing import TYPE_CHECKING, Any
 from jinja2 import Environment, FileSystemLoader
 
 from .sqlbase import SqlBase, SqlBaseEnum
+from .sqlcolumn import SqlColumn
+from .sqlfunction import SqlAggregateFunction
 from .sqltranspiler import ESqlDialect, SqlTranspiler
 
 if TYPE_CHECKING:
-    from .sqlcolumn import SqlColumn
     from .sqlcondition import SqlCondition
-    from .sqlfunction import SqlAggregateFunction
     from .sqljoin import SqlJoin
     from .sqlrecord import SqlRecord
     from .sqltable import SqlTable

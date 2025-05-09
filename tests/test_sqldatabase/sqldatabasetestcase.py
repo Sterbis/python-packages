@@ -365,6 +365,7 @@ class SqlDatabaseTestCase(BaseTestCase):
         self.assertEqual(example_ids, [7, 8, 9])
         examples_record_count = examples_table.record_count()
         self.assertEqual(examples_record_count, 9)
+        self.database.rollback()
 
     def _test_update_correct_answers_count(self) -> None:
         user_id = 1
@@ -390,6 +391,7 @@ class SqlDatabaseTestCase(BaseTestCase):
             user_progress_table.columns.CORRECT, where_condition=where_condition
         )[0][user_progress_table.columns.CORRECT]
         self.assertEqual(correct_answers_count, new_correct_answers_count)
+        self.database.rollback()
 
     def _test_delete_user_and_user_progress(self) -> None:
         user_id = 2
@@ -407,3 +409,4 @@ class SqlDatabaseTestCase(BaseTestCase):
         self.assertIsNone(user_progress_ids)
         user_progresses_cout = user_progress_table.record_count()
         self.assertEqual(user_progresses_cout, 3)
+        self.database.rollback()
