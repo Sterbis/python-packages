@@ -17,13 +17,13 @@ class SqlDataType(SqlBase):
         self,
         name: str,
         type_: type,
-        adapter: Callable[[Any], Any] | None = None,
-        converter: Callable[[Any], Any] | None = None,
+        to_database_converter: Callable[[Any], Any] | None = None,
+        from_database_converter: Callable[[Any], Any] | None = None,
     ) -> None:
         self.name = name
         self.type = type_
-        self.adapter = adapter
-        self.converter = converter
+        self.to_database_converter = to_database_converter
+        self.from_database_converter = from_database_converter
 
     def to_sql(self) -> str:
         return self.name
@@ -51,14 +51,16 @@ class SqlBlobDataType(SqlDataType):
 
 class SqlBooleanDataType(SqlDataType):
     def __init__(self) -> None:
-        SqlDataType.__init__(self, "BOOLEAN", bool, self._adapt, self._convert)
+        SqlDataType.__init__(
+            self, "BOOLEAN", bool, self._to_database_value, self._from_database_value
+        )
 
-    def _adapt(self, value: bool) -> bool | int:
+    def _to_database_value(self, value: bool) -> bool | int:
         from .sqlitedatabase import SqliteDatabase
 
         return int(value) if isinstance(self.database, SqliteDatabase) else value
 
-    def _convert(self, value: bool | int) -> bool:
+    def _from_database_value(self, value: bool | int) -> bool:
         return bool(value)
 
     def to_sql(self) -> str:
@@ -69,14 +71,20 @@ class SqlBooleanDataType(SqlDataType):
 
 class SqlDateDataType(SqlDataType):
     def __init__(self) -> None:
-        SqlDataType.__init__(self, "DATE", datetime.date, self._adapt, self._convert)
+        SqlDataType.__init__(
+            self,
+            "DATE",
+            datetime.date,
+            self._to_database_value,
+            self._from_database_value,
+        )
 
-    def _adapt(self, value: datetime.date) -> datetime.date | str:
+    def _to_database_value(self, value: datetime.date) -> datetime.date | str:
         from .sqlitedatabase import SqliteDatabase
 
         return value.isoformat() if isinstance(self.database, SqliteDatabase) else value
 
-    def _convert(self, value: datetime.date | str) -> datetime.date:
+    def _from_database_value(self, value: datetime.date | str) -> datetime.date:
         return datetime.date.fromisoformat(value) if isinstance(value, str) else value
 
     def to_sql(self) -> str:
@@ -87,14 +95,20 @@ class SqlDateDataType(SqlDataType):
 
 class SqlTimeDataType(SqlDataType):
     def __init__(self) -> None:
-        SqlDataType.__init__(self, "TIME", datetime.date, self._adapt, self._convert)
+        SqlDataType.__init__(
+            self,
+            "TIME",
+            datetime.date,
+            self._to_database_value,
+            self._from_database_value,
+        )
 
-    def _adapt(self, value: datetime.time) -> datetime.time | str:
+    def _to_database_value(self, value: datetime.time) -> datetime.time | str:
         from .sqlitedatabase import SqliteDatabase
 
         return value.isoformat() if isinstance(self.database, SqliteDatabase) else value
 
-    def _convert(self, value: datetime.time | str) -> datetime.time:
+    def _from_database_value(self, value: datetime.time | str) -> datetime.time:
         return datetime.time.fromisoformat(value) if isinstance(value, str) else value
 
     def to_sql(self) -> str:
@@ -106,15 +120,19 @@ class SqlTimeDataType(SqlDataType):
 class SqlDateTimeDataType(SqlDataType):
     def __init__(self) -> None:
         SqlDataType.__init__(
-            self, "DATETIME", datetime.date, self._adapt, self._convert
+            self,
+            "DATETIME",
+            datetime.date,
+            self._to_database_value,
+            self._from_database_value,
         )
 
-    def _adapt(self, value: datetime.datetime) -> datetime.datetime | str:
+    def _to_database_value(self, value: datetime.datetime) -> datetime.datetime | str:
         from .sqlitedatabase import SqliteDatabase
 
         return value.isoformat() if isinstance(self.database, SqliteDatabase) else value
 
-    def _convert(self, value: datetime.datetime | str) -> datetime.datetime:
+    def _from_database_value(self, value: datetime.datetime | str) -> datetime.datetime:
         return (
             datetime.datetime.fromisoformat(value) if isinstance(value, str) else value
         )

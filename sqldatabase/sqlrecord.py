@@ -125,18 +125,24 @@ class SqlRecord(MutableMapping):
 
     @staticmethod
     def to_database_value(item: SqlColumn | SqlAggregateFunction, value: Any) -> Any:
-        if item.adapter is not None:
-            value = item.adapter(value)
-        if item.data_type is not None and item.data_type.adapter is not None:
-            value = item.data_type.adapter(value)
+        if item.to_database_converter is not None:
+            value = item.to_database_converter(value)
+        if (
+            item.data_type is not None
+            and item.data_type.to_database_converter is not None
+        ):
+            value = item.data_type.to_database_converter(value)
         return value
 
     @staticmethod
     def from_database_value(item: SqlColumn | SqlAggregateFunction, value: Any) -> Any:
-        if item.data_type is not None and item.data_type.converter is not None:
-            value = item.data_type.converter(value)
-        if item.converter is not None:
-            value = item.converter(value)
+        if (
+            item.data_type is not None
+            and item.data_type.from_database_converter is not None
+        ):
+            value = item.data_type.from_database_converter(value)
+        if item.from_database_converter is not None:
+            value = item.from_database_converter(value)
         return value
 
     def to_database_parameters(self) -> dict[str, Any]:
@@ -158,8 +164,8 @@ class SqlRecord(MutableMapping):
 
     @staticmethod
     def to_json_value(item: SqlColumn | SqlAggregateFunction, value: Any) -> Any:
-        if item.adapter is not None:
-            value = item.adapter(value)
+        if item.to_database_converter is not None:
+            value = item.to_database_converter(value)
         if isinstance(value, bytes):
             value = base64.b64encode(value).decode("ascii")
         elif isinstance(value, (datetime.date, datetime.datetime, datetime.time)):
@@ -177,8 +183,8 @@ class SqlRecord(MutableMapping):
                 value = datetime.datetime.fromisoformat(value)
             elif item.data_type.type == datetime.time:
                 value = datetime.time.fromisoformat(value)
-        if item.converter is not None:
-            value = item.converter(value)
+        if item.from_database_converter is not None:
+            value = item.from_database_converter(value)
         return value
 
     def to_json(self) -> dict[str, Any]:

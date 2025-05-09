@@ -1,6 +1,6 @@
 import copy
 from collections.abc import ItemsView, KeysView, ValuesView
-from typing import TypeVar, Generic, Type, Iterator, Any, Iterable
+from typing import TypeVar, Generic, Type, Iterator, Any
 
 
 T = TypeVar("T")

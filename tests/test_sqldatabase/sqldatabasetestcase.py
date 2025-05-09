@@ -54,8 +54,8 @@ class SqlDatabaseTestCase(BaseTestCase):
             for row in rows:
                 for column_name, value in row.items():
                     column: SqlColumn = table.columns(column_name)
-                    if column.converter:
-                        value = column.converter(value)
+                    if column.from_database_converter:
+                        value = column.from_database_converter(value)
                     record[column] = value
                 table.insert_records(record)
         cls.database.commit()

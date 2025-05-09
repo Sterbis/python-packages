@@ -76,6 +76,11 @@ class SqlDatabase(SqlBase, Generic[T]):
                 records.append(SqlRecord.from_database_row(aliases, row, self))
         return records
 
+    def _fetch_ids(self, cursor: sqlite3.Cursor | pyodbc.Cursor) -> list[int] | None:
+        if cursor.description is not None:
+            return [row[0] for row in cursor.fetchall()]
+        return None
+
     def _execute_statement(
         self, statement: SqlStatement
     ) -> sqlite3.Cursor | pyodbc.Cursor:
@@ -189,9 +194,7 @@ class SqlDatabase(SqlBase, Generic[T]):
             where_condition,
         )
         cursor = self._execute_statement(update_statement)
-        if cursor.description is not None:
-            return [row[0] for row in cursor.fetchall()]
-        return None
+        return self._fetch_ids(cursor)
 
     def delete_records(
         self,
@@ -200,9 +203,7 @@ class SqlDatabase(SqlBase, Generic[T]):
     ) -> list[int] | None:
         delete_statement = SqlDeleteStatement(self.dialect, table, where_condition)
         cursor = self._execute_statement(delete_statement)
-        if cursor.description is not None:
-            return [row[0] for row in cursor.fetchall()]
-        return None
+        return self._fetch_ids(cursor)
 
     def record_count(self, table: SqlTable) -> int:
         count_function = self.functions.COUNT()

@@ -27,8 +27,8 @@ class SqlColumn(SqlBase):
         unique: bool = False,
         default: Any = None,
         reference: SqlColumn | None = None,
-        adapter: Callable[[Any], Any] | None = None,
-        converter: Callable[[Any], Any] | None = None,
+        to_database_converter: Callable[[Any], Any] | None = None,
+        from_database_converter: Callable[[Any], Any] | None = None,
         values: type[Enum] | None = None,
     ):
         self.name = name
@@ -41,14 +41,14 @@ class SqlColumn(SqlBase):
         self.reference = reference
         self.values = values
         if self.values is None:
-            self.adapter = adapter
-            self.converter = converter
+            self.to_database_converter = to_database_converter
+            self.from_database_converter = from_database_converter
         else:
             assert (
-                adapter is None and converter is None
-            ), "Adapter and converter cannot be specified together with values."
-            self.adapter = lambda value: value.value
-            self.converter = self.values
+                to_database_converter is None and from_database_converter is None
+            ), "Converters cannot be specified together with values."
+            self.to_database_converter = lambda value: value.value
+            self.from_database_converter = self.values
         self.filters = SqlColumnFilters(self)
         self._foreign_keys: list[SqlColumn] = []
         if self.reference is not None:
@@ -91,10 +91,10 @@ class SqlColumn(SqlBase):
 
     def default_to_sql(self) -> str:
         value = self.default
-        if self.adapter is not None:
-            value = self.adapter(value)
-        if self.data_type.adapter is not None:
-            value = self.data_type.adapter(value)
+        if self.to_database_converter is not None:
+            value = self.to_database_converter(value)
+        if self.data_type.to_database_converter is not None:
+            value = self.data_type.to_database_converter(value)
         return value_to_sql(value)
 
 

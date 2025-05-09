@@ -37,15 +37,15 @@ class SqlAggregateFunction(SqlBase):
             return f"FUNCTION.{self.name}.{self.column.alias}"
 
     @property
-    def adapter(self) -> Callable[[Any], Any] | None:
+    def to_database_converter(self) -> Callable[[Any], Any] | None:
         if self.column is not None:
-            return self.column.adapter
+            return self.column.to_database_converter
         return None
 
     @property
-    def converter(self) -> Callable[[Any], Any] | None:
+    def from_database_converter(self) -> Callable[[Any], Any] | None:
         if self.column is not None:
-            return self.column.converter
+            return self.column.from_database_converter
         return None
 
     @property
