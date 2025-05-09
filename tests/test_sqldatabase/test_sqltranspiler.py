@@ -23,7 +23,7 @@ from tests.test_sqldatabase.usersdatabase import (
 
 
 class SqlTranspilerTestCase(BaseTestCase):
-    def _print_test_data(
+    def _print_transpiled_sql(
         self,
         sql: str,
         parameters: dict[str, Any] | Sequence | None,
@@ -83,7 +83,7 @@ class SqlTranspilerTestCase(BaseTestCase):
         expected_transpiled_sql: str | None,
         expected_transpiled_parameters: dict[str, Any] | Sequence | None,
     ) -> None:
-        self._print_test_data(
+        self._print_transpiled_sql(
             sql,
             parameters,
             input_dialect,
@@ -104,8 +104,7 @@ class SqlTranspilerTestCase(BaseTestCase):
                 )
             self.assertEqual(transpiled_parameters, expected_transpiled_parameters)
 
-    def _test_data(self, data_file_name: str) -> None:
-        data = self._load_json_test_data(data_file_name)
+    def _test_transpile(self, data: Any) -> None:
         subtest_index = 0
         for (
             sql,
@@ -155,20 +154,8 @@ class SqlTranspilerTestCase(BaseTestCase):
         self.assertIs(parsed_sql, transpiler._cache[(sql, input_dialect.value)])
 
     def test_sort_parameters(self) -> None:
+        sql, parameters = self.test_data[self.test_name]
         transpiler = SqlTranspiler(ESqlDialect.SQLSERVER)
-        sql = """
-            SELECT
-              *
-            FROM users
-            WHERE
-              users.name = :users_name
-              AND users.age BETWEEN :users_age_lower AND :users_age_upper;
-        """
-        parameters = {
-            "users_age_lower": 18,
-            "users_age_upper": 65,
-            "users_name": "John",
-        }
         sorted_parameters = transpiler._sort_parameters(sql, parameters)
         self.assertEqual(
             OrderedDict(sorted_parameters),
@@ -178,20 +165,24 @@ class SqlTranspilerTestCase(BaseTestCase):
         )
 
     def test_update_returning_and_output_clause(self) -> None:
-        self._test_data("returning_and_output_clause.json")
+        data = self.test_data[self.test_name]
+        self._test_transpile(data)
 
     def test_update_named_parameters_and_positional_placeholders(self) -> None:
-        self._test_data("named_parameters_and_positional_placeholders.json")
+        data = self.test_data[self.test_name]
+        self._test_transpile(data)
 
-    def test_update_parameters(self) -> None:
-        self._test_data("transpiled_parameters.json")
+    def test_transpiled_parameters(self) -> None:
+        data = self.test_data[self.test_name]
+        self._test_transpile(data)
 
     def test_create_table_statement(self) -> None:
+        data = self.test_data[self.test_name]
         databases: list[SqlDatabase] = [
             UsersSqliteDatabase(self.get_temp_dir_path() / "test_users.db"),
             UsersSqlServerDatabase("localhost", "test_users", trusted_connection=True),
         ]
-        data = self._load_json_test_data("create_table_statement.json")
+
         for index, database in enumerate(databases):
             expected_transpiled_sql = data[index][0]
             output_dialect = ESqlDialect(data[index][1])

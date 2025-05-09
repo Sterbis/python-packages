@@ -1,0 +1,98 @@
+{
+    "test_select_words_table_records": [
+        {
+            "COLUMN.main.words.id": 1,
+            "COLUMN.main.words.word": "run",
+            "COLUMN.main.words.pronunciation": "rʌn"
+        },
+        {
+            "COLUMN.main.words.id": 2,
+            "COLUMN.main.words.word": "book",
+            "COLUMN.main.words.pronunciation": "bʊk"
+        },
+        {
+            "COLUMN.main.words.id": 3,
+            "COLUMN.main.words.word": "light",
+            "COLUMN.main.words.pronunciation": "laɪt"
+        }
+    ],
+    "test_select_word_meanings": [
+        {
+            "COLUMN.main.meanings.id": 3,
+            "COLUMN.main.meanings.word_id": 2,
+            "COLUMN.main.meanings.definition": "a set of pages bound together",
+            "COLUMN.main.meanings.part_of_speech": "noun"
+        },
+        {
+            "COLUMN.main.meanings.id": 4,
+            "COLUMN.main.meanings.word_id": 2,
+            "COLUMN.main.meanings.definition": "to reserve",
+            "COLUMN.main.meanings.part_of_speech": "verb"
+        }
+    ],
+    "test_select_word_definitions": [
+        {
+            "COLUMN.main.words.word": "run",
+            "COLUMN.main.meanings.part_of_speech": "verb",
+            "COLUMN.main.meanings.definition": "move at a speed faster than a walk"
+        },
+        {
+            "COLUMN.main.words.word": "run",
+            "COLUMN.main.meanings.part_of_speech": "verb",
+            "COLUMN.main.meanings.definition": "manage or operate"
+        }
+    ],
+    "test_select_word_examples": [
+        {
+            "COLUMN.main.words.word": "light",
+            "COLUMN.main.meanings.part_of_speech": "noun",
+            "COLUMN.main.examples.example": "The light is bright."
+        },
+        {
+            "COLUMN.main.words.word": "light",
+            "COLUMN.main.meanings.part_of_speech": "adjective",
+            "COLUMN.main.examples.example": "This bag is light."
+        }
+    ],
+    "test_select_words_tags": {
+        "run": [
+            "action",
+            "business"
+        ],
+        "book": [
+            "everyday",
+            "business"
+        ],
+        "light": [
+            "science",
+            "weight"
+        ]
+    },
+    "test_select_meanings_never_seen_by_user": [
+        {
+            "COLUMN.main.words.word": "book",
+            "COLUMN.main.meanings.part_of_speech": "noun",
+            "COLUMN.main.meanings.definition": "a set of pages bound together"
+        },
+        {
+            "COLUMN.main.words.word": "light",
+            "COLUMN.main.meanings.part_of_speech": "noun",
+            "COLUMN.main.meanings.definition": "visible radiant energy"
+        },
+        {
+            "COLUMN.main.words.word": "light",
+            "COLUMN.main.meanings.part_of_speech": "adjective",
+            "COLUMN.main.meanings.definition": "not heavy"
+        }
+    ],
+    "test_select_users_ordered_by_correct_answers": [
+        {"COLUMN.main.users.username": "alice", "FUNCTION.sum.COLUMN.main.user_progress.correct": 5},
+        {"COLUMN.main.users.username": "bob", "FUNCTION.sum.COLUMN.main.user_progress.correct": 2}
+    ],
+    "test_select_word_meanings_count": [
+        {"COLUMN.main.words.word": "run", "FUNCTION.count.COLUMN.main.meanings.id": 2},
+        {"COLUMN.main.words.word": "book", "FUNCTION.count.COLUMN.main.meanings.id": 2},
+        {"COLUMN.main.words.word": "light", "FUNCTION.count.COLUMN.main.meanings.id": 2}
+    ],
+    "test_select_user_answers_accuracy": {"alice": 83.33, "bob": 50.0}
+}
