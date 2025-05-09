@@ -1,5 +1,6 @@
 import copy
-from typing import TypeVar, Generic, Type, Iterator, Any, Iterable, Callable
+from collections.abc import ItemsView, KeysView, ValuesView
+from typing import TypeVar, Generic, Type, Iterator, Any, Iterable
 
 
 T = TypeVar("T")
@@ -23,20 +24,23 @@ class EnumLikeContainer(Generic[T]):
     def __getitem__(self, key: str) -> T:
         return self._items[key]
 
+    def __contains__(self, key: Any) -> bool:
+        return key in self._items.values()
+
     def __call__(self, name: str) -> T:
         for item in self:
             if getattr(item, "name", None) == name:
                 return item
         raise ValueError(f"{self.__class__.__name__} has no item with name '{name}'.")
 
-    def items(self) -> Iterator[tuple[str, T]]:
-        return iter(self._items.items())
-
-    def keys(self) -> Iterable[str]:
+    def keys(self) -> KeysView[str]:
         return self._items.keys()
 
-    def values(self) -> Iterable[T]:
+    def values(self) -> ValuesView[T]:
         return self._items.values()
+
+    def items(self) -> ItemsView[str, T]:
+        return self._items.items()
 
     @staticmethod
     def _condition(value: Any, item_type: type) -> bool:
@@ -53,14 +57,14 @@ class EnumLikeClassContainer(EnumLikeContainer, Generic[T]):
     def __call__(self, name: str) -> Type[T]:
         return EnumLikeContainer.__call__(self, name)
 
-    def items(self) -> Iterator[tuple[str, Type[T]]]:
-        return EnumLikeContainer.items(self)
-
-    def keys(self) -> Iterable[str]:
+    def keys(self) -> KeysView[str]:
         return EnumLikeContainer.keys(self)
 
-    def values(self) -> Iterable[Type[T]]:
+    def values(self) -> ValuesView[Type[T]]:
         return EnumLikeContainer.values(self)
+
+    def items(self) -> ItemsView[str, Type[T]]:
+        return EnumLikeContainer.items(self)
 
     @staticmethod
     def _condition(value: type, item_type: type) -> bool:

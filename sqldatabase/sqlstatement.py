@@ -1,18 +1,25 @@
 from __future__ import annotations
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from jinja2 import Environment, FileSystemLoader
 
-from .sqlbase import SqlBase
-from .sqlcolumn import SqlColumn
-from .sqlcondition import SqlCondition
-from .sqlfunction import SqlAggregateFunction
-from .sqljoin import SqlJoin
-from .sqlrecord import SqlRecord
-from .sqltable import SqlTable
+from .sqlbase import SqlBase, SqlBaseEnum
 from .sqltranspiler import ESqlDialect, SqlTranspiler
+
+if TYPE_CHECKING:
+    from .sqlcolumn import SqlColumn
+    from .sqlcondition import SqlCondition
+    from .sqlfunction import SqlAggregateFunction
+    from .sqljoin import SqlJoin
+    from .sqlrecord import SqlRecord
+    from .sqltable import SqlTable
+
+
+class ESqlOrderByType(SqlBaseEnum):
+    ASCENDING = "ASC"
+    DESCENDING = "DESC"
 
 
 class SqlStatement(SqlBase):
@@ -80,7 +87,7 @@ class SqlInsertIntoStatement(SqlStatement):
         table: SqlTable,
         record: SqlRecord,
     ) -> None:
-        parameters = record.generate_parameters()
+        parameters = record.to_database_parameters()
         columns = list(record.keys())
         SqlStatement.__init__(
             self,
@@ -98,17 +105,14 @@ class SqlSelectStatement(SqlStatement):
         self,
         dialect: ESqlDialect,
         table: SqlTable,
-        items: (
-            SqlColumn
-            | SqlAggregateFunction
-            | Sequence[SqlColumn | SqlAggregateFunction]
-            | None
-        ) = None,
+        *items: SqlColumn | SqlAggregateFunction,
         where_condition: SqlCondition | None = None,
         joins: list[SqlJoin] | None = None,
         group_by_columns: list[SqlColumn] | None = None,
         having_condition: SqlCondition | None = None,
-        order_by_columns: list[SqlColumn] | None = None,
+        order_by_items: (
+            list[SqlColumn | SqlAggregateFunction | ESqlOrderByType] | None
+        ) = None,
         distinct: bool = False,
         limit: int | None = None,
         offset: int | None = None,
@@ -119,28 +123,60 @@ class SqlSelectStatement(SqlStatement):
             parameters.update(where_condition.parameters)
         if having_condition:
             parameters.update(having_condition.parameters)
-        if items is None:
-            items = list(table.columns)
-        elif isinstance(items, Sequence):
-            items = list(items)
-        else:
-            items = [items]
+        preprocessed_items = self._preprocess_items(table, *items)
+        preprocessed_order_by_items = self._preprocess_order_by_items(order_by_items)
+
         SqlStatement.__init__(
             self,
             dialect,
             parameters,
             table=table,
-            items=items,
+            items=preprocessed_items,
             where_condition=where_condition,
             joins=joins,
             group_by_columns=group_by_columns,
             having_condition=having_condition,
-            order_by_columns=order_by_columns,
+            order_by_items=preprocessed_order_by_items,
             distinct=distinct,
             limit=limit,
             offset=offset,
             is_subquery=is_subquery,
         )
+
+    @staticmethod
+    def _preprocess_items(
+        table: SqlTable, *items: SqlColumn | SqlAggregateFunction
+    ) -> list[SqlColumn | SqlAggregateFunction]:
+        if len(items) == 0:
+            preprocessed_items = list(table.columns)
+        else:
+            preprocessed_items = list(items)
+        return preprocessed_items
+
+    @staticmethod
+    def _preprocess_order_by_items(
+        order_by_items: list[SqlColumn | SqlAggregateFunction | ESqlOrderByType] | None,
+    ) -> list[tuple[SqlColumn | SqlAggregateFunction, ESqlOrderByType | None]] | None:
+        if order_by_items is not None:
+            preprocessed_order_by_items: list[
+                tuple[SqlColumn | SqlAggregateFunction, ESqlOrderByType | None]
+            ] = []
+            index = 0
+            while index < len(order_by_items):
+                item = order_by_items[index]
+                assert isinstance(
+                    item, (SqlColumn, SqlAggregateFunction)
+                ), f"Unexpected order by item type {type(item)} with index {index}."
+                order = None
+                if index + 1 < len(order_by_items):
+                    next_item = order_by_items[index + 1]
+                    if isinstance(next_item, ESqlOrderByType):
+                        order = next_item
+                        index += 1
+                preprocessed_order_by_items.append((item, order))
+                index += 1
+            return preprocessed_order_by_items
+        return None
 
     def generate_parameter_name(self) -> str:
         assert (
@@ -159,16 +195,16 @@ class SqlUpdateStatement(SqlStatement):
         record: SqlRecord,
         where_condition: SqlCondition,
     ) -> None:
-        parameters = record.generate_parameters()
+        parameters = record.to_database_parameters()
         parameters.update(where_condition.parameters)
-        columns = list(record.keys())
+        columns_and_parameters = list(zip(record.keys(), parameters))
         SqlStatement.__init__(
             self,
             dialect,
             parameters,
             table=table,
+            columns_and_parameters=columns_and_parameters,
             where_condition=where_condition,
-            columns=columns,
         )
 
 

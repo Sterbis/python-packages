@@ -28,10 +28,11 @@ FROM {{ table.fully_qualified_name }}
 {% if having_condition is defined and having_condition is not none %}
     HAVING {{ having_condition }}
 {% endif %}
-{% if order_by_columns %}
+{% if order_by_items %}
     ORDER BY
-    {% for column in order_by_columns %}
-        {{ column.fully_qualified_name }}
+    {% for item, order in order_by_items %}
+        {{ item.fully_qualified_name }}
+        {% if order %}{{ order }}{% endif %}
         {% if not loop.last %},{% endif %}
     {% endfor %}
 {% endif %}

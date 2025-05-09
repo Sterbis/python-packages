@@ -18,6 +18,8 @@ class SqlCondition(SqlBase):
         operator: ESqlComparisonOperator,
         *right: Any,
     ) -> None:
+        from .sqlstatement import SqlSelectStatement
+
         self.left = left
         self.operator = operator
         self.right = right
@@ -61,6 +63,7 @@ class SqlCondition(SqlBase):
 
     def _parse_values(self) -> None:
         from .sqlcolumn import SqlColumn
+        from .sqlrecord import SqlRecord
         from .sqlstatement import SqlSelectStatement
 
         item = (
@@ -78,12 +81,8 @@ class SqlCondition(SqlBase):
                 self.parameters.update(value.parameters)
             else:
                 parameter = self.left.generate_parameter_name()
-                if item.adapter is not None:
-                    value = item.adapter(value)
-                if item.data_type is not None and item.data_type.adapter is not None:
-                    value = item.data_type.adapter(value)
                 self._values_to_sql.append(f":{parameter}")
-                self.parameters[parameter] = value
+                self.parameters[parameter] = SqlRecord.to_database_value(item, value)
 
     def to_sql(self) -> str:
         from .sqlcolumn import SqlColumn

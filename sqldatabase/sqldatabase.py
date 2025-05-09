@@ -19,6 +19,7 @@ from .sqlfunction import (
 from .sqljoin import SqlJoin
 from .sqlrecord import SqlRecord
 from .sqlstatement import (
+    ESqlOrderByType,
     SqlCreateTableStatement,
     SqlDeleteStatement,
     SqlInsertIntoStatement,
@@ -68,69 +69,11 @@ class SqlDatabase(SqlBase, Generic[T]):
         return bool(self._connection.autocommit)
 
     def _fetch_records(self, cursor: sqlite3.Cursor | pyodbc.Cursor) -> list[SqlRecord]:
-        def parse_alias(
-            alias: str,
-        ) -> tuple[str | None, str | None, str | None, str | None]:
-            function_name = database_name = table_name = column_name = None
-            alias_parts = alias.split(".")
-            if alias_parts[0] == "FUNCTION":
-                function_name = alias_parts[1]
-                if len(alias_parts) == 6:
-                    database_name = alias_parts[3]
-                    table_name = alias_parts[4]
-                    column_name = alias_parts[5]
-            elif alias_parts[0] == "COLUMN":
-                database_name = alias_parts[1]
-                table_name = alias_parts[2]
-                column_name = alias_parts[3]
-            return function_name, database_name, table_name, column_name
-
-        def get_item(alias) -> SqlColumn | SqlAggregateFunction:
-            function_name, database_name, table_name, column_name = parse_alias(alias)
-            if (
-                database_name is not None
-                and table_name is not None
-                and column_name is not None
-            ):
-                database = (
-                    self
-                    if database_name == self.name
-                    else self.attached_databases[database_name]
-                )
-                column = database.tables(table_name).columns(column_name)
-            else:
-                column = None
-            if function_name is not None:
-                function_class = self.functions(function_name)
-                assert not (
-                    column is None
-                    and issubclass(
-                        function_class, SqlAggregateFunctionWithMandatoryColumn
-                    )
-                ), f"Invalid alias format: {alias}"
-                item = function_class(column)
-            elif column is not None:
-                item = column
-            else:
-                assert False, f"Invalid alias format: {alias}"
-            return item
-
         records: list[SqlRecord] = []
         if cursor.description is not None:
             aliases = [description[0] for description in cursor.description]
             for row in cursor.fetchall():
-                record = SqlRecord()
-                for alias, value in zip(aliases, row):
-                    item = get_item(alias)
-                    if (
-                        item.data_type is not None
-                        and item.data_type.converter is not None
-                    ):
-                        value = item.data_type.converter(value)
-                    if item.converter is not None:
-                        value = item.converter(value)
-                    record[item] = value
-                records.append(record)
+                records.append(SqlRecord.from_database_row(aliases, row, self))
         return records
 
     def _execute_statement(
@@ -156,6 +99,7 @@ class SqlDatabase(SqlBase, Generic[T]):
                 f"parameters = {pprint.pformat(parameters, sort_dicts=False)}", "  "
             )
         )
+        print()
         return self._connection.execute(sql, parameters)
 
     def commit(self) -> None:
@@ -204,17 +148,14 @@ class SqlDatabase(SqlBase, Generic[T]):
     def select_records(
         self,
         table: SqlTable,
-        items: (
-            SqlColumn
-            | SqlAggregateFunction
-            | Sequence[SqlColumn | SqlAggregateFunction]
-            | None
-        ) = None,
+        *items: SqlColumn | SqlAggregateFunction,
         where_condition: SqlCondition | None = None,
         joins: list[SqlJoin] | None = None,
         group_by_columns: list[SqlColumn] | None = None,
         having_condition: SqlCondition | None = None,
-        order_by_columns: list[SqlColumn] | None = None,
+        order_by_items: (
+            list[SqlColumn | SqlAggregateFunction | ESqlOrderByType] | None
+        ) = None,
         distinct: bool = False,
         limit: int | None = None,
         offset: int | None = None,
@@ -222,15 +163,15 @@ class SqlDatabase(SqlBase, Generic[T]):
         select_statement = SqlSelectStatement(
             self.dialect,
             table,
-            items,
-            where_condition,
-            joins,
-            group_by_columns,
-            having_condition,
-            order_by_columns,
-            distinct,
-            limit,
-            offset,
+            *items,
+            where_condition=where_condition,
+            joins=joins,
+            group_by_columns=group_by_columns,
+            having_condition=having_condition,
+            order_by_items=order_by_items,
+            distinct=distinct,
+            limit=limit,
+            offset=offset,
         )
         cursor = self._execute_statement(select_statement)
         return self._fetch_records(cursor)

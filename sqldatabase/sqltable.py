@@ -9,11 +9,12 @@ from .sqlbase import SqlBase
 from .sqlcolumn import SqlColumn, SqlColumns
 from .sqlcondition import SqlCondition
 from .sqlfunction import SqlAggregateFunction
-from .sqlrecord import SqlRecord
+from .sqljoin import ESqlJoinType, SqlJoin
 
 if TYPE_CHECKING:
     from .sqldatabase import SqlDatabase
-    from .sqljoin import SqlJoin
+    from .sqlstatement import ESqlOrderByType
+    from .sqlrecord import SqlRecord
 
 
 T = TypeVar("T", bound=SqlColumns)
@@ -72,6 +73,30 @@ class SqlTable(SqlBase, Generic[T]):
     def to_sql(self) -> str:
         return self.name
 
+    def get_foreign_key(self, table: SqlTable) -> SqlColumn | None:
+        for foreign_key_column in self.foreign_key_columns:
+            if foreign_key_column.reference in table.columns:
+                return foreign_key_column
+        return None
+
+    def join(
+        self, table: SqlTable, join_type: ESqlJoinType = ESqlJoinType.INNER
+    ) -> SqlJoin:
+        foreign_key_column = table.get_foreign_key(self) or self.get_foreign_key(table)
+        assert foreign_key_column is not None, (
+            f"Cannot join {self.fully_qualified_name} table with {table.fully_qualified_name} table."
+            f" No foreign key column in {table.fully_qualified_name} table"
+            f" referencing column in {self.fully_qualified_name} table"
+            f" or foreign key column in {self.fully_qualified_name} table"
+            f" referencing column in {table.fully_qualified_name} table found."
+        )
+        assert (
+            foreign_key_column.reference is not None
+        ), f"Invalid foreign key column: {foreign_key_column.fully_qualified_name}"
+        return SqlJoin(
+            table, foreign_key_column, foreign_key_column.reference, type_=join_type
+        )
+
     def insert_records(
         self,
         records: SqlRecord | Sequence[SqlRecord],
@@ -80,32 +105,29 @@ class SqlTable(SqlBase, Generic[T]):
 
     def select_records(
         self,
-        items: (
-            SqlColumn
-            | SqlAggregateFunction
-            | Sequence[SqlColumn | SqlAggregateFunction]
-            | None
-        ) = None,
+        *items: SqlColumn | SqlAggregateFunction,
         where_condition: SqlCondition | None = None,
         joins: list[SqlJoin] | None = None,
         group_by_columns: list[SqlColumn] | None = None,
         having_condition: SqlCondition | None = None,
-        order_by_columns: list[SqlColumn] | None = None,
+        order_by_items: (
+            list[SqlColumn | SqlAggregateFunction | ESqlOrderByType] | None
+        ) = None,
         distinct: bool = False,
         limit: int | None = None,
         offset: int | None = None,
     ) -> list[SqlRecord]:
         return self.database.select_records(
             self,
-            items,
-            where_condition,
-            joins,
-            group_by_columns,
-            having_condition,
-            order_by_columns,
-            distinct,
-            limit,
-            offset,
+            *items,
+            where_condition=where_condition,
+            joins=joins,
+            group_by_columns=group_by_columns,
+            having_condition=having_condition,
+            order_by_items=order_by_items,
+            distinct=distinct,
+            limit=limit,
+            offset=offset,
         )
 
     def update_records(

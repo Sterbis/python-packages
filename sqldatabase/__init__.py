@@ -9,6 +9,7 @@ from .sqloperator import ESqlComparisonOperator, ESqlLogicalOperator
 from .sqlrecord import SqlRecord
 from .sqlserverdatabase import SqlServerDatabase
 from .sqlstatement import (
+    ESqlOrderByType,
     SqlCreateTableStatement,
     SqlInsertIntoStatement,
     SqlSelectStatement,
