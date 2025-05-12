@@ -37,8 +37,9 @@ class SqlStatement(SqlBase):
     ) -> None:
         self.dialect = dialect
         self.context = context
+        self.context["dialect"] = dialect.value
         self.context["parameters"] = parameters
-        self._template_parameters = parameters
+        self._template_parameters = parameters or {}
         self._template_sql = self._render_template()
 
     @property
@@ -76,6 +77,15 @@ class SqlCreateTableStatement(SqlStatement):
         self, dialect: ESqlDialect, table: SqlTable, if_not_exists: bool = False
     ) -> None:
         SqlStatement.__init__(self, dialect, table=table, if_not_exists=if_not_exists)
+
+
+class SqlDropTableStatement(SqlStatement):
+    _template_file = "drop_table_statement.sql.j2"
+
+    def __init__(
+        self, dialect: ESqlDialect, table: SqlTable, if_exists: bool = False
+    ) -> None:
+        SqlStatement.__init__(self, dialect, table=table, if_exists=if_exists)
 
 
 class SqlInsertIntoStatement(SqlStatement):

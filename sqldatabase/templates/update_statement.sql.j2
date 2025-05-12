@@ -1,4 +1,4 @@
-UPDATE {{ table }}
+UPDATE {{ table.fully_qualified_name }}
 SET
 {% for column, parameter in columns_and_parameters %}
     {{ column }} = :{{ parameter }}

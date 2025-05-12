@@ -5,17 +5,20 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parents[2]))
 
 from tests.test_sqldatabase.dictionarydatabase import (
-    DictionarySqliteDatabase,
+    DictionarySqlServerDatabase,
 )
 from tests.test_sqldatabase.sqldatabasetestcase import SqlDatabaseTestCase
 
 
-class SqliteDatabaseTestCase(SqlDatabaseTestCase):
+class SqlServerDatabaseTestCase(SqlDatabaseTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        path = cls.get_temp_dir_path() / "test_dictionary.db"
-        cls.database = DictionarySqliteDatabase(path)
+        cls.database = DictionarySqlServerDatabase(
+            server="localhost",
+            database="test_dictionary",
+            trusted_connection=True,
+        )
         cls.setup_database()
 
     def test_connection(self) -> None:

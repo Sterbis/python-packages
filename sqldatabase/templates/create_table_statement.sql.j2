@@ -1,6 +1,6 @@
 CREATE TABLE
 {% if if_not_exists %}IF NOT EXISTS{% endif %}
-{{table.name}} (
+{{table.fully_qualified_name}} (
 {% for column in table.columns %}
     {{ column }} {{ column.data_type }}
     {% if column.primary_key %}PRIMARY KEY{% endif %}
@@ -16,7 +16,7 @@ CREATE TABLE
 {% for column in table.foreign_key_columns %}
     {% if loop.first %},{% endif %}
     FOREIGN KEY ({{ column }})
-    REFERENCES {{ column.reference.table }}({{ column.reference }})
+    REFERENCES {{ column.reference.table.fully_qualified_name }}({{ column.reference }})
     {% if not loop.last %},{% endif %}
 {% endfor %}
 );

@@ -18,11 +18,14 @@ class EnumLikeContainer(Generic[T]):
                     self._items[name] = item
                     setattr(self, name, item)
 
+    def __getitem__(self, key: str) -> T:
+        return self._items[key]
+
     def __iter__(self) -> Iterator[T]:
         return iter(self._items.values())
 
-    def __getitem__(self, key: str) -> T:
-        return self._items[key]
+    def __len__(self) -> int:
+        return len(self._items)
 
     def __contains__(self, key: Any) -> bool:
         return key in self._items.values()

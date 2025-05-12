@@ -23,6 +23,11 @@ from tests.test_sqldatabase.usersdatabase import (
 
 
 class SqlTranspilerTestCase(BaseTestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.load_test_data()
+
     def _print_transpiled_sql(
         self,
         sql: str,
@@ -183,13 +188,9 @@ class SqlTranspilerTestCase(BaseTestCase):
             UsersSqlServerDatabase("localhost", "test_users", trusted_connection=True),
         ]
 
-        for index, database in enumerate(databases):
-            expected_transpiled_sql = data[index][0]
-            output_dialect = ESqlDialect(data[index][1])
-
-            self.assertEqual(database.dialect, output_dialect)
-
-            statement = SqlCreateTableStatement(output_dialect, database.tables.USERS)
+        for database in databases:
+            expected_transpiled_sql = data[database.dialect.value]
+            statement = SqlCreateTableStatement(database.dialect, database.tables.USERS)
             self._test_transpiled_sql(
                 statement._template_sql,
                 statement._template_parameters,

@@ -10,6 +10,7 @@ from .sqlcolumn import SqlColumn, SqlColumns
 from .sqlcondition import SqlCondition
 from .sqlfunction import SqlAggregateFunction
 from .sqljoin import ESqlJoinType, SqlJoin
+from .sqltranspiler import ESqlDialect
 
 if TYPE_CHECKING:
     from .sqldatabase import SqlDatabase
@@ -25,14 +26,21 @@ class SqlTable(SqlBase, Generic[T]):
     columns: T
     database: SqlDatabase
 
-    def __init__(self, name: str | None = None, columns: T | None = None):
+    def __init__(
+        self,
+        name: str | None = None,
+        schema_name: str | None = None,
+        columns: T | None = None,
+    ):
         if name is None:
             assert hasattr(self, "name"), (
                 "Table name must be specified either as class attribute"
                 " or passed when instance is created."
             )
+            self.name = self.name
         else:
             self.name = name
+        self._schema_name = schema_name
         if columns is None:
             assert hasattr(self, "columns"), (
                 "Table columns must be specified either as class attribute"
@@ -56,6 +64,26 @@ class SqlTable(SqlBase, Generic[T]):
         return table
 
     @property
+    def fully_qualified_name(self) -> str:
+        if self.database.dialect == ESqlDialect.SQLITE:
+            if self.database.attached_databases:
+                return f"{self.database.name}.{self.name}"
+            else:
+                return self.name
+        elif self.database.dialect == ESqlDialect.SQLSERVER:
+            return f"{self.database.name}.{self.schema_name}.{self.name}"
+        elif self.database.dialect == ESqlDialect.POSTGRESQL:
+            return f"{self.schema_name}.{self.name}"
+        elif self.database.dialect == ESqlDialect.MYSQL:
+            return f"{self.database.name}.{self.name}"
+        else:
+            assert False, f"Unexpectd dialect: {self.database.dialect}"
+
+    @property
+    def schema_name(self) -> str | None:
+        return self._schema_name or self.database.default_schema_name
+
+    @property
     def primary_key_column(self) -> SqlColumn | None:
         for column in self.columns:
             if column.primary_key:
@@ -67,11 +95,21 @@ class SqlTable(SqlBase, Generic[T]):
         return [column for column in self.columns if column.reference is not None]
 
     @property
-    def fully_qualified_name(self) -> str:
-        return f"{self.database.name}.{self.name}"
+    def referenced_tables(self) -> list[SqlTable]:
+        return [
+            column.reference.table
+            for column in self.columns
+            if column.reference is not None
+        ]
 
     def to_sql(self) -> str:
         return self.name
+
+    def get_column(self, column_name) -> SqlColumn:
+        for column in self.columns:
+            if column.name == column_name:
+                return column
+        assert False, f"Column '{column_name}' not found in table '{self.name}'."
 
     def get_foreign_key(self, table: SqlTable) -> SqlColumn | None:
         for foreign_key_column in self.foreign_key_columns:

@@ -14,6 +14,7 @@ class SqlServerDataTypes(SqlDataTypes):
 class SqlServerDatabase(SqlDatabase[T], Generic[T]):
     data_types = SqlServerDataTypes()
     dialect = ESqlDialect.SQLSERVER
+    default_schema_name = "dbo"
 
     def __init__(
         self,

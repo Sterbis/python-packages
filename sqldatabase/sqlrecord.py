@@ -8,6 +8,7 @@ import pyodbc  # type: ignore
 
 from .sqlcolumn import SqlColumn
 from .sqlfunction import SqlAggregateFunction, SqlAggregateFunctionWithMandatoryColumn
+from .sqltranspiler import ESqlDialect
 
 if TYPE_CHECKING:
     from .sqldatabase import SqlDatabase
@@ -75,39 +76,43 @@ class SqlRecord(MutableMapping):
     @staticmethod
     def _parse_alias(
         alias: str,
-    ) -> tuple[str | None, str | None, str | None, str | None]:
-        function_name = database_name = table_name = column_name = None
+        database: SqlDatabase,
+    ) -> tuple[str | None, str | None, str | None, str | None, str | None]:
+        function_name = database_name = schema_name = table_name = column_name = None
         alias_parts = alias.split(".")
-        if alias_parts[0] == "FUNCTION":
-            function_name = alias_parts[1]
-            if len(alias_parts) == 6:
-                database_name = alias_parts[3]
-                table_name = alias_parts[4]
-                column_name = alias_parts[5]
-        elif alias_parts[0] == "COLUMN":
-            database_name = alias_parts[1]
-            table_name = alias_parts[2]
-            column_name = alias_parts[3]
-        else:
-            assert False, f"Unexpected alias format: {alias}"
-        return function_name, database_name, table_name, column_name
+        if "FUNCTION" in alias_parts:
+            function_identifier_index = alias_parts.index("FUNCTION")
+            function_name = alias_parts[function_identifier_index + 1]
+        if "COLUMN" in alias_parts:
+            column_identifier_index = alias_parts.index("COLUMN")
+            column_fully_qualified_name_parts = alias_parts[
+                column_identifier_index + 1 :
+            ]
+            if len(column_fully_qualified_name_parts) == 2:
+                table_name, column_name = column_fully_qualified_name_parts
+            elif len(column_fully_qualified_name_parts) == 3:
+                if database.dialect in (ESqlDialect.SQLITE, ESqlDialect.MYSQL):
+                    database_name, table_name, column_name = column_fully_qualified_name_parts
+                elif database.dialect == ESqlDialect.POSTGRESQL:
+                    schema_name, table_name, column_name = column_fully_qualified_name_parts
+                else:
+                    assert False, f"Unexpected alias format: {alias}"
+            elif len(column_fully_qualified_name_parts) == 4:
+                database_name, schema_name, table_name, column_name = column_fully_qualified_name_parts
+            else:
+                assert False, f"Unexpected alias format: {alias}"
+            column_name = column_fully_qualified_name_parts[-1]
+        return function_name, database_name, schema_name, table_name, column_name
 
     @classmethod
     def _get_item_by_alias(
         cls, alias: str, database: SqlDatabase
     ) -> SqlColumn | SqlAggregateFunction:
-        function_name, database_name, table_name, column_name = cls._parse_alias(alias)
-        if (
-            database_name is not None
-            and table_name is not None
-            and column_name is not None
-        ):
-            database = (
-                database
-                if database_name == database.name
-                else database.attached_databases[database_name]
-            )
-            column = database.tables(table_name).columns(column_name)
+        function_name, database_name, schema_name, table_name, column_name = cls._parse_alias(alias, database)
+        if table_name is not None and column_name is not None:
+            if database_name is not None and database_name != database.name:
+                database = database.attached_databases[database_name]
+            column = database.get_table(table_name, schema_name).get_column(column_name)
         else:
             column = None
         if function_name is not None:
@@ -116,7 +121,7 @@ class SqlRecord(MutableMapping):
                 column is None
                 and issubclass(function_class, SqlAggregateFunctionWithMandatoryColumn)
             ), f"Unexpected alias format: {alias}"
-            item = function_class(column)
+            item: SqlColumn | SqlAggregateFunction = function_class(column)
         elif column is not None:
             item = column
         else:

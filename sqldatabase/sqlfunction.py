@@ -37,6 +37,13 @@ class SqlAggregateFunction(SqlBase):
             return f"FUNCTION.{self.name}.{self.column.alias}"
 
     @property
+    def fully_qualified_name(self) -> str:
+        if self.column is None:
+            return f"{self.name.upper()}(*)"
+        else:
+            return f"{self.name.upper()}({self.column.fully_qualified_name})"
+
+    @property
     def to_database_converter(self) -> Callable[[Any], Any] | None:
         if self.column is not None:
             return self.column.to_database_converter
@@ -53,13 +60,6 @@ class SqlAggregateFunction(SqlBase):
         if self.column is not None:
             return self.column.data_type
         return None
-
-    @property
-    def fully_qualified_name(self) -> str:
-        if self.column is None:
-            return f"{self.name.upper()}(*)"
-        else:
-            return f"{self.name.upper()}({self.column.fully_qualified_name})"
 
     def generate_parameter_name(self) -> str:
         if self.column is None:

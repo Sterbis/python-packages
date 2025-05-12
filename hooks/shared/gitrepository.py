@@ -18,7 +18,7 @@ class GitRepository:
         )
         if process.returncode != 0:
             raise GitError(
-                f"Command '{' '.join(command)}\n{process.stderr.strip()}' failed."
+                f"Command '{' '.join(command)}' failed: {process.stderr.strip()}."
             )
         return process.stdout.strip()
 

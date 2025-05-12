@@ -90,9 +90,9 @@
         {"COLUMN.main.users.username": "bob", "FUNCTION.sum.COLUMN.main.user_progress.correct": 2}
     ],
     "test_select_word_meanings_count": [
-        {"COLUMN.main.words.word": "run", "FUNCTION.count.COLUMN.main.meanings.id": 2},
         {"COLUMN.main.words.word": "book", "FUNCTION.count.COLUMN.main.meanings.id": 2},
-        {"COLUMN.main.words.word": "light", "FUNCTION.count.COLUMN.main.meanings.id": 2}
+        {"COLUMN.main.words.word": "light", "FUNCTION.count.COLUMN.main.meanings.id": 2},
+        {"COLUMN.main.words.word": "run", "FUNCTION.count.COLUMN.main.meanings.id": 2}
     ],
     "test_select_user_answers_accuracy": {"alice": 83.33, "bob": 50.0}
 }

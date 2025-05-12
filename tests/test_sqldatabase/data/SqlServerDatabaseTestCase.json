@@ -1,0 +1,98 @@
+{
+    "test_select_words_table_records": [
+        {
+            "COLUMN.test_dictionary.dbo.words.id": 1,
+            "COLUMN.test_dictionary.dbo.words.word": "run",
+            "COLUMN.test_dictionary.dbo.words.pronunciation": "rʌn"
+        },
+        {
+            "COLUMN.test_dictionary.dbo.words.id": 2,
+            "COLUMN.test_dictionary.dbo.words.word": "book",
+            "COLUMN.test_dictionary.dbo.words.pronunciation": "bʊk"
+        },
+        {
+            "COLUMN.test_dictionary.dbo.words.id": 3,
+            "COLUMN.test_dictionary.dbo.words.word": "light",
+            "COLUMN.test_dictionary.dbo.words.pronunciation": "laɪt"
+        }
+    ],
+    "test_select_word_meanings": [
+        {
+            "COLUMN.test_dictionary.dbo.meanings.id": 3,
+            "COLUMN.test_dictionary.dbo.meanings.word_id": 2,
+            "COLUMN.test_dictionary.dbo.meanings.definition": "a set of pages bound together",
+            "COLUMN.test_dictionary.dbo.meanings.part_of_speech": "noun"
+        },
+        {
+            "COLUMN.test_dictionary.dbo.meanings.id": 4,
+            "COLUMN.test_dictionary.dbo.meanings.word_id": 2,
+            "COLUMN.test_dictionary.dbo.meanings.definition": "to reserve",
+            "COLUMN.test_dictionary.dbo.meanings.part_of_speech": "verb"
+        }
+    ],
+    "test_select_word_definitions": [
+        {
+            "COLUMN.test_dictionary.dbo.words.word": "run",
+            "COLUMN.test_dictionary.dbo.meanings.part_of_speech": "verb",
+            "COLUMN.test_dictionary.dbo.meanings.definition": "move at a speed faster than a walk"
+        },
+        {
+            "COLUMN.test_dictionary.dbo.words.word": "run",
+            "COLUMN.test_dictionary.dbo.meanings.part_of_speech": "verb",
+            "COLUMN.test_dictionary.dbo.meanings.definition": "manage or operate"
+        }
+    ],
+    "test_select_word_examples": [
+        {
+            "COLUMN.test_dictionary.dbo.words.word": "light",
+            "COLUMN.test_dictionary.dbo.meanings.part_of_speech": "noun",
+            "COLUMN.test_dictionary.dbo.examples.example": "The light is bright."
+        },
+        {
+            "COLUMN.test_dictionary.dbo.words.word": "light",
+            "COLUMN.test_dictionary.dbo.meanings.part_of_speech": "adjective",
+            "COLUMN.test_dictionary.dbo.examples.example": "This bag is light."
+        }
+    ],
+    "test_select_words_tags": {
+        "run": [
+            "action",
+            "business"
+        ],
+        "book": [
+            "everyday",
+            "business"
+        ],
+        "light": [
+            "science",
+            "weight"
+        ]
+    },
+    "test_select_meanings_never_seen_by_user": [
+        {
+            "COLUMN.test_dictionary.dbo.words.word": "book",
+            "COLUMN.test_dictionary.dbo.meanings.part_of_speech": "noun",
+            "COLUMN.test_dictionary.dbo.meanings.definition": "a set of pages bound together"
+        },
+        {
+            "COLUMN.test_dictionary.dbo.words.word": "light",
+            "COLUMN.test_dictionary.dbo.meanings.part_of_speech": "noun",
+            "COLUMN.test_dictionary.dbo.meanings.definition": "visible radiant energy"
+        },
+        {
+            "COLUMN.test_dictionary.dbo.words.word": "light",
+            "COLUMN.test_dictionary.dbo.meanings.part_of_speech": "adjective",
+            "COLUMN.test_dictionary.dbo.meanings.definition": "not heavy"
+        }
+    ],
+    "test_select_users_ordered_by_correct_answers": [
+        {"COLUMN.test_dictionary.dbo.users.username": "alice", "FUNCTION.sum.COLUMN.test_dictionary.dbo.user_progress.correct": 5},
+        {"COLUMN.test_dictionary.dbo.users.username": "bob", "FUNCTION.sum.COLUMN.test_dictionary.dbo.user_progress.correct": 2}
+    ],
+    "test_select_word_meanings_count": [
+        {"COLUMN.test_dictionary.dbo.words.word": "book", "FUNCTION.count.COLUMN.test_dictionary.dbo.meanings.id": 2},
+        {"COLUMN.test_dictionary.dbo.words.word": "light", "FUNCTION.count.COLUMN.test_dictionary.dbo.meanings.id": 2},
+        {"COLUMN.test_dictionary.dbo.words.word": "run", "FUNCTION.count.COLUMN.test_dictionary.dbo.meanings.id": 2}
+    ],
+    "test_select_user_answers_accuracy": {"alice": 83.33, "bob": 50.0}
+}

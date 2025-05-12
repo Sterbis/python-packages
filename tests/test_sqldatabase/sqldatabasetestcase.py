@@ -11,7 +11,6 @@ from sqldatabase import (
     SqlColumn,
     SqlCondition,
     SqlDatabase,
-    SqlJoin,
     SqlRecord,
     SqlSelectStatement,
     SqlTable,
@@ -26,6 +25,26 @@ from tests.test_sqldatabase.dictionarydatabase import (
 
 class SqlDatabaseTestCase(BaseTestCase):
     database: SqlDatabase[DictionaryDatabaseTables]
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.load_test_data()
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cls.database.close()
+        super().tearDownClass()
+
+    def tearDown(self) -> None:
+        self.database.rollback()
+
+    @classmethod
+    def setup_database(cls) -> None:
+        cls.database.drop_all_tables(if_exists=True)
+        cls.database.create_all_tables()
+        dictionary = cls.load_test_dictionary()
+        cls.insert_test_dictionary(dictionary)
 
     @classmethod
     def load_test_dictionary(cls) -> dict:
@@ -49,25 +68,38 @@ class SqlDatabaseTestCase(BaseTestCase):
     @classmethod
     def insert_test_dictionary(cls, dictionary: dict) -> None:
         for table_name, rows in dictionary.items():
-            table = cls.database.tables(table_name)
+            table = cls.database.get_table(table_name)
             record = SqlRecord()
             for row in rows:
                 for column_name, value in row.items():
-                    column: SqlColumn = table.columns(column_name)
-                    if column.from_database_converter:
-                        value = column.from_database_converter(value)
-                    record[column] = value
+                    if column_name != "id":
+                        column = table.get_column(column_name)
+                        if column.from_database_converter:
+                            value = column.from_database_converter(value)
+                        record[column] = value
                 table.insert_records(record)
         cls.database.commit()
+
+    def _print_records(self, records: list[SqlRecord]) -> None:
+        for record in records:
+            print(record.to_json())
+
+    def _test_records(self, records: list[SqlRecord]) -> None:
+        expected_records = [
+            SqlRecord.from_json(data, self.database)
+            for data in self.test_data[self.test_name]
+        ]
+        for record, expected_record in zip(records, expected_records):
+            self.assertEqual(record, expected_record)
 
     def _test_foreign_key_column_to_primary_key_column_reference(self) -> None:
         for table in self.database.tables:
             for column in table.columns:
                 if column.reference is not None:
-                    _, table_name, column_name = (
-                        column.reference.fully_qualified_name.split(".")
-                    )
-                    referenced_column = self.database.tables(table_name).columns(
+                    column_name = column.reference.name
+                    table_name = column.reference.table.name
+                    schema_name = column.reference.table.schema_name
+                    referenced_column = self.database.get_table(table_name, schema_name).get_column(
                         column_name
                     )
                     with self.subTest(
@@ -124,18 +156,6 @@ class SqlDatabaseTestCase(BaseTestCase):
     def _test_words_table_record_count(self) -> None:
         record_count = self.database.tables.WORDS.record_count()
         self.assertEqual(record_count, 3)
-
-    def _print_records(self, records: list[SqlRecord]) -> None:
-        for record in records:
-            print(record.to_json())
-
-    def _test_records(self, records: list[SqlRecord]) -> None:
-        expected_records = [
-            SqlRecord.from_json(data, self.database)
-            for data in self.test_data[self.test_name]
-        ]
-        for record, expected_record in zip(records, expected_records):
-            self.assertEqual(record, expected_record)
 
     def _test_select_words_table_records(self) -> None:
         records = self.database.tables.WORDS.select_records()
@@ -254,7 +274,7 @@ class SqlDatabaseTestCase(BaseTestCase):
             joins=[
                 user_table.join(user_progress_table),
             ],
-            group_by_columns=[user_table.columns.ID],
+            group_by_columns=[user_table.columns.USERNAME],
             order_by_items=[sum_correct_function, ESqlOrderByType.DESCENDING],
         )
         self._test_records(records)
@@ -271,7 +291,8 @@ class SqlDatabaseTestCase(BaseTestCase):
             joins=[
                 words_table.join(meanings_table, ESqlJoinType.LEFT),
             ],
-            group_by_columns=[words_table.columns.ID],
+            group_by_columns=[words_table.columns.WORD],
+            order_by_items=[words_table.columns.WORD],
         )
         self._test_records(records)
 
@@ -291,7 +312,7 @@ class SqlDatabaseTestCase(BaseTestCase):
             joins=[
                 user_progress_table.join(user_table),
             ],
-            group_by_columns=[user_table.columns.ID],
+            group_by_columns=[user_table.columns.USERNAME],
         )
         users_accuracy = {
             record[user_table.columns.USERNAME]: round(
@@ -365,7 +386,6 @@ class SqlDatabaseTestCase(BaseTestCase):
         self.assertEqual(example_ids, [7, 8, 9])
         examples_record_count = examples_table.record_count()
         self.assertEqual(examples_record_count, 9)
-        self.database.rollback()
 
     def _test_update_correct_answers_count(self) -> None:
         user_id = 1
@@ -391,22 +411,22 @@ class SqlDatabaseTestCase(BaseTestCase):
             user_progress_table.columns.CORRECT, where_condition=where_condition
         )[0][user_progress_table.columns.CORRECT]
         self.assertEqual(correct_answers_count, new_correct_answers_count)
-        self.database.rollback()
 
     def _test_delete_user_and_user_progress(self) -> None:
         user_id = 2
         users_table = self.database.tables.USERS
         user_progress_table = self.database.tables.USER_PROGRESS
-        user_ids = users_table.delete_records(
-            users_table.columns.ID.filters.IS_EQUAL(user_id)
-        )
-        self.assertEqual(user_ids, [user_id])
-        users_count = users_table.record_count()
-        self.assertEqual(users_count, 1)
+
         user_progress_ids = user_progress_table.delete_records(
             user_progress_table.columns.USER_ID.filters.IS_EQUAL(user_id)
         )
         self.assertIsNone(user_progress_ids)
         user_progresses_cout = user_progress_table.record_count()
         self.assertEqual(user_progresses_cout, 3)
-        self.database.rollback()
+
+        user_ids = users_table.delete_records(
+            users_table.columns.ID.filters.IS_EQUAL(user_id)
+        )
+        self.assertEqual(user_ids, [user_id])
+        users_count = users_table.record_count()
+        self.assertEqual(users_count, 1)

@@ -2,7 +2,7 @@ import copy
 import re
 from enum import Enum
 from collections.abc import Sequence
-from typing import Any
+from typing import Any, overload
 
 import sqlglot
 import sqlglot.expressions
@@ -39,13 +39,11 @@ class SqlTranspiler:
         pretty: bool = False,
     ) -> str:
         parsed_sql = self._parse(sql, input_dialect)
-        if input_dialect != self.output_dialect:
-            parsed_sql = self._update_parsed_sql(parsed_sql)
+        parsed_sql = self._update_parsed_sql(parsed_sql)
         transpiled_sql = parsed_sql.sql(
             dialect=self.output_dialect.value, pretty=pretty
         )
-        if input_dialect != self.output_dialect:
-            transpiled_sql = self._update_transpiled_sql(transpiled_sql, input_dialect)
+        transpiled_sql = self._update_transpiled_sql(transpiled_sql, input_dialect)
         return transpiled_sql
 
     def transpile_parameters(
@@ -54,30 +52,24 @@ class SqlTranspiler:
         parameters: dict[str, Any] | Sequence | None,
         input_dialect: ESqlDialect | None,
     ) -> dict[str, Any] | Sequence:
-        if isinstance(parameters, dict):
-            parameters = self._sort_parameters(sql, parameters)
-            if self.output_dialect in (ESqlDialect.POSTGRESQL, ESqlDialect.MYSQL):
-                parameters = tuple(parameters.values())
-        elif isinstance(parameters, Sequence):
-            parameters = tuple(parameters)
-            if (
-                input_dialect == ESqlDialect.POSTGRESQL
-                and self.output_dialect != ESqlDialect.POSTGRESQL
-            ):
-                placeholders = self._find_named_parameters_and_positional_placeholders(
-                    sql
-                )
-                indexes = [
-                    int(placeholder.lstrip("$")) - 1 for placeholder in placeholders
-                ]
-                parameters = tuple(parameters[index] for index in indexes)
-            if self.output_dialect in (ESqlDialect.SQLITE, ESqlDialect.SQLSERVER):
-                parameters = {
-                    f"parameter_{index + 1}": parameter
-                    for index, parameter in enumerate(parameters)
-                }
-        elif parameters is None:
+        if parameters is None:
             parameters = ()
+        else:
+            parameters = self._sort_parameters(sql, parameters)
+        if isinstance(parameters, dict) and self.output_dialect in (
+            ESqlDialect.SQLSERVER,
+            ESqlDialect.POSTGRESQL,
+            ESqlDialect.MYSQL,
+        ):
+            parameters = tuple(parameters.values())
+        elif (
+            isinstance(parameters, Sequence)
+            and self.output_dialect == ESqlDialect.SQLITE
+        ):
+            parameters = {
+                f"parameter_{index + 1}": parameter
+                for index, parameter in enumerate(parameters)
+            }
         return parameters
 
     def _parse(
@@ -95,35 +87,69 @@ class SqlTranspiler:
         self._cache[cache_key] = parsed_sql
         return parsed_sql
 
-    def _find_named_parameters_and_positional_placeholders(self, sql: str) -> list[str]:
-        parameters = re.findall(r"(?<!:):\b\w+\b|@\b\w+\b|\$\b\w+\b", sql)
-        regex = re.compile(
-            r"""
-            (                             # Group 1: string literals
-                (?:'[^']*')               # single-quoted string
-                |(?:\"[^\"]*\")           # double-quoted string
-            )
-            |
-            (\?)                          # Group 2: bare question mark
-        """,
-            re.VERBOSE,
+    @staticmethod
+    def _remove_string_literals(sql: str) -> str:
+        pattern = re.compile(
+            r"('(?:''|[^'])*')"  # single-quoted strings
+            r'|("(?:[^"]|"")*")'  # double-quoted strings (optionally used for identifiers or strings)
         )
-        parameters += [
-            match.group(2) for match in regex.finditer(sql) if match.group(2)
-        ]
-        return parameters
+        return pattern.sub("", sql)
+
+    def _find_named_parameters(self, sql: str) -> list[str]:
+        preprocessed_sql = self._remove_string_literals(sql)
+        return re.findall(r"(?<!:)[:@$][a-zA-Z_][a-zA-Z0-9_]*", preprocessed_sql)
+
+    def _find_positional_placeholders(self, sql: str) -> list[str]:
+        preprocessed_sql = self._remove_string_literals(sql)
+        return re.findall(r"[$@]\d+|\?", preprocessed_sql)
+
+    def _find_named_parameters_and_positional_placeholders(self, sql: str) -> list[str]:
+        return self._find_named_parameters(sql) + self._find_positional_placeholders(
+            sql
+        )
+
+    @staticmethod
+    def _is_positional_placeholder(value: str) -> bool:
+        return value == "?" or re.fullmatch(r"[$@]\d+", value) is not None
+
+    @staticmethod
+    def _is_named_parameter(value: str) -> bool:
+        return re.fullmatch(r"[:@$][a-zA-Z_][a-zA-Z0-9_]*", value) is not None
+
+    @overload
+    def _sort_parameters(
+        self, sql: str, parameters: dict[str, Any]
+    ) -> dict[str, Any]: ...
+
+    @overload
+    def _sort_parameters(self, sql: str, parameters: Sequence) -> tuple: ...
 
     def _sort_parameters(
         self,
         sql: str,
-        parameters: dict[str, object],
-    ) -> dict[str, object]:
-        return {
-            parameter.lstrip(":@$"): parameters[parameter.lstrip(":@$")]
-            for parameter in self._find_named_parameters_and_positional_placeholders(
-                sql
-            )
-        }
+        parameters: dict[str, Any] | Sequence,
+    ) -> dict[str, Any] | tuple:
+        if isinstance(parameters, dict):
+            parameters = {
+                parameter.lstrip(":@$"): parameters[parameter.lstrip(":@$")]
+                for parameter in self._find_named_parameters(sql)
+            }
+        elif isinstance(parameters, Sequence):
+            placeholders = self._find_positional_placeholders(sql)
+            indexes = [
+                int(placeholder.lstrip("$")) - 1
+                for placeholder in placeholders
+                if placeholder.startswith("$")
+            ]
+            if len(indexes) == len(parameters):
+                parameters = tuple(parameters[index] for index in indexes)
+            elif len(indexes) == 0:
+                parameters = tuple(parameters)
+            else:
+                assert (
+                    False
+                ), f"Unexpected positional placeholders found in sql:\n{sql}\n\nplaceholders = {placeholders}"
+        return parameters
 
     def _update_parsed_sql(self, parsed_sql: sqlglot.Expression) -> sqlglot.Expression:
         parsed_sql = copy.deepcopy(parsed_sql)
@@ -169,29 +195,49 @@ class SqlTranspiler:
     def _update_transpiled_sql(
         self, sql: str, input_dialect: ESqlDialect | None
     ) -> str:
-        sql = self._update_named_parameters_and_positional_placeholders(
-            sql, input_dialect
-        )
+        sql = self._update_named_parameters_and_positional_placeholders(sql)
+        sql = self._update_output_clause(sql)
         return sql
 
-    def _update_named_parameters_and_positional_placeholders(
-        self, sql: str, input_dialect: ESqlDialect | None
-    ) -> str:
-        parameters = self._find_named_parameters_and_positional_placeholders(sql)
-        for index, parameter in enumerate(parameters):
-            if self.output_dialect in (ESqlDialect.SQLITE, ESqlDialect.SQLSERVER):
-                if self.output_dialect == ESqlDialect.SQLITE:
-                    symbol = ":"
-                elif self.output_dialect == ESqlDialect.SQLSERVER:
-                    symbol = "@"
+    def _update_named_parameters_and_positional_placeholders(self, sql: str) -> str:
+        parameters_and_placeholders = (
+            self._find_named_parameters_and_positional_placeholders(sql)
+        )
+        search_location = 0
+        for index, parameter_or_placeholder in enumerate(parameters_and_placeholders):
+            location = sql.find(parameter_or_placeholder, search_location)
+            if self.output_dialect == ESqlDialect.SQLITE:
+                if self._is_positional_placeholder(parameter_or_placeholder):
+                    replacement = f":parameter_{index + 1}"
+                elif self._is_named_parameter(parameter_or_placeholder):
+                    replacement = f":{parameter_or_placeholder.lstrip(":@$")}"
                 else:
-                    assert False, f"Unexpected output dialect: {self.output_dialect}"
-                if input_dialect in (ESqlDialect.POSTGRESQL, ESqlDialect.MYSQL):
-                    sql = sql.replace(parameter, f"{symbol}parameter_{index + 1}", 1)
-                else:
-                    sql = sql.replace(parameter, f"{symbol}{parameter.lstrip(":@")}", 1)
+                    assert (
+                        False
+                    ), f"Unexpected parameter or placeholder: {parameter_or_placeholder}"
             elif self.output_dialect == ESqlDialect.POSTGRESQL:
-                sql = sql.replace(parameter, f"${index + 1}", 1)
-            elif self.output_dialect == ESqlDialect.MYSQL:
-                sql = sql.replace(parameter, "?", 1)
+                replacement = f"${index + 1}"
+            elif self.output_dialect in (ESqlDialect.SQLSERVER, ESqlDialect.MYSQL):
+                replacement = "?"
+            else:
+                assert False, f"Unexpected output dialect: {self.output_dialect}"
+            sql = sql[:location] + sql[location:].replace(
+                parameter_or_placeholder, replacement, 1
+            )
+            search_location = location + len(replacement)
+        return sql
+
+    def _update_output_clause(self, sql: str) -> str:
+        if self.output_dialect == ESqlDialect.SQLSERVER:
+            pattern = r"DELETE\s(?P<output_clause>\bOUTPUT\b.*?)(?P<from_clause>\bFROM\b.*?)(?=\bWHERE\b|$)"
+            match = re.search(pattern, sql, flags=re.DOTALL)
+            if match:
+                output_clause = match.group("output_clause")
+                from_clause = match.group("from_clause")
+                sql = re.sub(
+                    pattern,
+                    f"DELETE {from_clause.strip()}\n{output_clause.strip()}\n",
+                    sql,
+                    flags=re.DOTALL,
+                )
         return sql

@@ -1,4 +1,4 @@
-INSERT INTO {{ table }} (
+INSERT INTO {{ table.fully_qualified_name }} (
     {% for column in columns %}
         {{ column }}{% if not loop.last %},{% endif %}
     {% endfor %}

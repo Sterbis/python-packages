@@ -16,7 +16,6 @@ class BaseTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.get_temp_dir_path().mkdir(parents=True, exist_ok=True)
-        cls.load_test_data()
 
     @classmethod
     def tearDownClass(cls) -> None:
@@ -29,8 +28,9 @@ class BaseTestCase(unittest.TestCase):
         return Path(__file__).parent / "temp" / cls.__name__
 
     @classmethod
-    def load_test_data(cls) -> None:
-        cls.test_data = cls.load_json_data(f"{cls.__name__}.json")
+    def load_test_data(cls, file_name: str | None = None) -> None:
+        file_name = file_name or f"{cls.__name__}.json"
+        cls.test_data = cls.load_json_data(file_name)
 
     @classmethod
     def load_json_data(cls, file_name: str) -> Any:

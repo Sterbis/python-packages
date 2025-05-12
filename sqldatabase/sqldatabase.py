@@ -13,7 +13,6 @@ from .sqlcondition import SqlCondition
 from .sqldatatype import SqlDataTypes
 from .sqlfunction import (
     SqlAggregateFunction,
-    SqlAggregateFunctionWithMandatoryColumn,
     SqlFunctions,
 )
 from .sqljoin import SqlJoin
@@ -22,6 +21,7 @@ from .sqlstatement import (
     ESqlOrderByType,
     SqlCreateTableStatement,
     SqlDeleteStatement,
+    SqlDropTableStatement,
     SqlInsertIntoStatement,
     SqlSelectStatement,
     SqlStatement,
@@ -38,6 +38,7 @@ class SqlDatabase(SqlBase, Generic[T]):
     data_types: SqlDataTypes
     dialect: ESqlDialect
     tables: T
+    default_schema_name: str | None = None
 
     def __init__(
         self,
@@ -117,15 +118,42 @@ class SqlDatabase(SqlBase, Generic[T]):
         self._connection.close()
 
     def create_table(self, table: SqlTable, if_not_exists: bool = False) -> None:
-        create_table_statement = SqlCreateTableStatement(
-            self.dialect, table, if_not_exists
+        self._execute_statement(
+            SqlCreateTableStatement(self.dialect, table, if_not_exists)
         )
-        self._execute_statement(create_table_statement)
 
     def create_all_tables(self, if_not_exists: bool = False) -> None:
         for table in self.tables:
             self.create_table(table, if_not_exists)
         self.commit()
+
+    def drop_table(self, table: SqlTable, if_exists: bool = False) -> None:
+        self._execute_statement(SqlDropTableStatement(self.dialect, table, if_exists))
+
+    def drop_all_tables(self, if_exists: bool = False) -> None:
+        unsorted_tables = set(self.tables)
+        sorted_tables: list[SqlTable] = []
+
+        while unsorted_tables:
+            referenced_tables = set()
+            for table in unsorted_tables:
+                for referenced_table in table.referenced_tables:
+                    referenced_tables.add(referenced_table)
+            unreferenced_tables = set(unsorted_tables) - set(referenced_tables)
+            sorted_tables.extend(unreferenced_tables)
+            unsorted_tables = referenced_tables
+
+        for table in sorted_tables:
+            self.drop_table(table, if_exists)
+
+        self.commit()
+
+    def get_table(self, table_name: str, schema_name: str | None = None) -> SqlTable:
+        schema_name = schema_name or self.default_schema_name
+        for table in self.tables:
+            if table.name == table_name and table.schema_name == schema_name:
+                return table
+        assert False, f"Table '{table_name}', schema '{schema_name}', not found in database."
 
     def insert_records(
         self,

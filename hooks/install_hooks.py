@@ -26,5 +26,5 @@ if __name__ == "__main__":
         print("Git-hooks installed successfully.")
     except OSError:
         traceback.print_exc()
-        print("Failed to install git-hooks. Please run this script as administrator.")
+        print(f"Failed to install git-hooks. Please try to run this script as administrator.")
     input("Press Enter to exit...")

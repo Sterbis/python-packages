@@ -1,4 +1,4 @@
-DELETE FROM {{ table }}
+DELETE FROM {{ table.fully_qualified_name }}
 WHERE {{ where_condition }}
 {% if 'id' in table.columns | map(attribute='name') %}
     RETURNING id

@@ -43,6 +43,11 @@ class SqlTextDataType(SqlDataType):
     def __init__(self) -> None:
         SqlDataType.__init__(self, "TEXT", str)
 
+    def to_sql(self) -> str:
+        from .sqlserverdatabase import SqlServerDatabase
+
+        return "NVARCHAR(255)" if isinstance(self.database, SqlServerDatabase) else self.name
+
 
 class SqlBlobDataType(SqlDataType):
     def __init__(self) -> None:
@@ -66,7 +71,7 @@ class SqlBooleanDataType(SqlDataType):
     def to_sql(self) -> str:
         from .sqlitedatabase import SqliteDatabase
 
-        return "INTEGER" if isinstance(self.database, SqliteDatabase) else "BOOLEAN"
+        return "INTEGER" if isinstance(self.database, SqliteDatabase) else self.name
 
 
 class SqlDateDataType(SqlDataType):
@@ -90,7 +95,7 @@ class SqlDateDataType(SqlDataType):
     def to_sql(self) -> str:
         from .sqlitedatabase import SqliteDatabase
 
-        return "TEXT" if isinstance(self.database, SqliteDatabase) else "DATE"
+        return "TEXT" if isinstance(self.database, SqliteDatabase) else self.name
 
 
 class SqlTimeDataType(SqlDataType):
@@ -114,7 +119,7 @@ class SqlTimeDataType(SqlDataType):
     def to_sql(self) -> str:
         from .sqlitedatabase import SqliteDatabase
 
-        return "TEXT" if isinstance(self.database, SqliteDatabase) else "TIME"
+        return "TEXT" if isinstance(self.database, SqliteDatabase) else self.name
 
 
 class SqlDateTimeDataType(SqlDataType):
@@ -140,7 +145,7 @@ class SqlDateTimeDataType(SqlDataType):
     def to_sql(self) -> str:
         from .sqlitedatabase import SqliteDatabase
 
-        return "TEXT" if isinstance(self.database, SqliteDatabase) else "DATETIME"
+        return "TEXT" if isinstance(self.database, SqliteDatabase) else self.name
 
 
 class SqlDataTypes(EnumLikeContainer[SqlDataType]):

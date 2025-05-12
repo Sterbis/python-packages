@@ -1,109 +1,263 @@
 {
-    "test_create_table_statement": [
-        [
-            "CREATE TABLE users (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  timestamp REAL DEFAULT 0.1,\n  username TEXT NOT NULL UNIQUE,\n  email TEXT NOT NULL UNIQUE,\n  photo BLOB,\n  admin INTEGER NOT NULL,\n  birth_date TEXT,\n  last_login TEXT,\n  automatic_logout TEXT\n)",
-            "sqlite"
-        ],
-        [
-            "CREATE TABLE users (\n  id INTEGER PRIMARY KEY IDENTITY,\n  timestamp FLOAT DEFAULT 0.1,\n  username VARCHAR(MAX) NOT NULL UNIQUE,\n  email VARCHAR(MAX) NOT NULL UNIQUE,\n  photo VARBINARY,\n  admin BIT NOT NULL,\n  birth_date DATE,\n  last_login DATETIME,\n  automatic_logout TIME\n)",
-            "tsql"
-        ]
-    ],
+    "test_create_table_statement": {
+        "sqlite": "CREATE TABLE users (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  timestamp REAL DEFAULT 0.1,\n  username TEXT NOT NULL UNIQUE,\n  email TEXT NOT NULL UNIQUE,\n  photo BLOB,\n  admin INTEGER NOT NULL,\n  birth_date TEXT,\n  last_login TEXT,\n  automatic_logout TEXT\n)",
+        "tsql": "CREATE TABLE test_users.dbo.users (\n  id INTEGER PRIMARY KEY IDENTITY,\n  timestamp FLOAT DEFAULT 0.1,\n  username NVARCHAR(255) NOT NULL UNIQUE,\n  email NVARCHAR(255) NOT NULL UNIQUE,\n  photo VARBINARY,\n  admin BIT NOT NULL,\n  birth_date DATE,\n  last_login DATETIME,\n  automatic_logout TIME\n)"
+    },
     "test_transpiled_parameters": [
         [
             "SELECT\n  *\nFROM users\nWHERE\n  users.name = :users_name\n  AND users.age BETWEEN :users_age_lower AND :users_age_upper",
-            {"users_age_lower": 18, "users_age_upper": 65, "users_name": "John"},
+            {
+                "users_age_lower": 18,
+                "users_age_upper": 65,
+                "users_name": "John"
+            },
             "sqlite",
             null,
-            {"users_name": "John", "users_age_lower": 18, "users_age_upper": 65},
+            {
+                "users_name": "John",
+                "users_age_lower": 18,
+                "users_age_upper": 65
+            },
+            "sqlite"
+        ],
+        [
+            "SELECT\n  *\nFROM users\nWHERE\n  users.name = :users_name\n  AND users.age BETWEEN :users_age_lower AND :users_age_upper",
+            {
+                "users_age_lower": 18,
+                "users_age_upper": 65,
+                "users_name": "John"
+            },
+            "sqlite",
+            null,
+            [
+                "John",
+                18,
+                65
+            ],
             "tsql"
         ],
         [
             "SELECT\n  *\nFROM users\nWHERE\n  users.name = :users_name\n  AND users.age BETWEEN :users_age_lower AND :users_age_upper",
-            {"users_age_lower": 18, "users_age_upper": 65, "users_name": "John"},
+            {
+                "users_age_lower": 18,
+                "users_age_upper": 65,
+                "users_name": "John"
+            },
             "sqlite",
             null,
-            ["John", 18, 65],
+            [
+                "John",
+                18,
+                65
+            ],
             "postgres"
         ],
         [
             "SELECT\n  *\nFROM users\nWHERE\n  users.name = :users_name\n  AND users.age BETWEEN :users_age_lower AND :users_age_upper",
-            {"users_age_lower": 18, "users_age_upper": 65, "users_name": "John"},
+            {
+                "users_age_lower": 18,
+                "users_age_upper": 65,
+                "users_name": "John"
+            },
             "sqlite",
             null,
-            ["John", 18, 65],
+            [
+                "John",
+                18,
+                65
+            ],
             "mysql"
         ],
         [
-            "SELECT\n  *\nFROM users\nWHERE\n  users.name = @users_name\n  AND users.age BETWEEN @users_age_lower AND @users_age_upper",
-            {"users_age_lower": 18, "users_age_upper": 65, "users_name": "John"},
+            "SELECT\n  *\nFROM users\nWHERE\n  users.name = ?\n  AND users.age BETWEEN ? AND ?",
+            [
+                "John",
+                18,
+                65
+            ],
             "tsql",
             null,
-            {"users_name": "John", "users_age_lower": 18, "users_age_upper": 65},
+            [
+                "John",
+                18,
+                65
+            ],
+            "tsql"
+        ],
+        [
+            "SELECT\n  *\nFROM users\nWHERE\n  users.name = ?\n  AND users.age BETWEEN ? AND ?",
+            [
+                "John",
+                18,
+                65
+            ],
+            "tsql",
+            null,
+            {
+                "parameter_1": "John",
+                "parameter_2": 18,
+                "parameter_3": 65
+            },
             "sqlite"
         ],
         [
-            "SELECT\n  *\nFROM users\nWHERE\n  users.name = @users_name\n  AND users.age BETWEEN @users_age_lower AND @users_age_upper",
-            {"users_age_lower": 18, "users_age_upper": 65, "users_name": "John"},
+            "SELECT\n  *\nFROM users\nWHERE\n  users.name = ?\n  AND users.age BETWEEN ? AND ?",
+            [
+                "John",
+                18,
+                65
+            ],
             "tsql",
             null,
-            ["John", 18, 65],
+            [
+                "John",
+                18,
+                65
+            ],
             "postgres"
         ],
         [
-            "SELECT\n  *\nFROM users\nWHERE\n  users.name = @users_name\n  AND users.age BETWEEN @users_age_lower AND @users_age_upper",
-            {"users_age_lower": 18, "users_age_upper": 65, "users_name": "John"},
+            "SELECT\n  *\nFROM users\nWHERE\n  users.name = ?\n  AND users.age BETWEEN ? AND ?",
+            [
+                "John",
+                18,
+                65
+            ],
             "tsql",
             null,
-            ["John", 18, 65],
+            [
+                "John",
+                18,
+                65
+            ],
             "mysql"
         ],
         [
             "SELECT\n  *\nFROM users\nWHERE\n  users.name = $3\n  AND users.age BETWEEN $2 AND $1",
-            [65, 18, "John"],
+            [
+                65,
+                18,
+                "John"
+            ],
             "postgres",
             null,
-            {"parameter_1": "John", "parameter_2": 18, "parameter_3": 65},
+            [
+                "John",
+                18,
+                65
+            ],
+            "postgres"
+        ],
+        [
+            "SELECT\n  *\nFROM users\nWHERE\n  users.name = $3\n  AND users.age BETWEEN $2 AND $1",
+            [
+                65,
+                18,
+                "John"
+            ],
+            "postgres",
+            null,
+            {
+                "parameter_1": "John",
+                "parameter_2": 18,
+                "parameter_3": 65
+            },
             "sqlite"
         ],
         [
             "SELECT\n  *\nFROM users\nWHERE\n  users.name = $3\n  AND users.age BETWEEN $2 AND $1",
-            [65, 18, "John"],
+            [
+                65,
+                18,
+                "John"
+            ],
             "postgres",
             null,
-            {"parameter_1": "John", "parameter_2": 18, "parameter_3": 65},
+            [
+                "John",
+                18,
+                65
+            ],
             "tsql"
         ],
         [
             "SELECT\n  *\nFROM users\nWHERE\n  users.name = $3\n  AND users.age BETWEEN $2 AND $1",
-            [65, 18, "John"],
+            [
+                65,
+                18,
+                "John"
+            ],
             "postgres",
             null,
-            ["John", 18, 65],
+            [
+                "John",
+                18,
+                65
+            ],
             "mysql"
         ],
         [
             "SELECT\n  *\nFROM users\nWHERE\n  users.name = ?\n  AND users.age BETWEEN ? AND ?",
-            ["John", 18, 65],
+            [
+                "John",
+                18,
+                65
+            ],
             "mysql",
             null,
-            {"parameter_1": "John", "parameter_2": 18, "parameter_3": 65},
+            [
+                "John",
+                18,
+                65
+            ],
+            "mysql"
+        ],
+        [
+            "SELECT\n  *\nFROM users\nWHERE\n  users.name = ?\n  AND users.age BETWEEN ? AND ?",
+            [
+                "John",
+                18,
+                65
+            ],
+            "mysql",
+            null,
+            {
+                "parameter_1": "John",
+                "parameter_2": 18,
+                "parameter_3": 65
+            },
             "sqlite"
         ],
         [
             "SELECT\n  *\nFROM users\nWHERE\n  users.name = ?\n  AND users.age BETWEEN ? AND ?",
-            ["John", 18, 65],
+            [
+                "John",
+                18,
+                65
+            ],
             "mysql",
             null,
-            {"parameter_1": "John", "parameter_2": 18, "parameter_3": 65},
+            [
+                "John",
+                18,
+                65
+            ],
             "tsql"
         ],
         [
             "SELECT\n  *\nFROM users\nWHERE\n  users.name = ?\n  AND users.age BETWEEN ? AND ?",
-            ["John", 18, 65],
+            [
+                "John",
+                18,
+                65
+            ],
             "mysql",
             null,
-            ["John", 18, 65],
+            [
+                "John",
+                18,
+                65
+            ],
             "postgres"
         ]
     ],
@@ -112,7 +266,15 @@
             "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (:first_name, :last_name, :email)",
             null,
             "sqlite",
-            "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (@first_name, @last_name, @email)",
+            "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (:first_name, :last_name, :email)",
+            null,
+            "sqlite"
+        ],
+        [
+            "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (:first_name, :last_name, :email)",
+            null,
+            "sqlite",
+            "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (?, ?, ?)",
             null,
             "tsql"
         ],
@@ -133,15 +295,23 @@
             "mysql"
         ],
         [
-            "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (@first_name, @last_name, @email)",
+            "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (?, ?, ?)",
             null,
             "tsql",
-            "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (:first_name, :last_name, :email)",
+            "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (?, ?, ?)",
+            null,
+            "tsql"
+        ],
+        [
+            "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (?, ?, ?)",
+            null,
+            "tsql",
+            "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (:parameter_1, :parameter_2, :parameter_3)",
             null,
             "sqlite"
         ],
         [
-            "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (@first_name, @last_name, @email)",
+            "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (?, ?, ?)",
             null,
             "tsql",
             "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  ($1, $2, $3)",
@@ -149,7 +319,7 @@
             "postgres"
         ],
         [
-            "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (@first_name, @last_name, @email)",
+            "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (?, ?, ?)",
             null,
             "tsql",
             "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (?, ?, ?)",
@@ -157,7 +327,15 @@
             "mysql"
         ],
         [
+            "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  ($2, $3, $1)",
+            null,
+            "postgres",
             "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  ($1, $2, $3)",
+            null,
+            "postgres"
+        ],
+        [
+            "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  ($2, $3, $1)",
             null,
             "postgres",
             "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (:parameter_1, :parameter_2, :parameter_3)",
@@ -165,17 +343,25 @@
             "sqlite"
         ],
         [
-            "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  ($1, $2, $3)",
+            "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  ($2, $3, $1)",
             null,
             "postgres",
-            "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (@parameter_1, @parameter_2, @parameter_3)",
+            "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (?, ?, ?)",
             null,
             "tsql"
         ],
         [
-            "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  ($1, $2, $3)",
+            "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  ($2, $3, $1)",
             null,
             "postgres",
+            "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (?, ?, ?)",
+            null,
+            "mysql"
+        ],
+        [
+            "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (?, ?, ?)",
+            null,
+            "mysql",
             "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (?, ?, ?)",
             null,
             "mysql"
@@ -192,7 +378,7 @@
             "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (?, ?, ?)",
             null,
             "mysql",
-            "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (@parameter_1, @parameter_2, @parameter_3)",
+            "INSERT INTO users (\n  first_name,\n  last_name,\n  email\n)\nVALUES\n  (?, ?, ?)",
             null,
             "tsql"
         ],
@@ -258,7 +444,7 @@
             "DELETE FROM users\nWHERE\n  users.first_name = 'John' AND users.last_name = 'Doe'\nRETURNING users.id, users.email",
             null,
             "sqlite",
-            "DELETE\nOUTPUT DELETED.id, DELETED.email FROM users\nWHERE\n  users.first_name = 'John' AND users.last_name = 'Doe'",
+            "DELETE FROM users\nOUTPUT DELETED.id, DELETED.email\nWHERE\n  users.first_name = 'John' AND users.last_name = 'Doe'",
             null,
             "tsql"
         ],
