@@ -192,9 +192,9 @@ class SqlTranspilerTestCase(BaseTestCase):
             expected_transpiled_sql = data[database.dialect.value]
             statement = SqlCreateTableStatement(database.dialect, database.tables.USERS)
             self._test_transpiled_sql(
-                statement._template_sql,
-                statement._template_parameters,
-                statement._template_dialect,
+                statement.template_sql,
+                statement.template_parameters,
+                statement.template_dialect,
                 statement.sql,
                 statement.parameters,
                 statement.dialect,

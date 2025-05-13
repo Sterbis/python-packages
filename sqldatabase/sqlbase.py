@@ -21,7 +21,6 @@ class SqlBase(ABC):
         Returns:
             str: The SQL representation of the object.
         """
-        pass
 
 
 class SqlBaseEnum(Enum):

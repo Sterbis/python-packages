@@ -1,1 +1,5 @@
-from .enumlikecontainer import EnumLikeClassContainer, EnumLikeContainer
+from .enumlikecontainer import (
+    EnumLikeClassContainer,
+    EnumLikeContainer,
+    EnumLikeMixedContainer,
+)

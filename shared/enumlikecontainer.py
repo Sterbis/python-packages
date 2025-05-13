@@ -72,3 +72,29 @@ class EnumLikeClassContainer(EnumLikeContainer, Generic[T]):
     @staticmethod
     def _condition(value: type, item_type: type) -> bool:
         return isinstance(value, type) and issubclass(value, item_type)
+
+
+class EnumLikeMixedContainer(EnumLikeContainer, Generic[T]):
+    def __iter__(self) -> Iterator[T | Type[T]]:
+        return EnumLikeContainer.__iter__(self)
+
+    def __getitem__(self, key: str) -> T | Type[T]:
+        return EnumLikeContainer.__getitem__(self, key)
+
+    def __call__(self, name: str) -> T | Type[T]:
+        return EnumLikeContainer.__call__(self, name)
+
+    def keys(self) -> KeysView[str]:
+        return EnumLikeContainer.keys(self)
+
+    def values(self) -> ValuesView[T | Type[T]]:
+        return EnumLikeContainer.values(self)
+
+    def items(self) -> ItemsView[str, T | Type[T]]:
+        return EnumLikeContainer.items(self)
+
+    @staticmethod
+    def _condition(value: type, item_type: type) -> bool:
+        return isinstance(value, item_type) or (
+            isinstance(value, type) and issubclass(value, item_type)
+        )

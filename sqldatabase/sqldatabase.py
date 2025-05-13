@@ -1,4 +1,5 @@
 from __future__ import annotations
+import copy
 import pprint
 import sqlite3
 import textwrap
@@ -11,7 +12,7 @@ import pyodbc  # type: ignore
 from .sqlbase import SqlBase
 from .sqlcolumn import SqlColumn
 from .sqlcondition import SqlCondition
-from .sqldatatype import SqlDataTypes
+from .sqldatatype import SqlDataType, SqlDataTypeWithParameter
 from .sqlfunction import (
     SqlAggregateFunction,
     SqlFunctions,
@@ -36,7 +37,6 @@ T = TypeVar("T", bound=SqlTables)
 
 
 class SqlDatabase(SqlBase, Generic[T]):
-    data_types: SqlDataTypes
     dialect: ESqlDialect
     tables: T
     default_schema_name: str | None = None
@@ -50,21 +50,30 @@ class SqlDatabase(SqlBase, Generic[T]):
         self.name = name
         self._connection = connection
         if tables is None:
-            assert hasattr(self, "tables"), (
+            assert hasattr(self.__class__, "tables"), (
                 "Database tables must be specified either as class attribute"
                 "or passed when instance is created."
             )
-            self.tables = self.tables
+            self.tables = self.__class__.tables
         else:
             self.tables = tables
-        for data_type in self.data_types:
-            data_type.database = self
+        self.functions = SqlFunctions()
+        self.attached_databases: dict[str, SqlDatabase] = {}
+        data_types = {}
         for table in self.tables:
             table.database = self
             for column in table.columns:
-                column.data_type = self.data_types(column.data_type.name)
-        self.functions = SqlFunctions()
-        self.attached_databases: dict[str, SqlDatabase] = {}
+                assert isinstance(
+                    column.data_type, SqlDataType
+                ), f"Unexpected data type: {column.data_type}"
+                if isinstance(column.data_type, SqlDataTypeWithParameter):
+                    column.data_type.database = self
+                else:
+                    if column.data_type.name not in data_types:
+                        data_type = copy.deepcopy(column.data_type)
+                        data_type.database = self
+                        data_types[data_type.name] = data_type
+                    column.data_type = data_types[column.data_type.name]
 
     @property
     def autocommit(self) -> bool:
@@ -186,11 +195,11 @@ class SqlDatabase(SqlBase, Generic[T]):
         insert_statement = SqlInsertIntoStatement(self.dialect, table, records[0])
         ids = []
         for index, record in enumerate(records):
-            if index > 0 and insert_statement._template_parameters is not None:
+            if index > 0 and insert_statement.template_parameters is not None:
                 for parameter, value in zip(
-                    insert_statement._template_parameters.keys(), record.values()
+                    insert_statement.template_parameters.keys(), record.values()
                 ):
-                    insert_statement._template_parameters[parameter] = value
+                    insert_statement.template_parameters[parameter] = value
             cursor = self._execute_statement(insert_statement)
             if cursor.description is not None:
                 row = cursor.fetchone()

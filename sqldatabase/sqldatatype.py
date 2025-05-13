@@ -2,7 +2,7 @@ from __future__ import annotations
 import datetime
 from typing import TYPE_CHECKING, Any, Callable
 
-from shared import EnumLikeContainer
+from shared import EnumLikeMixedContainer
 
 from .sqlbase import SqlBase
 
@@ -51,6 +51,22 @@ class SqlDataType(SqlBase):
             str: The SQL representation of the data type.
         """
         return self.name
+
+
+class SqlDataTypeWithParameter(SqlDataType):
+    def __init__(
+        self,
+        name: str,
+        type_: type,
+        parameter: Any,
+        to_database_converter: Callable[[Any], Any] | None = None,
+        from_database_converter: Callable[[Any], Any] | None = None,
+    ) -> None:
+        SqlDataType.__init__(self, name, type_, to_database_converter, from_database_converter)
+        self.parameter = parameter
+
+    def to_sql(self) -> str:
+        return f"{self.name}({self.parameter})"
 
 
 class SqlIntegerDataType(SqlDataType):
@@ -172,7 +188,7 @@ class SqlDateTimeDataType(SqlDataType):
         return "TEXT" if isinstance(self.database, SqliteDatabase) else self.name
 
 
-class SqlDataTypes(EnumLikeContainer[SqlDataType]):
+class SqlDataTypes(EnumLikeMixedContainer[SqlDataType]):
     item_type = SqlDataType
 
     BLOB = SqlBlobDataType()

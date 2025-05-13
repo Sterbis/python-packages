@@ -48,20 +48,20 @@ class SqlTable(SqlBase, Generic[T]):
             columns (T | None, optional): The columns in the table. Defaults to None.
         """
         if name is None:
-            assert hasattr(self, "name"), (
+            assert hasattr(self.__class__, "name"), (
                 "Table name must be specified either as class attribute"
                 " or passed when instance is created."
             )
-            self.name = self.name
+            self.name = self.__class__.name
         else:
             self.name = name
         self._schema_name = schema_name
         if columns is None:
-            assert hasattr(self, "columns"), (
+            assert hasattr(self.__class__, "columns"), (
                 "Table columns must be specified either as class attribute"
                 " or passed when instance is created."
             )
-            self.columns = self.columns
+            self.columns = self.__class__.columns
         else:
             self.columns = columns
         for column in self.columns:

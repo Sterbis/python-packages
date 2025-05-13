@@ -3,13 +3,24 @@ from typing import Generic
 import pyodbc  # type: ignore
 
 from .sqldatabase import SqlDatabase, T
-from .sqldatatype import SqlDataTypes
+from .sqldatatype import SqlDataTypeWithParameter, SqlDataTypes
 from .sqltable import SqlTable
 from .sqltranspiler import ESqlDialect
 
 
+class SqlVarcharDataType(SqlDataTypeWithParameter):
+    def __init__(self, length: int | str) -> None:
+        SqlDataTypeWithParameter.__init__(self, "VARCHAR", str, length)
+
+
+class SqlNVarcharDataType(SqlDataTypeWithParameter):
+    def __init__(self, length: int | str) -> None:
+        SqlDataTypeWithParameter.__init__(self, "NVARCHAR", str, length)
+
+
 class SqlServerDataTypes(SqlDataTypes):
-    pass
+    NVARCHAR = SqlNVarcharDataType
+    VARCHAR = SqlVarcharDataType
 
 
 class SqlServerDatabase(SqlDatabase[T], Generic[T]):
@@ -21,7 +32,6 @@ class SqlServerDatabase(SqlDatabase[T], Generic[T]):
         dialect (ESqlDialect): The SQL dialect for SQL Server.
         default_schema_name (str): The default schema name (e.g., "dbo").
     """
-    data_types = SqlServerDataTypes()
     dialect = ESqlDialect.SQLSERVER
     default_schema_name = "dbo"
 

@@ -113,8 +113,8 @@ class SqlCondition(SqlBase):
             elif isinstance(value, SqlAggregateFunction):
                 self._values_to_sql.append(value.to_sql())
             elif isinstance(value, SqlSelectStatement):
-                self._values_to_sql.append(f"({value._template_sql.rstrip(";")})")
-                self.parameters.update(value._template_parameters)
+                self._values_to_sql.append(f"({value.template_sql.rstrip(";")})")
+                self.parameters.update(value.template_parameters)
             else:
                 parameter = self.left.generate_parameter_name()
                 self._values_to_sql.append(f":{parameter}")

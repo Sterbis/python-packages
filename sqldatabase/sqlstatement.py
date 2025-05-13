@@ -35,8 +35,8 @@ class SqlStatement(SqlBase):
     _environment = Environment(
         loader=FileSystemLoader(Path(__file__).parent / "templates")
     )
-    _template_dialect = ESqlDialect.SQLITE
-    _template_file: str
+    template_dialect = ESqlDialect.SQLITE
+    template_file: str
 
     def __init__(
         self,
@@ -56,8 +56,8 @@ class SqlStatement(SqlBase):
         self.context = context
         self.context["dialect"] = dialect.value
         self.context["parameters"] = parameters
-        self._template_parameters = parameters or {}
-        self._template_sql = self._render_template()
+        self.template_parameters = parameters or {}
+        self.template_sql = self._render_template()
 
     @property
     def sql(self) -> str:
@@ -68,8 +68,8 @@ class SqlStatement(SqlBase):
             str: The SQL representation of the statement.
         """
         return SqlTranspiler(self.dialect).transpile_sql(
-            self._template_sql,
-            self._template_dialect,
+            self.template_sql,
+            self.template_dialect,
             pretty=True,
         )
 
@@ -82,8 +82,8 @@ class SqlStatement(SqlBase):
             dict[str, Any] | Sequence: The parameters for the statement.
         """
         return SqlTranspiler(self.dialect).transpile_parameters(
-            self._template_sql,
-            self._template_parameters,
+            self.template_sql,
+            self.template_parameters,
         )
 
     def _render_template(self) -> str:
@@ -93,7 +93,7 @@ class SqlStatement(SqlBase):
         Returns:
             str: The rendered SQL template.
         """
-        template = self._environment.get_template(self._template_file)
+        template = self._environment.get_template(self.template_file)
         template_sql = template.render(self.context)
         template_sql = "\n".join(
             line for line in template_sql.splitlines() if line.strip()
@@ -111,7 +111,7 @@ class SqlStatement(SqlBase):
 
 
 class SqlCreateTableStatement(SqlStatement):
-    _template_file = "create_table_statement.sql.j2"
+    template_file = "create_table_statement.sql.j2"
 
     def __init__(
         self, dialect: ESqlDialect, table: SqlTable, if_not_exists: bool = False
@@ -120,7 +120,7 @@ class SqlCreateTableStatement(SqlStatement):
 
 
 class SqlDropTableStatement(SqlStatement):
-    _template_file = "drop_table_statement.sql.j2"
+    template_file = "drop_table_statement.sql.j2"
 
     def __init__(
         self, dialect: ESqlDialect, table: SqlTable, if_exists: bool = False
@@ -129,7 +129,7 @@ class SqlDropTableStatement(SqlStatement):
 
 
 class SqlInsertIntoStatement(SqlStatement):
-    _template_file = "insert_into_statement.sql.j2"
+    template_file = "insert_into_statement.sql.j2"
 
     def __init__(
         self,
@@ -149,7 +149,7 @@ class SqlInsertIntoStatement(SqlStatement):
 
 
 class SqlSelectStatement(SqlStatement):
-    _template_file = "select_statement.sql.j2"
+    template_file = "select_statement.sql.j2"
 
     def __init__(
         self,
@@ -236,7 +236,7 @@ class SqlSelectStatement(SqlStatement):
 
 
 class SqlUpdateStatement(SqlStatement):
-    _template_file = "update_statement.sql.j2"
+    template_file = "update_statement.sql.j2"
 
     def __init__(
         self,
@@ -259,7 +259,7 @@ class SqlUpdateStatement(SqlStatement):
 
 
 class SqlDeleteStatement(SqlStatement):
-    _template_file = "delete_statement.sql.j2"
+    template_file = "delete_statement.sql.j2"
 
     def __init__(
         self,

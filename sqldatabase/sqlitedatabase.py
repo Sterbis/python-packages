@@ -1,6 +1,6 @@
 import sqlite3
 from pathlib import Path
-from typing import Any, Generic
+from typing import Generic
 
 from .sqldatabase import SqlDatabase, T
 from .sqldatatype import SqlDataTypes
@@ -13,7 +13,6 @@ class SqliteDataTypes(SqlDataTypes):
 
 
 class SqliteDatabase(SqlDatabase[T], Generic[T]):
-    data_types = SqliteDataTypes()
     dialect = ESqlDialect.SQLITE
 
     def __init__(self, path: str | Path, autocommit: bool = False):
