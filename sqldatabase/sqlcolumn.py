@@ -53,6 +53,7 @@ class SqlColumn(SqlBase):
         self._foreign_keys: list[SqlColumn] = []
         if self.reference is not None:
             self.reference._foreign_keys.append(self)
+        self.table: SqlTable | None = None
 
     def __deepcopy__(self, memo) -> SqlColumn:
         if id(self) in memo:
@@ -81,6 +82,8 @@ class SqlColumn(SqlBase):
 
     @property
     def fully_qualified_name(self) -> str:
+        if self.table is None:
+            raise AttributeError("The 'table' attribute is not set for this column.")
         return f"{self.table.fully_qualified_name}.{self.name}"
 
     def generate_parameter_name(self) -> str:

@@ -4,6 +4,7 @@ import pyodbc  # type: ignore
 
 from .sqldatabase import SqlDatabase, T
 from .sqldatatype import SqlDataTypes
+from .sqltable import SqlTable
 from .sqltranspiler import ESqlDialect
 
 
@@ -46,3 +47,25 @@ class SqlServerDatabase(SqlDatabase[T], Generic[T]):
 
         connection = pyodbc.connect(self.connection_string, autocommit=autocommit)
         SqlDatabase.__init__(self, database, connection)
+
+    def _parse_table_fully_qualified_name(
+        self, table_fully_qualified_name: str
+    ) -> tuple[str | None, str | None, str | None]:
+        """
+        Parse a fully qualified table name into its components.
+
+        Args:
+            table_fully_qualified_name (str): The fully qualified table name.
+
+        Returns:
+            tuple[str | None, str | None, str | None]: The database name, schema name, and table name.
+        """
+        table_fully_qualified_name_parts = table_fully_qualified_name.split(".")
+        assert (
+            len(table_fully_qualified_name_parts) == 3
+        ), f"Unexpected table fully qualified name: {table_fully_qualified_name}"
+        database_name, schema_name, table_name = table_fully_qualified_name_parts
+        return database_name, schema_name, table_name
+
+    def get_table_fully_qualified_name(self, table: SqlTable) -> str:
+        return f"{self.name}.{table.schema_name}.{table.name}"

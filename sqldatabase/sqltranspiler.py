@@ -29,7 +29,7 @@ class SqlTranspiler:
         pretty: bool = False,
     ) -> tuple[str, dict[str, Any] | Sequence]:
         transpiled_sql = self.transpile_sql(sql, input_dialect, pretty)
-        parameters = self.transpile_parameters(sql, parameters, input_dialect)
+        parameters = self.transpile_parameters(sql, parameters)
         return transpiled_sql, parameters
 
     def transpile_sql(
@@ -43,14 +43,13 @@ class SqlTranspiler:
         transpiled_sql = parsed_sql.sql(
             dialect=self.output_dialect.value, pretty=pretty
         )
-        transpiled_sql = self._update_transpiled_sql(transpiled_sql, input_dialect)
+        transpiled_sql = self._update_transpiled_sql(transpiled_sql)
         return transpiled_sql
 
     def transpile_parameters(
         self,
         sql: str,
         parameters: dict[str, Any] | Sequence | None,
-        input_dialect: ESqlDialect | None,
     ) -> dict[str, Any] | Sequence:
         if parameters is None:
             parameters = ()
@@ -193,7 +192,7 @@ class SqlTranspiler:
                                 )
 
     def _update_transpiled_sql(
-        self, sql: str, input_dialect: ESqlDialect | None
+        self, sql: str,
     ) -> str:
         sql = self._update_named_parameters_and_positional_placeholders(sql)
         sql = self._update_output_clause(sql)

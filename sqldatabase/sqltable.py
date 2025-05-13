@@ -10,7 +10,6 @@ from .sqlcolumn import SqlColumn, SqlColumns
 from .sqlcondition import SqlCondition
 from .sqlfunction import SqlAggregateFunction
 from .sqljoin import ESqlJoinType, SqlJoin
-from .sqltranspiler import ESqlDialect
 
 if TYPE_CHECKING:
     from .sqldatabase import SqlDatabase
@@ -65,19 +64,7 @@ class SqlTable(SqlBase, Generic[T]):
 
     @property
     def fully_qualified_name(self) -> str:
-        if self.database.dialect == ESqlDialect.SQLITE:
-            if self.database.attached_databases:
-                return f"{self.database.name}.{self.name}"
-            else:
-                return self.name
-        elif self.database.dialect == ESqlDialect.SQLSERVER:
-            return f"{self.database.name}.{self.schema_name}.{self.name}"
-        elif self.database.dialect == ESqlDialect.POSTGRESQL:
-            return f"{self.schema_name}.{self.name}"
-        elif self.database.dialect == ESqlDialect.MYSQL:
-            return f"{self.database.name}.{self.name}"
-        else:
-            assert False, f"Unexpectd dialect: {self.database.dialect}"
+        return self.database.get_table_fully_qualified_name(self)
 
     @property
     def schema_name(self) -> str | None:
@@ -100,6 +87,7 @@ class SqlTable(SqlBase, Generic[T]):
             column.reference.table
             for column in self.columns
             if column.reference is not None
+            and column.reference.table is not None
         ]
 
     def to_sql(self) -> str:
@@ -111,7 +99,7 @@ class SqlTable(SqlBase, Generic[T]):
                 return column
         assert False, f"Column '{column_name}' not found in table '{self.name}'."
 
-    def get_foreign_key(self, table: SqlTable) -> SqlColumn | None:
+    def get_foreign_key_column(self, table: SqlTable) -> SqlColumn | None:
         for foreign_key_column in self.foreign_key_columns:
             if foreign_key_column.reference in table.columns:
                 return foreign_key_column
@@ -120,7 +108,7 @@ class SqlTable(SqlBase, Generic[T]):
     def join(
         self, table: SqlTable, join_type: ESqlJoinType = ESqlJoinType.INNER
     ) -> SqlJoin:
-        foreign_key_column = table.get_foreign_key(self) or self.get_foreign_key(table)
+        foreign_key_column = table.get_foreign_key_column(self) or self.get_foreign_key_column(table)
         assert foreign_key_column is not None, (
             f"Cannot join {self.fully_qualified_name} table with {table.fully_qualified_name} table."
             f" No foreign key column in {table.fully_qualified_name} table"

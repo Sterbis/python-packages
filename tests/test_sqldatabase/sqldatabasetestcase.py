@@ -68,7 +68,11 @@ class SqlDatabaseTestCase(BaseTestCase):
     @classmethod
     def insert_test_dictionary(cls, dictionary: dict) -> None:
         for table_name, rows in dictionary.items():
-            table = cls.database.get_table(table_name)
+            if cls.database.default_schema_name:
+                table_fully_qualified_name = f"{cls.database.name}.{cls.database.default_schema_name}.{table_name}"
+            else:
+                table_fully_qualified_name = f"{cls.database.name}.{table_name}"
+            table = cls.database.get_table(table_fully_qualified_name)
             record = SqlRecord()
             for row in rows:
                 for column_name, value in row.items():
@@ -97,9 +101,8 @@ class SqlDatabaseTestCase(BaseTestCase):
             for column in table.columns:
                 if column.reference is not None:
                     column_name = column.reference.name
-                    table_name = column.reference.table.name
-                    schema_name = column.reference.table.schema_name
-                    referenced_column = self.database.get_table(table_name, schema_name).get_column(
+                    table_fully_qualified_name = column.reference.table.fully_qualified_name
+                    referenced_column = self.database.get_table(table_fully_qualified_name).get_column(
                         column_name
                     )
                     with self.subTest(

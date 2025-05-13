@@ -55,7 +55,6 @@ class SqlStatement(SqlBase):
         return SqlTranspiler(self.dialect).transpile_parameters(
             self._template_sql,
             self._template_parameters,
-            self._template_dialect,
         )
 
     def _render_template(self) -> str:

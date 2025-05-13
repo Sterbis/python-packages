@@ -2,6 +2,7 @@ from __future__ import annotations
 import pprint
 import sqlite3
 import textwrap
+from abc import abstractmethod
 from collections.abc import Sequence
 from typing import Any, Generic, TypeVar
 
@@ -68,6 +69,17 @@ class SqlDatabase(SqlBase, Generic[T]):
     @property
     def autocommit(self) -> bool:
         return bool(self._connection.autocommit)
+
+    @abstractmethod
+    def _parse_table_fully_qualified_name(
+        self,
+        table_fully_qualified_name: str,
+    ) -> tuple[str | None, str | None, str | None]:
+        pass
+
+    @abstractmethod
+    def get_table_fully_qualified_name(self, table: SqlTable) -> str:
+        pass
 
     def _fetch_records(self, cursor: sqlite3.Cursor | pyodbc.Cursor) -> list[SqlRecord]:
         records: list[SqlRecord] = []
@@ -148,12 +160,20 @@ class SqlDatabase(SqlBase, Generic[T]):
 
         self.commit()
 
-    def get_table(self, table_name: str, schema_name: str | None = None) -> SqlTable:
-        schema_name = schema_name or self.default_schema_name
-        for table in self.tables:
+    def get_table(self, table_fully_qualified_name: str) -> SqlTable:
+        database_name, schema_name, table_name = self._parse_table_fully_qualified_name(
+            table_fully_qualified_name
+        )
+        if database_name is not None and database_name != self.name:
+            database = self.attached_databases[database_name]
+        else:
+            database = self
+        for table in database.tables:
             if table.name == table_name and table.schema_name == schema_name:
                 return table
-        assert False, f"Table '{table_name}', schema '{schema_name}', not found in database."
+        assert (
+            False
+        ), f"Table '{table_name}', schema '{schema_name}', not found in database '{database.name}'."
 
     def insert_records(
         self,

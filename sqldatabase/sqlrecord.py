@@ -8,7 +8,6 @@ import pyodbc  # type: ignore
 
 from .sqlcolumn import SqlColumn
 from .sqlfunction import SqlAggregateFunction, SqlAggregateFunctionWithMandatoryColumn
-from .sqltranspiler import ESqlDialect
 
 if TYPE_CHECKING:
     from .sqldatabase import SqlDatabase
@@ -76,9 +75,8 @@ class SqlRecord(MutableMapping):
     @staticmethod
     def _parse_alias(
         alias: str,
-        database: SqlDatabase,
-    ) -> tuple[str | None, str | None, str | None, str | None, str | None]:
-        function_name = database_name = schema_name = table_name = column_name = None
+    ) -> tuple[str | None, str | None, str | None]:
+        function_name = table_fully_qualified_name = column_name = None
         alias_parts = alias.split(".")
         if "FUNCTION" in alias_parts:
             function_identifier_index = alias_parts.index("FUNCTION")
@@ -88,31 +86,23 @@ class SqlRecord(MutableMapping):
             column_fully_qualified_name_parts = alias_parts[
                 column_identifier_index + 1 :
             ]
-            if len(column_fully_qualified_name_parts) == 2:
-                table_name, column_name = column_fully_qualified_name_parts
-            elif len(column_fully_qualified_name_parts) == 3:
-                if database.dialect in (ESqlDialect.SQLITE, ESqlDialect.MYSQL):
-                    database_name, table_name, column_name = column_fully_qualified_name_parts
-                elif database.dialect == ESqlDialect.POSTGRESQL:
-                    schema_name, table_name, column_name = column_fully_qualified_name_parts
-                else:
-                    assert False, f"Unexpected alias format: {alias}"
-            elif len(column_fully_qualified_name_parts) == 4:
-                database_name, schema_name, table_name, column_name = column_fully_qualified_name_parts
-            else:
-                assert False, f"Unexpected alias format: {alias}"
+            table_fully_qualified_name = ".".join(
+                column_fully_qualified_name_parts[:-1]
+            )
             column_name = column_fully_qualified_name_parts[-1]
-        return function_name, database_name, schema_name, table_name, column_name
+        return function_name, table_fully_qualified_name, column_name
 
     @classmethod
     def _get_item_by_alias(
         cls, alias: str, database: SqlDatabase
     ) -> SqlColumn | SqlAggregateFunction:
-        function_name, database_name, schema_name, table_name, column_name = cls._parse_alias(alias, database)
-        if table_name is not None and column_name is not None:
-            if database_name is not None and database_name != database.name:
-                database = database.attached_databases[database_name]
-            column = database.get_table(table_name, schema_name).get_column(column_name)
+        function_name, table_fully_qualified_name, column_name = cls._parse_alias(
+            alias
+        )
+        if table_fully_qualified_name is not None and column_name is not None:
+            column = database.get_table(table_fully_qualified_name).get_column(
+                column_name
+            )
         else:
             column = None
         if function_name is not None:
