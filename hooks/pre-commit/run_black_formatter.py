@@ -16,7 +16,9 @@ def run_black_formatter(files: Sequence[str | Path]) -> None:
 def main():
     repository = GitRepository(REPOSITORY_DIR_PATH)
     staged_files = [
-        file for file in repository.get_staged_files() if file.suffix == ".py"
+        file
+        for file in repository.get_staged_files()
+        if file.suffix == ".py" and file.is_file()
     ]
     if staged_files:
         run_black_formatter(staged_files)
