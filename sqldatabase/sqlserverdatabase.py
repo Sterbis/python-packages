@@ -13,6 +13,14 @@ class SqlServerDataTypes(SqlDataTypes):
 
 
 class SqlServerDatabase(SqlDatabase[T], Generic[T]):
+    """
+    Represents a SQL Server database.
+
+    Attributes:
+        data_types (SqlServerDataTypes): The data types supported by SQL Server.
+        dialect (ESqlDialect): The SQL dialect for SQL Server.
+        default_schema_name (str): The default schema name (e.g., "dbo").
+    """
     data_types = SqlServerDataTypes()
     dialect = ESqlDialect.SQLSERVER
     default_schema_name = "dbo"
@@ -27,6 +35,18 @@ class SqlServerDatabase(SqlDatabase[T], Generic[T]):
         password: str | None = None,
         autocommit: bool = False,
     ):
+        """
+        Initialize a SqlServerDatabase instance.
+
+        Args:
+            server (str): The server address.
+            database (str): The database name.
+            driver (str, optional): The ODBC driver. Defaults to "ODBC Driver 17 for SQL Server".
+            trusted_connection (bool, optional): Whether to use a trusted connection. Defaults to True.
+            user_id (str | None, optional): The user ID for authentication. Defaults to None.
+            password (str | None, optional): The password for authentication. Defaults to None.
+            autocommit (bool, optional): Whether to enable autocommit. Defaults to False.
+        """
         self.server = server
         self.database = database
         self.driver = driver

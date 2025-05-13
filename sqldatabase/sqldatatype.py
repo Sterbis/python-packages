@@ -11,6 +11,15 @@ if TYPE_CHECKING:
 
 
 class SqlDataType(SqlBase):
+    """
+    Represents a SQL data type.
+
+    Attributes:
+        name (str): The name of the data type.
+        type (type): The Python type corresponding to the SQL data type.
+        to_database_converter (Callable[[Any], Any] | None): Function to convert values to database format.
+        from_database_converter (Callable[[Any], Any] | None): Function to convert values from database format.
+    """
     database: SqlDatabase
 
     def __init__(
@@ -20,12 +29,27 @@ class SqlDataType(SqlBase):
         to_database_converter: Callable[[Any], Any] | None = None,
         from_database_converter: Callable[[Any], Any] | None = None,
     ) -> None:
+        """
+        Initialize a SqlDataType instance.
+
+        Args:
+            name (str): The name of the data type.
+            type_ (type): The Python type corresponding to the SQL data type.
+            to_database_converter (Callable[[Any], Any] | None, optional): Function to convert values to database format. Defaults to None.
+            from_database_converter (Callable[[Any], Any] | None, optional): Function to convert values from database format. Defaults to None.
+        """
         self.name = name
         self.type = type_
         self.to_database_converter = to_database_converter
         self.from_database_converter = from_database_converter
 
     def to_sql(self) -> str:
+        """
+        Convert the data type to its SQL representation.
+
+        Returns:
+            str: The SQL representation of the data type.
+        """
         return self.name
 
 

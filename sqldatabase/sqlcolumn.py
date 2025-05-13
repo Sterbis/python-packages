@@ -15,8 +15,22 @@ if TYPE_CHECKING:
 
 
 class SqlColumn(SqlBase):
-    table: SqlTable
+    """
+    Represents a column in a SQL table.
 
+    Attributes:
+        name (str): The name of the column.
+        data_type (SqlDataType): The data type of the column.
+        primary_key (bool): Whether the column is a primary key.
+        autoincrement (bool): Whether the column is auto-incremented.
+        not_null (bool): Whether the column is NOT NULL.
+        unique (bool): Whether the column is unique.
+        default (Any): The default value of the column.
+        reference (SqlColumn | None): A reference to another column.
+        to_database_converter (Callable[[Any], Any] | None): Function to convert values to database format.
+        from_database_converter (Callable[[Any], Any] | None): Function to convert values from database format.
+        values (type[Enum] | None): Enum values for the column.
+    """
     def __init__(
         self,
         name: str,
@@ -31,6 +45,22 @@ class SqlColumn(SqlBase):
         from_database_converter: Callable[[Any], Any] | None = None,
         values: type[Enum] | None = None,
     ):
+        """
+        Initialize a SqlColumn instance.
+
+        Args:
+            name (str): The name of the column.
+            data_type (SqlDataType): The data type of the column.
+            primary_key (bool, optional): Whether the column is a primary key. Defaults to False.
+            autoincrement (bool, optional): Whether the column is auto-incremented. Defaults to False.
+            not_null (bool, optional): Whether the column is NOT NULL. Defaults to False.
+            unique (bool, optional): Whether the column is unique. Defaults to False.
+            default (Any, optional): The default value of the column. Defaults to None.
+            reference (SqlColumn | None, optional): A reference to another column. Defaults to None.
+            to_database_converter (Callable[[Any], Any] | None, optional): Function to convert values to database format. Defaults to None.
+            from_database_converter (Callable[[Any], Any] | None, optional): Function to convert values from database format. Defaults to None.
+            values (type[Enum] | None, optional): Enum values for the column. Defaults to None.
+        """
         self.name = name
         self.data_type = data_type
         self.primary_key = primary_key

@@ -23,6 +23,15 @@ class ESqlOrderByType(SqlBaseEnum):
 
 
 class SqlStatement(SqlBase):
+    """
+    Represents a SQL statement.
+
+    Attributes:
+        dialect (ESqlDialect): The SQL dialect for the statement.
+        context (dict): The context for rendering the statement.
+        _template_parameters (dict[str, Any]): Parameters for the statement template.
+        _template_sql (str): The rendered SQL template.
+    """
     _environment = Environment(
         loader=FileSystemLoader(Path(__file__).parent / "templates")
     )
@@ -35,6 +44,14 @@ class SqlStatement(SqlBase):
         parameters: dict[str, Any] | None = None,
         **context,
     ) -> None:
+        """
+        Initialize a SqlStatement instance.
+
+        Args:
+            dialect (ESqlDialect): The SQL dialect for the statement.
+            parameters (dict[str, Any] | None, optional): Parameters for the statement template. Defaults to None.
+            context (dict): Additional context for rendering the statement.
+        """
         self.dialect = dialect
         self.context = context
         self.context["dialect"] = dialect.value
@@ -44,6 +61,12 @@ class SqlStatement(SqlBase):
 
     @property
     def sql(self) -> str:
+        """
+        Get the SQL representation of the statement.
+
+        Returns:
+            str: The SQL representation of the statement.
+        """
         return SqlTranspiler(self.dialect).transpile_sql(
             self._template_sql,
             self._template_dialect,
@@ -52,12 +75,24 @@ class SqlStatement(SqlBase):
 
     @property
     def parameters(self) -> dict[str, Any] | Sequence:
+        """
+        Get the parameters for the statement.
+
+        Returns:
+            dict[str, Any] | Sequence: The parameters for the statement.
+        """
         return SqlTranspiler(self.dialect).transpile_parameters(
             self._template_sql,
             self._template_parameters,
         )
 
     def _render_template(self) -> str:
+        """
+        Render the SQL template.
+
+        Returns:
+            str: The rendered SQL template.
+        """
         template = self._environment.get_template(self._template_file)
         template_sql = template.render(self.context)
         template_sql = "\n".join(
@@ -66,6 +101,12 @@ class SqlStatement(SqlBase):
         return template_sql
 
     def to_sql(self) -> str:
+        """
+        Get the SQL representation of the statement.
+
+        Returns:
+            str: The SQL representation of the statement.
+        """
         return self.sql
 
 

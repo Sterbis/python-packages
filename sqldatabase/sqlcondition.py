@@ -12,12 +12,30 @@ if TYPE_CHECKING:
 
 
 class SqlCondition(SqlBase):
+    """
+    Represents a SQL condition used in WHERE, HAVING, or JOIN clauses.
+
+    Attributes:
+        left (SqlColumn | SqlAggregateFunction | SqlSelectStatement): The left-hand side of the condition.
+        operator (ESqlComparisonOperator): The comparison operator.
+        right (Any): The right-hand side of the condition.
+        parameters (dict[str, Any]): Parameters for the condition.
+        _values_to_sql (list[str]): SQL representations of the values.
+    """
     def __init__(
         self,
         left: SqlColumn | SqlAggregateFunction | SqlSelectStatement,
         operator: ESqlComparisonOperator,
         *right: Any,
     ) -> None:
+        """
+        Initialize a SqlCondition instance.
+
+        Args:
+            left (SqlColumn | SqlAggregateFunction | SqlSelectStatement): The left-hand side of the condition.
+            operator (ESqlComparisonOperator): The comparison operator.
+            right (Any): The right-hand side of the condition.
+        """
         from .sqlstatement import SqlSelectStatement
 
         self.left = left
@@ -31,9 +49,27 @@ class SqlCondition(SqlBase):
             self.parameters.update(self.left.parameters)
 
     def __and__(self, other: SqlCondition):
+        """
+        Combine this condition with another using the AND logical operator.
+
+        Args:
+            other (SqlCondition): The other condition to combine.
+
+        Returns:
+            SqlCompoundCondition: A new compound condition.
+        """
         return SqlCompoundCondition(self, ESqlLogicalOperator.AND, other)
 
     def __or__(self, other: SqlCondition):
+        """
+        Combine this condition with another using the OR logical operator.
+
+        Args:
+            other (SqlCondition): The other condition to combine.
+
+        Returns:
+            SqlCompoundCondition: A new compound condition.
+        """
         return SqlCompoundCondition(self, ESqlLogicalOperator.OR, other)
 
     def _validate_value_count(self) -> None:

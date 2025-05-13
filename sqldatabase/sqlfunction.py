@@ -12,9 +12,22 @@ if TYPE_CHECKING:
 
 
 class SqlAggregateFunction(SqlBase):
+    """
+    Represents a SQL aggregate function (e.g., COUNT, SUM).
+
+    Attributes:
+        name (str): The name of the aggregate function.
+        column (SqlColumn | None): The column the function operates on.
+    """
     name: str
 
     def __init__(self, column: SqlColumn | None = None):
+        """
+        Initialize a SqlAggregateFunction instance.
+
+        Args:
+            column (SqlColumn | None, optional): The column the function operates on. Defaults to None.
+        """
         assert hasattr(
             self, "name"
         ), "Function name must be specified as class attribute."
@@ -31,6 +44,12 @@ class SqlAggregateFunction(SqlBase):
 
     @property
     def alias(self) -> str:
+        """
+        Get the alias for the aggregate function.
+
+        Returns:
+            str: The alias for the function.
+        """
         if self.column is None:
             return f"FUNCTION.{self.name}"
         else:
@@ -38,6 +57,12 @@ class SqlAggregateFunction(SqlBase):
 
     @property
     def fully_qualified_name(self) -> str:
+        """
+        Get the fully qualified name of the aggregate function.
+
+        Returns:
+            str: The fully qualified name of the function.
+        """
         if self.column is None:
             return f"{self.name.upper()}(*)"
         else:
