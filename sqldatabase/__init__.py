@@ -1,7 +1,7 @@
 from .sqlcolumn import SqlColumn, SqlColumns, SqlColumnsWithID
 from .sqlcondition import SqlCondition
 from .sqldatabase import SqlDatabase
-from .sqldatatype import SqlDataType, SqlDataTypes
+from .sqldatatype import SqlDataType, SqlDataTypeWithParameter, SqlDataTypes
 from .sqlfunction import SqlAggregateFunction, SqlFunctions
 from .sqlitedatabase import SqliteDatabase
 from .sqljoin import ESqlJoinType, SqlJoin
@@ -11,6 +11,7 @@ from .sqlserverdatabase import SqlServerDatabase
 from .sqlstatement import (
     ESqlOrderByType,
     SqlCreateTableStatement,
+    SqlDropTableStatement,
     SqlInsertIntoStatement,
     SqlSelectStatement,
     SqlStatement,

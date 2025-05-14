@@ -11,16 +11,16 @@ if TYPE_CHECKING:
 
 
 class ESqlJoinType(SqlBaseEnum):
-    """
-    Enumeration for SQL join types.
+    """Enumeration for SQL join types.
 
     Attributes:
         CROSS (str): Represents a CROSS JOIN.
-        FULL (str): Represents a FULL JOIN.
+        FULL (str): Represents a FULL OUTER JOIN.
         INNER (str): Represents an INNER JOIN.
-        LEFT (str): Represents a LEFT JOIN.
-        RIGHT (str): Represents a RIGHT JOIN.
+        LEFT (str): Represents a LEFT OUTER JOIN.
+        RIGHT (str): Represents a RIGHT OUTER JOIN.
     """
+
     CROSS = "CROSS"
     FULL = "FULL"
     INNER = "INNER"
@@ -29,14 +29,14 @@ class ESqlJoinType(SqlBaseEnum):
 
 
 class SqlJoin(SqlBase):
-    """
-    Represents a SQL JOIN clause.
+    """Represents a SQL JOIN clause.
 
     Attributes:
         table (SqlTable): The table to join.
         type (ESqlJoinType): The type of join (e.g., INNER, LEFT).
         condition (SqlCondition): The condition for the join.
     """
+
     def __init__(
         self,
         table: SqlTable,
@@ -44,8 +44,7 @@ class SqlJoin(SqlBase):
         type_: ESqlJoinType = ESqlJoinType.INNER,
         operator: ESqlComparisonOperator = ESqlComparisonOperator.IS_EQUAL,
     ) -> None:
-        """
-        Initialize a SqlJoin instance.
+        """Initialize a SqlJoin instance.
 
         Args:
             table (SqlTable): The table to join.
@@ -58,8 +57,7 @@ class SqlJoin(SqlBase):
         self.condition = SqlCondition(columns[0], operator, *columns[1:])
 
     def to_sql(self) -> str:
-        """
-        Convert the join clause to its SQL representation.
+        """Convert the join clause to its SQL representation.
 
         Returns:
             str: The SQL representation of the join clause.

@@ -9,6 +9,15 @@ import sqlglot.expressions
 
 
 class ESqlDialect(Enum):
+    """Enumeration for supported SQL dialects.
+
+    Attributes:
+        MYSQL (str): Represents the MySQL dialect.
+        POSTGRESQL (str): Represents the PostgreSQL dialect.
+        SQLITE (str): Represents the SQLite dialect.
+        SQLSERVER (str): Represents the SQL Server dialect.
+    """
+
     MYSQL = "mysql"
     POSTGRESQL = "postgres"
     SQLITE = "sqlite"
@@ -16,18 +25,17 @@ class ESqlDialect(Enum):
 
 
 class SqlTranspiler:
-    """
-    Transpiles SQL queries between different SQL dialects.
+    """Transpiles SQL queries between different SQL dialects.
 
     Attributes:
         output_dialect (ESqlDialect): The target SQL dialect for transpilation.
         _cache (dict[tuple[str, str | None], sqlglot.Expression]): Cache for parsed SQL expressions.
     """
+
     _cache: dict[tuple[str, str | None], sqlglot.Expression] = {}
 
     def __init__(self, output_dialect: ESqlDialect) -> None:
-        """
-        Initialize a SqlTranspiler instance.
+        """Initialize a SqlTranspiler instance.
 
         Args:
             output_dialect (ESqlDialect): The target SQL dialect for transpilation.
@@ -41,8 +49,7 @@ class SqlTranspiler:
         input_dialect: ESqlDialect | None = None,
         pretty: bool = False,
     ) -> tuple[str, dict[str, Any] | Sequence]:
-        """
-        Transpile a SQL query and its parameters to the target dialect.
+        """Transpile a SQL query and its parameters to the target dialect.
 
         Args:
             sql (str): The SQL query to transpile.
@@ -63,8 +70,7 @@ class SqlTranspiler:
         input_dialect: ESqlDialect | None = None,
         pretty: bool = False,
     ) -> str:
-        """
-        Transpile a SQL query to the target dialect.
+        """Transpile a SQL query to the target dialect.
 
         Args:
             sql (str): The SQL query to transpile.
@@ -87,13 +93,11 @@ class SqlTranspiler:
         sql: str,
         parameters: dict[str, Any] | Sequence | None,
     ) -> dict[str, Any] | Sequence:
-        """
-        Transpile the parameters of a SQL query to the target dialect.
+        """Transpile the parameters of a SQL query to the target dialect.
 
         Args:
             sql (str): The SQL query.
             parameters (dict[str, Any] | Sequence | None): Parameters for the query.
-            input_dialect (ESqlDialect | None): The source SQL dialect.
 
         Returns:
             dict[str, Any] | Sequence: The transpiled parameters.
@@ -121,8 +125,7 @@ class SqlTranspiler:
     def _parse(
         self, sql: str, input_dialect: ESqlDialect | None = None
     ) -> sqlglot.Expression:
-        """
-        Parse a SQL query using the specified input dialect.
+        """Parse a SQL query using the specified input dialect.
 
         Args:
             sql (str): The SQL query to parse.
@@ -145,8 +148,7 @@ class SqlTranspiler:
 
     @staticmethod
     def _remove_string_literals(sql: str) -> str:
-        """
-        Remove string literals from a SQL query.
+        """Remove string literals from a SQL query.
 
         Args:
             sql (str): The SQL query.
@@ -161,8 +163,7 @@ class SqlTranspiler:
         return pattern.sub("", sql)
 
     def _find_named_parameters(self, sql: str) -> list[str]:
-        """
-        Find named parameters in a SQL query.
+        """Find named parameters in a SQL query.
 
         Args:
             sql (str): The SQL query.
@@ -174,8 +175,7 @@ class SqlTranspiler:
         return re.findall(r"(?<!:)[:@$][a-zA-Z_][a-zA-Z0-9_]*", preprocessed_sql)
 
     def _find_positional_placeholders(self, sql: str) -> list[str]:
-        """
-        Find positional placeholders in a SQL query.
+        """Find positional placeholders in a SQL query.
 
         Args:
             sql (str): The SQL query.
@@ -187,8 +187,7 @@ class SqlTranspiler:
         return re.findall(r"[$@]\d+|\?", preprocessed_sql)
 
     def _find_named_parameters_and_positional_placeholders(self, sql: str) -> list[str]:
-        """
-        Find both named parameters and positional placeholders in a SQL query.
+        """Find both named parameters and positional placeholders in a SQL query.
 
         Args:
             sql (str): The SQL query.
@@ -202,8 +201,7 @@ class SqlTranspiler:
 
     @staticmethod
     def _is_positional_placeholder(value: str) -> bool:
-        """
-        Check if a value is a positional placeholder.
+        """Check if a value is a positional placeholder.
 
         Args:
             value (str): The value to check.
@@ -215,8 +213,7 @@ class SqlTranspiler:
 
     @staticmethod
     def _is_named_parameter(value: str) -> bool:
-        """
-        Check if a value is a named parameter.
+        """Check if a value is a named parameter.
 
         Args:
             value (str): The value to check.
@@ -239,8 +236,7 @@ class SqlTranspiler:
         sql: str,
         parameters: dict[str, Any] | Sequence,
     ) -> dict[str, Any] | tuple:
-        """
-        Sort the parameters of a SQL query.
+        """Sort the parameters of a SQL query.
 
         Args:
             sql (str): The SQL query.
@@ -272,8 +268,7 @@ class SqlTranspiler:
         return parameters
 
     def _update_parsed_sql(self, parsed_sql: sqlglot.Expression) -> sqlglot.Expression:
-        """
-        Update the parsed SQL expression.
+        """Update the parsed SQL expression.
 
         Args:
             parsed_sql (sqlglot.Expression): The parsed SQL expression.
@@ -288,8 +283,7 @@ class SqlTranspiler:
     def _update_returning_and_output_clause(
         self, parsed_sql: sqlglot.Expression
     ) -> None:
-        """
-        Update the RETURNING and OUTPUT clauses in the parsed SQL expression.
+        """Update the RETURNING and OUTPUT clauses in the parsed SQL expression.
 
         Args:
             parsed_sql (sqlglot.Expression): The parsed SQL expression.
@@ -328,14 +322,13 @@ class SqlTranspiler:
                                 )
 
     def _update_transpiled_sql(
-        self, sql: str,
+        self,
+        sql: str,
     ) -> str:
-        """
-        Update the transpiled SQL query.
+        """Update the transpiled SQL query.
 
         Args:
             sql (str): The transpiled SQL query.
-            input_dialect (ESqlDialect | None, optional): The source SQL dialect. Defaults to None.
 
         Returns:
             str: The updated SQL query.
@@ -345,8 +338,7 @@ class SqlTranspiler:
         return sql
 
     def _update_named_parameters_and_positional_placeholders(self, sql: str) -> str:
-        """
-        Update named parameters and positional placeholders in a SQL query.
+        """Update named parameters and positional placeholders in a SQL query.
 
         Args:
             sql (str): The SQL query.
@@ -382,8 +374,7 @@ class SqlTranspiler:
         return sql
 
     def _update_output_clause(self, sql: str) -> str:
-        """
-        Update the OUTPUT clause in a SQL query.
+        """Update the OUTPUT clause in a SQL query.
 
         Args:
             sql (str): The SQL query.

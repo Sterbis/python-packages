@@ -21,14 +21,14 @@ T = TypeVar("T", bound=SqlColumns)
 
 
 class SqlTable(SqlBase, Generic[T]):
-    """
-    Represents a SQL table.
+    """Represents a SQL table.
 
     Attributes:
         name (str): The name of the table.
         columns (T): The columns in the table.
         database (SqlDatabase): The database the table belongs to.
     """
+
     name: str
     columns: T
     database: SqlDatabase
@@ -39,8 +39,7 @@ class SqlTable(SqlBase, Generic[T]):
         schema_name: str | None = None,
         columns: T | None = None,
     ):
-        """
-        Initialize a SqlTable instance.
+        """Initialize a SqlTable instance.
 
         Args:
             name (str | None, optional): The name of the table. Defaults to None.
@@ -68,8 +67,7 @@ class SqlTable(SqlBase, Generic[T]):
             column.table = self
 
     def __deepcopy__(self, memo) -> SqlTable:
-        """
-        Create a deep copy of the table.
+        """Create a deep copy of the table.
 
         Args:
             memo (dict): A dictionary of objects already copied during the current copying pass.
@@ -89,8 +87,7 @@ class SqlTable(SqlBase, Generic[T]):
 
     @property
     def fully_qualified_name(self) -> str:
-        """
-        Get the fully qualified name of the table.
+        """Get the fully qualified name of the table.
 
         Returns:
             str: The fully qualified name of the table.
@@ -99,8 +96,7 @@ class SqlTable(SqlBase, Generic[T]):
 
     @property
     def schema_name(self) -> str | None:
-        """
-        Get the schema name of the table.
+        """Get the schema name of the table.
 
         Returns:
             str | None: The schema name of the table.
@@ -109,8 +105,7 @@ class SqlTable(SqlBase, Generic[T]):
 
     @property
     def primary_key_column(self) -> SqlColumn | None:
-        """
-        Get the primary key column of the table.
+        """Get the primary key column of the table.
 
         Returns:
             SqlColumn | None: The primary key column of the table.
@@ -122,8 +117,7 @@ class SqlTable(SqlBase, Generic[T]):
 
     @property
     def foreign_key_columns(self) -> list[SqlColumn]:
-        """
-        Get the foreign key columns of the table.
+        """Get the foreign key columns of the table.
 
         Returns:
             list[SqlColumn]: The foreign key columns of the table.
@@ -132,8 +126,7 @@ class SqlTable(SqlBase, Generic[T]):
 
     @property
     def referenced_tables(self) -> list[SqlTable]:
-        """
-        Get the tables referenced by the foreign key columns of the table.
+        """Get the tables referenced by the foreign key columns of the table.
 
         Returns:
             list[SqlTable]: The tables referenced by the foreign key columns of the table.
@@ -141,13 +134,11 @@ class SqlTable(SqlBase, Generic[T]):
         return [
             column.reference.table
             for column in self.columns
-            if column.reference is not None
-            and column.reference.table is not None
+            if column.reference is not None and column.reference.table is not None
         ]
 
     def to_sql(self) -> str:
-        """
-        Convert the table to its SQL representation.
+        """Convert the table to its SQL representation.
 
         Returns:
             str: The SQL representation of the table.
@@ -155,8 +146,7 @@ class SqlTable(SqlBase, Generic[T]):
         return self.name
 
     def get_column(self, column_name) -> SqlColumn:
-        """
-        Get a column by name.
+        """Get a column by name.
 
         Args:
             column_name (str): The name of the column.
@@ -173,8 +163,7 @@ class SqlTable(SqlBase, Generic[T]):
         assert False, f"Column '{column_name}' not found in table '{self.name}'."
 
     def get_foreign_key_column(self, table: SqlTable) -> SqlColumn | None:
-        """
-        Get the foreign key column that references the specified table.
+        """Get the foreign key column that references the specified table.
 
         Args:
             table (SqlTable): The table to find the foreign key column for.
@@ -190,8 +179,7 @@ class SqlTable(SqlBase, Generic[T]):
     def join(
         self, table: SqlTable, join_type: ESqlJoinType = ESqlJoinType.INNER
     ) -> SqlJoin:
-        """
-        Create a join with another table.
+        """Create a join with another table.
 
         Args:
             table (SqlTable): The table to join with.
@@ -203,7 +191,9 @@ class SqlTable(SqlBase, Generic[T]):
         Raises:
             AssertionError: If no foreign key column is found to join the tables.
         """
-        foreign_key_column = table.get_foreign_key_column(self) or self.get_foreign_key_column(table)
+        foreign_key_column = table.get_foreign_key_column(
+            self
+        ) or self.get_foreign_key_column(table)
         assert foreign_key_column is not None, (
             f"Cannot join {self.fully_qualified_name} table with {table.fully_qualified_name} table."
             f" No foreign key column in {table.fully_qualified_name} table"
@@ -222,8 +212,7 @@ class SqlTable(SqlBase, Generic[T]):
         self,
         records: SqlRecord | Sequence[SqlRecord],
     ) -> list[int] | None:
-        """
-        Insert records into the table.
+        """Insert records into the table.
 
         Args:
             records (SqlRecord | Sequence[SqlRecord]): The records to insert.
@@ -247,8 +236,7 @@ class SqlTable(SqlBase, Generic[T]):
         limit: int | None = None,
         offset: int | None = None,
     ) -> list[SqlRecord]:
-        """
-        Select records from the table.
+        """Select records from the table.
 
         Args:
             *items (SqlColumn | SqlAggregateFunction): The columns or aggregate functions to select.
@@ -280,8 +268,7 @@ class SqlTable(SqlBase, Generic[T]):
     def update_records(
         self, record: SqlRecord, where_condition: SqlCondition
     ) -> list[int] | None:
-        """
-        Update records in the table.
+        """Update records in the table.
 
         Args:
             record (SqlRecord): The record with updated values.
@@ -296,8 +283,7 @@ class SqlTable(SqlBase, Generic[T]):
         self,
         where_condition: SqlCondition,
     ) -> list[int] | None:
-        """
-        Delete records from the table.
+        """Delete records from the table.
 
         Args:
             where_condition (SqlCondition): The condition to filter the records to delete.
@@ -308,8 +294,7 @@ class SqlTable(SqlBase, Generic[T]):
         return self.database.delete_records(self, where_condition)
 
     def record_count(self) -> int:
-        """
-        Get the count of records in the table.
+        """Get the count of records in the table.
 
         Returns:
             int: The count of records in the table.
@@ -318,4 +303,6 @@ class SqlTable(SqlBase, Generic[T]):
 
 
 class SqlTables(EnumLikeContainer[SqlTable]):
+    """Container for managing multiple SQL tables."""
+
     item_type = SqlTable

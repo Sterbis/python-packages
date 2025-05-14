@@ -14,17 +14,16 @@ if TYPE_CHECKING:
 
 
 class SqlRecord(MutableMapping):
-    """
-    Represents a record in a SQL table.
+    """Represents a record in a SQL table.
 
     Attributes:
         _data (dict[SqlColumn | SqlAggregateFunction, Any]): The data stored in the record.
     """
+
     def __init__(
         self, data: dict[SqlColumn | SqlAggregateFunction, Any] | None = None
     ) -> None:
-        """
-        Initialize a SqlRecord instance.
+        """Initialize a SqlRecord instance.
 
         Args:
             data (dict[SqlColumn | SqlAggregateFunction, Any] | None, optional): The data for the record. Defaults to None.
@@ -36,8 +35,7 @@ class SqlRecord(MutableMapping):
                 self[key] = value
 
     def __eq__(self, other: Any) -> bool:
-        """
-        Check if two SqlRecord instances are equal.
+        """Check if two SqlRecord instances are equal.
 
         Args:
             other (Any): The other instance to compare with.
@@ -48,8 +46,7 @@ class SqlRecord(MutableMapping):
         return isinstance(other, SqlRecord) and self._data == other._data
 
     def __getitem__(self, key: SqlColumn | SqlAggregateFunction | int) -> Any:
-        """
-        Get the value associated with a key.
+        """Get the value associated with a key.
 
         Args:
             key (SqlColumn | SqlAggregateFunction | int): The key to retrieve the value for.
@@ -63,8 +60,7 @@ class SqlRecord(MutableMapping):
     def __setitem__(
         self, key: SqlColumn | SqlAggregateFunction | int, value: Any
     ) -> None:
-        """
-        Set the value for a key.
+        """Set the value for a key.
 
         Args:
             key (SqlColumn | SqlAggregateFunction | int): The key to set the value for.
@@ -74,8 +70,7 @@ class SqlRecord(MutableMapping):
         self._data[resolved_key] = value
 
     def __delitem__(self, key: SqlColumn | SqlAggregateFunction | int) -> None:
-        """
-        Delete the value associated with a key.
+        """Delete the value associated with a key.
 
         Args:
             key (SqlColumn | SqlAggregateFunction | int): The key to delete the value for.
@@ -84,8 +79,7 @@ class SqlRecord(MutableMapping):
         del self._data[resolved_key]
 
     def __iter__(self) -> Iterator:
-        """
-        Return an iterator over the keys of the record.
+        """Return an iterator over the keys of the record.
 
         Returns:
             Iterator: An iterator over the keys of the record.
@@ -93,8 +87,7 @@ class SqlRecord(MutableMapping):
         return iter(self._data)
 
     def __len__(self) -> int:
-        """
-        Return the number of items in the record.
+        """Return the number of items in the record.
 
         Returns:
             int: The number of items in the record.
@@ -102,8 +95,7 @@ class SqlRecord(MutableMapping):
         return len(self._data)
 
     def __contains__(self, key: Any) -> bool:
-        """
-        Check if a key is in the record.
+        """Check if a key is in the record.
 
         Args:
             key (Any): The key to check.
@@ -115,8 +107,7 @@ class SqlRecord(MutableMapping):
         return key in self._data
 
     def _validate_key(self, key: Any) -> None:
-        """
-        Validate the key type.
+        """Validate the key type.
 
         Args:
             key (Any): The key to validate.
@@ -131,8 +122,7 @@ class SqlRecord(MutableMapping):
             )
 
     def _resolve_key(self, key: Any) -> SqlColumn | SqlAggregateFunction:
-        """
-        Resolve the key to a SqlColumn or SqlAggregateFunction.
+        """Resolve the key to a SqlColumn or SqlAggregateFunction.
 
         Args:
             key (Any): The key to resolve.
@@ -146,8 +136,7 @@ class SqlRecord(MutableMapping):
         return key
 
     def keys(self) -> KeysView[SqlColumn | SqlAggregateFunction]:
-        """
-        Return a view of the keys in the record.
+        """Return a view of the keys in the record.
 
         Returns:
             KeysView[SqlColumn | SqlAggregateFunction]: A view of the keys in the record.
@@ -155,8 +144,7 @@ class SqlRecord(MutableMapping):
         return self._data.keys()
 
     def values(self) -> ValuesView[Any]:
-        """
-        Return a view of the values in the record.
+        """Return a view of the values in the record.
 
         Returns:
             ValuesView[Any]: A view of the values in the record.
@@ -164,8 +152,7 @@ class SqlRecord(MutableMapping):
         return self._data.values()
 
     def items(self) -> ItemsView[SqlColumn | SqlAggregateFunction, Any]:
-        """
-        Return a view of the items in the record.
+        """Return a view of the items in the record.
 
         Returns:
             ItemsView[SqlColumn | SqlAggregateFunction, Any]: A view of the items in the record.
@@ -176,12 +163,10 @@ class SqlRecord(MutableMapping):
     def _parse_alias(
         alias: str,
     ) -> tuple[str | None, str | None, str | None]:
-        """
-        Parse an alias into its components.
+        """Parse an alias into its components.
 
         Args:
             alias (str): The alias to parse.
-            database (SqlDatabase): The database instance.
 
         Returns:
             tuple[str | None, str | None, str | None]: The function name, table fully qualified name, and column name.
@@ -206,8 +191,7 @@ class SqlRecord(MutableMapping):
     def _get_item_by_alias(
         cls, alias: str, database: SqlDatabase
     ) -> SqlColumn | SqlAggregateFunction:
-        """
-        Get an item by its alias.
+        """Get an item by its alias.
 
         Args:
             alias (str): The alias of the item.
@@ -216,9 +200,7 @@ class SqlRecord(MutableMapping):
         Returns:
             SqlColumn | SqlAggregateFunction: The item associated with the alias.
         """
-        function_name, table_fully_qualified_name, column_name = cls._parse_alias(
-            alias
-        )
+        function_name, table_fully_qualified_name, column_name = cls._parse_alias(alias)
         if table_fully_qualified_name is not None and column_name is not None:
             column = database.get_table(table_fully_qualified_name).get_column(
                 column_name
@@ -240,8 +222,7 @@ class SqlRecord(MutableMapping):
 
     @staticmethod
     def to_database_value(item: SqlColumn | SqlAggregateFunction, value: Any) -> Any:
-        """
-        Convert a value to its database representation.
+        """Convert a value to its database representation.
 
         Args:
             item (SqlColumn | SqlAggregateFunction): The item associated with the value.
@@ -261,8 +242,7 @@ class SqlRecord(MutableMapping):
 
     @staticmethod
     def from_database_value(item: SqlColumn | SqlAggregateFunction, value: Any) -> Any:
-        """
-        Convert a value from its database representation.
+        """Convert a value from its database representation.
 
         Args:
             item (SqlColumn | SqlAggregateFunction): The item associated with the value.
@@ -281,8 +261,7 @@ class SqlRecord(MutableMapping):
         return value
 
     def to_database_parameters(self) -> dict[str, Any]:
-        """
-        Convert the record to a dictionary of database parameters.
+        """Convert the record to a dictionary of database parameters.
 
         Returns:
             dict[str, Any]: The dictionary of database parameters.
@@ -297,8 +276,7 @@ class SqlRecord(MutableMapping):
     def from_database_row(
         cls, aliases: list[str], row: tuple | pyodbc.Row, database: SqlDatabase
     ) -> SqlRecord:
-        """
-        Create a SqlRecord instance from a database row.
+        """Create a SqlRecord instance from a database row.
 
         Args:
             aliases (list[str]): The list of aliases for the row.
@@ -316,8 +294,7 @@ class SqlRecord(MutableMapping):
 
     @staticmethod
     def to_json_value(item: SqlColumn | SqlAggregateFunction, value: Any) -> Any:
-        """
-        Convert a value to its JSON representation.
+        """Convert a value to its JSON representation.
 
         Args:
             item (SqlColumn | SqlAggregateFunction): The item associated with the value.
@@ -336,8 +313,7 @@ class SqlRecord(MutableMapping):
 
     @staticmethod
     def from_json_value(item: SqlColumn | SqlAggregateFunction, value: Any) -> Any:
-        """
-        Convert a value from its JSON representation.
+        """Convert a value from its JSON representation.
 
         Args:
             item (SqlColumn | SqlAggregateFunction): The item associated with the value.
@@ -360,8 +336,7 @@ class SqlRecord(MutableMapping):
         return value
 
     def to_json(self) -> dict[str, Any]:
-        """
-        Convert the record to a JSON-serializable dictionary.
+        """Convert the record to a JSON-serializable dictionary.
 
         Returns:
             dict[str, Any]: The JSON-serializable dictionary.
@@ -373,8 +348,7 @@ class SqlRecord(MutableMapping):
 
     @classmethod
     def from_json(cls, data: dict[str, Any], database: SqlDatabase) -> SqlRecord:
-        """
-        Create a SqlRecord instance from a JSON-serializable dictionary.
+        """Create a SqlRecord instance from a JSON-serializable dictionary.
 
         Args:
             data (dict[str, Any]): The JSON-serializable dictionary.

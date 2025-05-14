@@ -22,6 +22,7 @@ class SqlCondition(SqlBase):
         parameters (dict[str, Any]): Parameters for the condition.
         _values_to_sql (list[str]): SQL representations of the values.
     """
+
     def __init__(
         self,
         left: SqlColumn | SqlAggregateFunction | SqlSelectStatement,
@@ -155,16 +156,37 @@ class SqlCondition(SqlBase):
 
 
 class SqlCompoundCondition(SqlCondition):
+    """Represents a compound SQL condition combining two conditions with a logical operator.
+
+    Attributes:
+        left (SqlCondition): The left-hand side condition.
+        operator (ESqlLogicalOperator): The logical operator (e.g., AND, OR).
+        right (SqlCondition): The right-hand side condition.
+        parameters (dict[str, Any]): Combined parameters from both conditions.
+    """
+
     def __init__(
         self,
         left: SqlCondition,
         operator: ESqlLogicalOperator,
         right: SqlCondition,
     ) -> None:
+        """Initialize a SqlCompoundCondition instance.
+
+        Args:
+            left (SqlCondition): The left-hand side condition.
+            operator (ESqlLogicalOperator): The logical operator (e.g., AND, OR).
+            right (SqlCondition): The right-hand side condition.
+        """
         self.left = left  # type: ignore
         self.operator: ESqlLogicalOperator = operator  # type: ignore
         self.right = right  # type: ignore
         self.parameters = left.parameters | right.parameters
 
     def to_sql(self) -> str:
+        """Convert the compound condition to its SQL representation.
+
+        Returns:
+            str: The SQL representation of the compound condition.
+        """
         return f"({self.left} {self.operator} {self.right})"

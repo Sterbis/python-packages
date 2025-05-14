@@ -10,6 +10,7 @@ class SqlBase(ABC):
     Methods:
         to_sql: Abstract method to convert the object to its SQL representation.
     """
+
     def __str__(self) -> str:
         return self.to_sql()
 
@@ -30,6 +31,7 @@ class SqlBaseEnum(Enum):
     Methods:
         to_sql: Convert the enumeration value to its SQL representation.
     """
+
     def __str__(self) -> str:
         return self.to_sql()
 

@@ -117,8 +117,8 @@ class UserProgressTableColumns(SqlColumns):
         not_null=True,
         reference=MeaningsTable.columns.ID,
     )
-    ATTEMPTS = SqlColumn("attempts", SqlDataTypes.INTEGER, default=0)
-    CORRECT = SqlColumn("correct", SqlDataTypes.INTEGER, default=0)
+    ATTEMPTS = SqlColumn("attempts", SqlDataTypes.INTEGER, default_value=0)
+    CORRECT = SqlColumn("correct", SqlDataTypes.INTEGER, default_value=0)
     LAST_SEEN = SqlColumn("last_seen", SqlDataTypes.DATE)
 
 

@@ -131,96 +131,123 @@
 </span><span id="L-9"><a href="#L-9"><span class="linenos">  9</span></a>
 </span><span id="L-10"><a href="#L-10"><span class="linenos"> 10</span></a>
 </span><span id="L-11"><a href="#L-11"><span class="linenos"> 11</span></a><span class="k">class</span><span class="w"> </span><span class="nc">SqlVarcharDataType</span><span class="p">(</span><span class="n">SqlDataTypeWithParameter</span><span class="p">):</span>
-</span><span id="L-12"><a href="#L-12"><span class="linenos"> 12</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-13"><a href="#L-13"><span class="linenos"> 13</span></a>        <span class="n">SqlDataTypeWithParameter</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;VARCHAR&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">length</span><span class="p">)</span>
-</span><span id="L-14"><a href="#L-14"><span class="linenos"> 14</span></a>
-</span><span id="L-15"><a href="#L-15"><span class="linenos"> 15</span></a>
-</span><span id="L-16"><a href="#L-16"><span class="linenos"> 16</span></a><span class="k">class</span><span class="w"> </span><span class="nc">SqlNVarcharDataType</span><span class="p">(</span><span class="n">SqlDataTypeWithParameter</span><span class="p">):</span>
-</span><span id="L-17"><a href="#L-17"><span class="linenos"> 17</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-18"><a href="#L-18"><span class="linenos"> 18</span></a>        <span class="n">SqlDataTypeWithParameter</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;NVARCHAR&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">length</span><span class="p">)</span>
-</span><span id="L-19"><a href="#L-19"><span class="linenos"> 19</span></a>
-</span><span id="L-20"><a href="#L-20"><span class="linenos"> 20</span></a>
-</span><span id="L-21"><a href="#L-21"><span class="linenos"> 21</span></a><span class="k">class</span><span class="w"> </span><span class="nc">SqlServerDataTypes</span><span class="p">(</span><span class="n">SqlDataTypes</span><span class="p">):</span>
-</span><span id="L-22"><a href="#L-22"><span class="linenos"> 22</span></a>    <span class="n">NVARCHAR</span> <span class="o">=</span> <span class="n">SqlNVarcharDataType</span>
-</span><span id="L-23"><a href="#L-23"><span class="linenos"> 23</span></a>    <span class="n">VARCHAR</span> <span class="o">=</span> <span class="n">SqlVarcharDataType</span>
-</span><span id="L-24"><a href="#L-24"><span class="linenos"> 24</span></a>
+</span><span id="L-12"><a href="#L-12"><span class="linenos"> 12</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents the SQL VARCHAR data type with a specified length.&quot;&quot;&quot;</span>
+</span><span id="L-13"><a href="#L-13"><span class="linenos"> 13</span></a>
+</span><span id="L-14"><a href="#L-14"><span class="linenos"> 14</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-15"><a href="#L-15"><span class="linenos"> 15</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a SqlVarcharDataType instance.</span>
+</span><span id="L-16"><a href="#L-16"><span class="linenos"> 16</span></a>
+</span><span id="L-17"><a href="#L-17"><span class="linenos"> 17</span></a><span class="sd">        Args:</span>
+</span><span id="L-18"><a href="#L-18"><span class="linenos"> 18</span></a><span class="sd">            length (int | str): The maximum length of the VARCHAR data type.</span>
+</span><span id="L-19"><a href="#L-19"><span class="linenos"> 19</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="L-20"><a href="#L-20"><span class="linenos"> 20</span></a>        <span class="n">SqlDataTypeWithParameter</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;VARCHAR&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">length</span><span class="p">)</span>
+</span><span id="L-21"><a href="#L-21"><span class="linenos"> 21</span></a>
+</span><span id="L-22"><a href="#L-22"><span class="linenos"> 22</span></a>
+</span><span id="L-23"><a href="#L-23"><span class="linenos"> 23</span></a><span class="k">class</span><span class="w"> </span><span class="nc">SqlNVarcharDataType</span><span class="p">(</span><span class="n">SqlDataTypeWithParameter</span><span class="p">):</span>
+</span><span id="L-24"><a href="#L-24"><span class="linenos"> 24</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents the SQL NVARCHAR data type with a specified length.&quot;&quot;&quot;</span>
 </span><span id="L-25"><a href="#L-25"><span class="linenos"> 25</span></a>
-</span><span id="L-26"><a href="#L-26"><span class="linenos"> 26</span></a><span class="k">class</span><span class="w"> </span><span class="nc">SqlServerDatabase</span><span class="p">(</span><span class="n">SqlDatabase</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
-</span><span id="L-27"><a href="#L-27"><span class="linenos"> 27</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-28"><a href="#L-28"><span class="linenos"> 28</span></a><span class="sd">    Represents a SQL Server database.</span>
-</span><span id="L-29"><a href="#L-29"><span class="linenos"> 29</span></a>
-</span><span id="L-30"><a href="#L-30"><span class="linenos"> 30</span></a><span class="sd">    Attributes:</span>
-</span><span id="L-31"><a href="#L-31"><span class="linenos"> 31</span></a><span class="sd">        data_types (SqlServerDataTypes): The data types supported by SQL Server.</span>
-</span><span id="L-32"><a href="#L-32"><span class="linenos"> 32</span></a><span class="sd">        dialect (ESqlDialect): The SQL dialect for SQL Server.</span>
-</span><span id="L-33"><a href="#L-33"><span class="linenos"> 33</span></a><span class="sd">        default_schema_name (str): The default schema name (e.g., &quot;dbo&quot;).</span>
-</span><span id="L-34"><a href="#L-34"><span class="linenos"> 34</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="L-35"><a href="#L-35"><span class="linenos"> 35</span></a>    <span class="n">dialect</span> <span class="o">=</span> <span class="n">ESqlDialect</span><span class="o">.</span><span class="n">SQLSERVER</span>
-</span><span id="L-36"><a href="#L-36"><span class="linenos"> 36</span></a>    <span class="n">default_schema_name</span> <span class="o">=</span> <span class="s2">&quot;dbo&quot;</span>
+</span><span id="L-26"><a href="#L-26"><span class="linenos"> 26</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-27"><a href="#L-27"><span class="linenos"> 27</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a SqlNVarcharDataType instance.</span>
+</span><span id="L-28"><a href="#L-28"><span class="linenos"> 28</span></a>
+</span><span id="L-29"><a href="#L-29"><span class="linenos"> 29</span></a><span class="sd">        Args:</span>
+</span><span id="L-30"><a href="#L-30"><span class="linenos"> 30</span></a><span class="sd">            length (int | str): The maximum length of the NVARCHAR data type.</span>
+</span><span id="L-31"><a href="#L-31"><span class="linenos"> 31</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="L-32"><a href="#L-32"><span class="linenos"> 32</span></a>        <span class="n">SqlDataTypeWithParameter</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;NVARCHAR&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">length</span><span class="p">)</span>
+</span><span id="L-33"><a href="#L-33"><span class="linenos"> 33</span></a>
+</span><span id="L-34"><a href="#L-34"><span class="linenos"> 34</span></a>
+</span><span id="L-35"><a href="#L-35"><span class="linenos"> 35</span></a><span class="k">class</span><span class="w"> </span><span class="nc">SqlServerDataTypes</span><span class="p">(</span><span class="n">SqlDataTypes</span><span class="p">):</span>
+</span><span id="L-36"><a href="#L-36"><span class="linenos"> 36</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents SQL Server-specific data types.</span>
 </span><span id="L-37"><a href="#L-37"><span class="linenos"> 37</span></a>
-</span><span id="L-38"><a href="#L-38"><span class="linenos"> 38</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-</span><span id="L-39"><a href="#L-39"><span class="linenos"> 39</span></a>        <span class="bp">self</span><span class="p">,</span>
-</span><span id="L-40"><a href="#L-40"><span class="linenos"> 40</span></a>        <span class="n">server</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-</span><span id="L-41"><a href="#L-41"><span class="linenos"> 41</span></a>        <span class="n">database</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-</span><span id="L-42"><a href="#L-42"><span class="linenos"> 42</span></a>        <span class="n">driver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ODBC Driver 17 for SQL Server&quot;</span><span class="p">,</span>
-</span><span id="L-43"><a href="#L-43"><span class="linenos"> 43</span></a>        <span class="n">trusted_connection</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-</span><span id="L-44"><a href="#L-44"><span class="linenos"> 44</span></a>        <span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="L-45"><a href="#L-45"><span class="linenos"> 45</span></a>        <span class="n">password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="L-46"><a href="#L-46"><span class="linenos"> 46</span></a>        <span class="n">autocommit</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span id="L-47"><a href="#L-47"><span class="linenos"> 47</span></a>    <span class="p">):</span>
-</span><span id="L-48"><a href="#L-48"><span class="linenos"> 48</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-49"><a href="#L-49"><span class="linenos"> 49</span></a><span class="sd">        Initialize a SqlServerDatabase instance.</span>
-</span><span id="L-50"><a href="#L-50"><span class="linenos"> 50</span></a>
-</span><span id="L-51"><a href="#L-51"><span class="linenos"> 51</span></a><span class="sd">        Args:</span>
-</span><span id="L-52"><a href="#L-52"><span class="linenos"> 52</span></a><span class="sd">            server (str): The server address.</span>
-</span><span id="L-53"><a href="#L-53"><span class="linenos"> 53</span></a><span class="sd">            database (str): The database name.</span>
-</span><span id="L-54"><a href="#L-54"><span class="linenos"> 54</span></a><span class="sd">            driver (str, optional): The ODBC driver. Defaults to &quot;ODBC Driver 17 for SQL Server&quot;.</span>
-</span><span id="L-55"><a href="#L-55"><span class="linenos"> 55</span></a><span class="sd">            trusted_connection (bool, optional): Whether to use a trusted connection. Defaults to True.</span>
-</span><span id="L-56"><a href="#L-56"><span class="linenos"> 56</span></a><span class="sd">            user_id (str | None, optional): The user ID for authentication. Defaults to None.</span>
-</span><span id="L-57"><a href="#L-57"><span class="linenos"> 57</span></a><span class="sd">            password (str | None, optional): The password for authentication. Defaults to None.</span>
-</span><span id="L-58"><a href="#L-58"><span class="linenos"> 58</span></a><span class="sd">            autocommit (bool, optional): Whether to enable autocommit. Defaults to False.</span>
-</span><span id="L-59"><a href="#L-59"><span class="linenos"> 59</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="L-60"><a href="#L-60"><span class="linenos"> 60</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="n">server</span>
-</span><span id="L-61"><a href="#L-61"><span class="linenos"> 61</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">database</span> <span class="o">=</span> <span class="n">database</span>
-</span><span id="L-62"><a href="#L-62"><span class="linenos"> 62</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">driver</span> <span class="o">=</span> <span class="n">driver</span>
-</span><span id="L-63"><a href="#L-63"><span class="linenos"> 63</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">trusted_connection</span> <span class="o">=</span> <span class="n">trusted_connection</span>
-</span><span id="L-64"><a href="#L-64"><span class="linenos"> 64</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span> <span class="o">=</span> <span class="n">user_id</span>
-</span><span id="L-65"><a href="#L-65"><span class="linenos"> 65</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">password</span>
-</span><span id="L-66"><a href="#L-66"><span class="linenos"> 66</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">connection_string</span> <span class="o">=</span> <span class="p">(</span>
-</span><span id="L-67"><a href="#L-67"><span class="linenos"> 67</span></a>            <span class="sa">f</span><span class="s2">&quot;Driver=</span><span class="se">{{</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="si">}</span><span class="se">}}</span><span class="s2">;&quot;</span>
-</span><span id="L-68"><a href="#L-68"><span class="linenos"> 68</span></a>            <span class="sa">f</span><span class="s2">&quot;Server=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="si">}</span><span class="s2">;&quot;</span>
-</span><span id="L-69"><a href="#L-69"><span class="linenos"> 69</span></a>            <span class="sa">f</span><span class="s2">&quot;Database=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">database</span><span class="si">}</span><span class="s2">;&quot;</span>
-</span><span id="L-70"><a href="#L-70"><span class="linenos"> 70</span></a>        <span class="p">)</span>
-</span><span id="L-71"><a href="#L-71"><span class="linenos"> 71</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trusted_connection</span><span class="p">:</span>
-</span><span id="L-72"><a href="#L-72"><span class="linenos"> 72</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">connection_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;Trusted_Connection=</span><span class="si">{</span><span class="s1">&#39;Yes&#39;</span><span class="si">}</span><span class="s2">;&quot;</span>
-</span><span id="L-73"><a href="#L-73"><span class="linenos"> 73</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span><span class="p">:</span>
-</span><span id="L-74"><a href="#L-74"><span class="linenos"> 74</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">connection_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;UID=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">user_id</span><span class="si">}</span><span class="s2">;&quot;</span>
-</span><span id="L-75"><a href="#L-75"><span class="linenos"> 75</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span><span class="p">:</span>
-</span><span id="L-76"><a href="#L-76"><span class="linenos"> 76</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">connection_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;PWD=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">password</span><span class="si">}</span><span class="s2">;&quot;</span>
-</span><span id="L-77"><a href="#L-77"><span class="linenos"> 77</span></a>
-</span><span id="L-78"><a href="#L-78"><span class="linenos"> 78</span></a>        <span class="n">connection</span> <span class="o">=</span> <span class="n">pyodbc</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connection_string</span><span class="p">,</span> <span class="n">autocommit</span><span class="o">=</span><span class="n">autocommit</span><span class="p">)</span>
-</span><span id="L-79"><a href="#L-79"><span class="linenos"> 79</span></a>        <span class="n">SqlDatabase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database</span><span class="p">,</span> <span class="n">connection</span><span class="p">)</span>
-</span><span id="L-80"><a href="#L-80"><span class="linenos"> 80</span></a>
-</span><span id="L-81"><a href="#L-81"><span class="linenos"> 81</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_table_fully_qualified_name</span><span class="p">(</span>
-</span><span id="L-82"><a href="#L-82"><span class="linenos"> 82</span></a>        <span class="bp">self</span><span class="p">,</span> <span class="n">table_fully_qualified_name</span><span class="p">:</span> <span class="nb">str</span>
-</span><span id="L-83"><a href="#L-83"><span class="linenos"> 83</span></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
-</span><span id="L-84"><a href="#L-84"><span class="linenos"> 84</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-85"><a href="#L-85"><span class="linenos"> 85</span></a><span class="sd">        Parse a fully qualified table name into its components.</span>
-</span><span id="L-86"><a href="#L-86"><span class="linenos"> 86</span></a>
-</span><span id="L-87"><a href="#L-87"><span class="linenos"> 87</span></a><span class="sd">        Args:</span>
-</span><span id="L-88"><a href="#L-88"><span class="linenos"> 88</span></a><span class="sd">            table_fully_qualified_name (str): The fully qualified table name.</span>
-</span><span id="L-89"><a href="#L-89"><span class="linenos"> 89</span></a>
-</span><span id="L-90"><a href="#L-90"><span class="linenos"> 90</span></a><span class="sd">        Returns:</span>
-</span><span id="L-91"><a href="#L-91"><span class="linenos"> 91</span></a><span class="sd">            tuple[str | None, str | None, str | None]: The database name, schema name, and table name.</span>
-</span><span id="L-92"><a href="#L-92"><span class="linenos"> 92</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="L-93"><a href="#L-93"><span class="linenos"> 93</span></a>        <span class="n">table_fully_qualified_name_parts</span> <span class="o">=</span> <span class="n">table_fully_qualified_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
-</span><span id="L-94"><a href="#L-94"><span class="linenos"> 94</span></a>        <span class="k">assert</span> <span class="p">(</span>
-</span><span id="L-95"><a href="#L-95"><span class="linenos"> 95</span></a>            <span class="nb">len</span><span class="p">(</span><span class="n">table_fully_qualified_name_parts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span>
-</span><span id="L-96"><a href="#L-96"><span class="linenos"> 96</span></a>        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Unexpected table fully qualified name: </span><span class="si">{</span><span class="n">table_fully_qualified_name</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span id="L-97"><a href="#L-97"><span class="linenos"> 97</span></a>        <span class="n">database_name</span><span class="p">,</span> <span class="n">schema_name</span><span class="p">,</span> <span class="n">table_name</span> <span class="o">=</span> <span class="n">table_fully_qualified_name_parts</span>
-</span><span id="L-98"><a href="#L-98"><span class="linenos"> 98</span></a>        <span class="k">return</span> <span class="n">database_name</span><span class="p">,</span> <span class="n">schema_name</span><span class="p">,</span> <span class="n">table_name</span>
-</span><span id="L-99"><a href="#L-99"><span class="linenos"> 99</span></a>
-</span><span id="L-100"><a href="#L-100"><span class="linenos">100</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_table_fully_qualified_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="p">:</span> <span class="n">SqlTable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span id="L-101"><a href="#L-101"><span class="linenos">101</span></a>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">table</span><span class="o">.</span><span class="n">schema_name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">table</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="L-38"><a href="#L-38"><span class="linenos"> 38</span></a><span class="sd">    Attributes:</span>
+</span><span id="L-39"><a href="#L-39"><span class="linenos"> 39</span></a><span class="sd">        NVARCHAR (type): Represents the NVARCHAR data type.</span>
+</span><span id="L-40"><a href="#L-40"><span class="linenos"> 40</span></a><span class="sd">        VARCHAR (type): Represents the VARCHAR data type.</span>
+</span><span id="L-41"><a href="#L-41"><span class="linenos"> 41</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-42"><a href="#L-42"><span class="linenos"> 42</span></a>
+</span><span id="L-43"><a href="#L-43"><span class="linenos"> 43</span></a>    <span class="n">NVARCHAR</span> <span class="o">=</span> <span class="n">SqlNVarcharDataType</span>
+</span><span id="L-44"><a href="#L-44"><span class="linenos"> 44</span></a>    <span class="n">VARCHAR</span> <span class="o">=</span> <span class="n">SqlVarcharDataType</span>
+</span><span id="L-45"><a href="#L-45"><span class="linenos"> 45</span></a>
+</span><span id="L-46"><a href="#L-46"><span class="linenos"> 46</span></a>
+</span><span id="L-47"><a href="#L-47"><span class="linenos"> 47</span></a><span class="k">class</span><span class="w"> </span><span class="nc">SqlServerDatabase</span><span class="p">(</span><span class="n">SqlDatabase</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+</span><span id="L-48"><a href="#L-48"><span class="linenos"> 48</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents a SQL Server database.</span>
+</span><span id="L-49"><a href="#L-49"><span class="linenos"> 49</span></a>
+</span><span id="L-50"><a href="#L-50"><span class="linenos"> 50</span></a><span class="sd">    Attributes:</span>
+</span><span id="L-51"><a href="#L-51"><span class="linenos"> 51</span></a><span class="sd">        dialect (ESqlDialect): The SQL dialect for SQL Server.</span>
+</span><span id="L-52"><a href="#L-52"><span class="linenos"> 52</span></a><span class="sd">        default_schema_name (str): The default schema name (e.g., &quot;dbo&quot;).</span>
+</span><span id="L-53"><a href="#L-53"><span class="linenos"> 53</span></a><span class="sd">        connection_string (str): The connection string used to connect to the database.</span>
+</span><span id="L-54"><a href="#L-54"><span class="linenos"> 54</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-55"><a href="#L-55"><span class="linenos"> 55</span></a>
+</span><span id="L-56"><a href="#L-56"><span class="linenos"> 56</span></a>    <span class="n">dialect</span> <span class="o">=</span> <span class="n">ESqlDialect</span><span class="o">.</span><span class="n">SQLSERVER</span>
+</span><span id="L-57"><a href="#L-57"><span class="linenos"> 57</span></a>    <span class="n">default_schema_name</span> <span class="o">=</span> <span class="s2">&quot;dbo&quot;</span>
+</span><span id="L-58"><a href="#L-58"><span class="linenos"> 58</span></a>
+</span><span id="L-59"><a href="#L-59"><span class="linenos"> 59</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+</span><span id="L-60"><a href="#L-60"><span class="linenos"> 60</span></a>        <span class="bp">self</span><span class="p">,</span>
+</span><span id="L-61"><a href="#L-61"><span class="linenos"> 61</span></a>        <span class="n">server</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span id="L-62"><a href="#L-62"><span class="linenos"> 62</span></a>        <span class="n">database</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span id="L-63"><a href="#L-63"><span class="linenos"> 63</span></a>        <span class="n">driver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ODBC Driver 17 for SQL Server&quot;</span><span class="p">,</span>
+</span><span id="L-64"><a href="#L-64"><span class="linenos"> 64</span></a>        <span class="n">trusted_connection</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+</span><span id="L-65"><a href="#L-65"><span class="linenos"> 65</span></a>        <span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="L-66"><a href="#L-66"><span class="linenos"> 66</span></a>        <span class="n">password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="L-67"><a href="#L-67"><span class="linenos"> 67</span></a>        <span class="n">autocommit</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span id="L-68"><a href="#L-68"><span class="linenos"> 68</span></a>    <span class="p">):</span>
+</span><span id="L-69"><a href="#L-69"><span class="linenos"> 69</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a SqlServerDatabase instance.</span>
+</span><span id="L-70"><a href="#L-70"><span class="linenos"> 70</span></a>
+</span><span id="L-71"><a href="#L-71"><span class="linenos"> 71</span></a><span class="sd">        Args:</span>
+</span><span id="L-72"><a href="#L-72"><span class="linenos"> 72</span></a><span class="sd">            server (str): The server address.</span>
+</span><span id="L-73"><a href="#L-73"><span class="linenos"> 73</span></a><span class="sd">            database (str): The database name.</span>
+</span><span id="L-74"><a href="#L-74"><span class="linenos"> 74</span></a><span class="sd">            driver (str, optional): The ODBC driver. Defaults to &quot;ODBC Driver 17 for SQL Server&quot;.</span>
+</span><span id="L-75"><a href="#L-75"><span class="linenos"> 75</span></a><span class="sd">            trusted_connection (bool, optional): Whether to use a trusted connection. Defaults to True.</span>
+</span><span id="L-76"><a href="#L-76"><span class="linenos"> 76</span></a><span class="sd">            user_id (str | None, optional): The user ID for authentication. Defaults to None.</span>
+</span><span id="L-77"><a href="#L-77"><span class="linenos"> 77</span></a><span class="sd">            password (str | None, optional): The password for authentication. Defaults to None.</span>
+</span><span id="L-78"><a href="#L-78"><span class="linenos"> 78</span></a><span class="sd">            autocommit (bool, optional): Whether to enable autocommit. Defaults to False.</span>
+</span><span id="L-79"><a href="#L-79"><span class="linenos"> 79</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="L-80"><a href="#L-80"><span class="linenos"> 80</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="n">server</span>
+</span><span id="L-81"><a href="#L-81"><span class="linenos"> 81</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">database</span> <span class="o">=</span> <span class="n">database</span>
+</span><span id="L-82"><a href="#L-82"><span class="linenos"> 82</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">driver</span> <span class="o">=</span> <span class="n">driver</span>
+</span><span id="L-83"><a href="#L-83"><span class="linenos"> 83</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">trusted_connection</span> <span class="o">=</span> <span class="n">trusted_connection</span>
+</span><span id="L-84"><a href="#L-84"><span class="linenos"> 84</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span> <span class="o">=</span> <span class="n">user_id</span>
+</span><span id="L-85"><a href="#L-85"><span class="linenos"> 85</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">password</span>
+</span><span id="L-86"><a href="#L-86"><span class="linenos"> 86</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">connection_string</span> <span class="o">=</span> <span class="p">(</span>
+</span><span id="L-87"><a href="#L-87"><span class="linenos"> 87</span></a>            <span class="sa">f</span><span class="s2">&quot;Driver=</span><span class="se">{{</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="si">}</span><span class="se">}}</span><span class="s2">;&quot;</span>
+</span><span id="L-88"><a href="#L-88"><span class="linenos"> 88</span></a>            <span class="sa">f</span><span class="s2">&quot;Server=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="si">}</span><span class="s2">;&quot;</span>
+</span><span id="L-89"><a href="#L-89"><span class="linenos"> 89</span></a>            <span class="sa">f</span><span class="s2">&quot;Database=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">database</span><span class="si">}</span><span class="s2">;&quot;</span>
+</span><span id="L-90"><a href="#L-90"><span class="linenos"> 90</span></a>        <span class="p">)</span>
+</span><span id="L-91"><a href="#L-91"><span class="linenos"> 91</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trusted_connection</span><span class="p">:</span>
+</span><span id="L-92"><a href="#L-92"><span class="linenos"> 92</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">connection_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;Trusted_Connection=</span><span class="si">{</span><span class="s1">&#39;Yes&#39;</span><span class="si">}</span><span class="s2">;&quot;</span>
+</span><span id="L-93"><a href="#L-93"><span class="linenos"> 93</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span><span class="p">:</span>
+</span><span id="L-94"><a href="#L-94"><span class="linenos"> 94</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">connection_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;UID=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">user_id</span><span class="si">}</span><span class="s2">;&quot;</span>
+</span><span id="L-95"><a href="#L-95"><span class="linenos"> 95</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span><span class="p">:</span>
+</span><span id="L-96"><a href="#L-96"><span class="linenos"> 96</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">connection_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;PWD=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">password</span><span class="si">}</span><span class="s2">;&quot;</span>
+</span><span id="L-97"><a href="#L-97"><span class="linenos"> 97</span></a>
+</span><span id="L-98"><a href="#L-98"><span class="linenos"> 98</span></a>        <span class="n">connection</span> <span class="o">=</span> <span class="n">pyodbc</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connection_string</span><span class="p">,</span> <span class="n">autocommit</span><span class="o">=</span><span class="n">autocommit</span><span class="p">)</span>
+</span><span id="L-99"><a href="#L-99"><span class="linenos"> 99</span></a>        <span class="n">SqlDatabase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database</span><span class="p">,</span> <span class="n">connection</span><span class="p">)</span>
+</span><span id="L-100"><a href="#L-100"><span class="linenos">100</span></a>
+</span><span id="L-101"><a href="#L-101"><span class="linenos">101</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_table_fully_qualified_name</span><span class="p">(</span>
+</span><span id="L-102"><a href="#L-102"><span class="linenos">102</span></a>        <span class="bp">self</span><span class="p">,</span> <span class="n">table_fully_qualified_name</span><span class="p">:</span> <span class="nb">str</span>
+</span><span id="L-103"><a href="#L-103"><span class="linenos">103</span></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
+</span><span id="L-104"><a href="#L-104"><span class="linenos">104</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse a fully qualified table name into its components.</span>
+</span><span id="L-105"><a href="#L-105"><span class="linenos">105</span></a>
+</span><span id="L-106"><a href="#L-106"><span class="linenos">106</span></a><span class="sd">        Args:</span>
+</span><span id="L-107"><a href="#L-107"><span class="linenos">107</span></a><span class="sd">            table_fully_qualified_name (str): The fully qualified table name.</span>
+</span><span id="L-108"><a href="#L-108"><span class="linenos">108</span></a>
+</span><span id="L-109"><a href="#L-109"><span class="linenos">109</span></a><span class="sd">        Returns:</span>
+</span><span id="L-110"><a href="#L-110"><span class="linenos">110</span></a><span class="sd">            tuple[str | None, str | None, str | None]: The database name, schema name, and table name.</span>
+</span><span id="L-111"><a href="#L-111"><span class="linenos">111</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="L-112"><a href="#L-112"><span class="linenos">112</span></a>        <span class="n">table_fully_qualified_name_parts</span> <span class="o">=</span> <span class="n">table_fully_qualified_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+</span><span id="L-113"><a href="#L-113"><span class="linenos">113</span></a>        <span class="k">assert</span> <span class="p">(</span>
+</span><span id="L-114"><a href="#L-114"><span class="linenos">114</span></a>            <span class="nb">len</span><span class="p">(</span><span class="n">table_fully_qualified_name_parts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span>
+</span><span id="L-115"><a href="#L-115"><span class="linenos">115</span></a>        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Unexpected table fully qualified name: </span><span class="si">{</span><span class="n">table_fully_qualified_name</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="L-116"><a href="#L-116"><span class="linenos">116</span></a>        <span class="n">database_name</span><span class="p">,</span> <span class="n">schema_name</span><span class="p">,</span> <span class="n">table_name</span> <span class="o">=</span> <span class="n">table_fully_qualified_name_parts</span>
+</span><span id="L-117"><a href="#L-117"><span class="linenos">117</span></a>        <span class="k">return</span> <span class="n">database_name</span><span class="p">,</span> <span class="n">schema_name</span><span class="p">,</span> <span class="n">table_name</span>
+</span><span id="L-118"><a href="#L-118"><span class="linenos">118</span></a>
+</span><span id="L-119"><a href="#L-119"><span class="linenos">119</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_table_fully_qualified_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="p">:</span> <span class="n">SqlTable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="L-120"><a href="#L-120"><span class="linenos">120</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the fully qualified name of a table.</span>
+</span><span id="L-121"><a href="#L-121"><span class="linenos">121</span></a>
+</span><span id="L-122"><a href="#L-122"><span class="linenos">122</span></a><span class="sd">        Args:</span>
+</span><span id="L-123"><a href="#L-123"><span class="linenos">123</span></a><span class="sd">            table (SqlTable): The table for which to get the fully qualified name.</span>
+</span><span id="L-124"><a href="#L-124"><span class="linenos">124</span></a>
+</span><span id="L-125"><a href="#L-125"><span class="linenos">125</span></a><span class="sd">        Returns:</span>
+</span><span id="L-126"><a href="#L-126"><span class="linenos">126</span></a><span class="sd">            str: The fully qualified name of the table in the format &#39;&lt;database&gt;.&lt;schema&gt;.&lt;table&gt;&#39;.</span>
+</span><span id="L-127"><a href="#L-127"><span class="linenos">127</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="L-128"><a href="#L-128"><span class="linenos">128</span></a>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">table</span><span class="o">.</span><span class="n">schema_name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">table</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
 </span></pre></div>
 
 
@@ -237,21 +264,19 @@
     </div>
     <a class="headerlink" href="#SqlVarcharDataType"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="SqlVarcharDataType-12"><a href="#SqlVarcharDataType-12"><span class="linenos">12</span></a><span class="k">class</span><span class="w"> </span><span class="nc">SqlVarcharDataType</span><span class="p">(</span><span class="n">SqlDataTypeWithParameter</span><span class="p">):</span>
-</span><span id="SqlVarcharDataType-13"><a href="#SqlVarcharDataType-13"><span class="linenos">13</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="SqlVarcharDataType-14"><a href="#SqlVarcharDataType-14"><span class="linenos">14</span></a>        <span class="n">SqlDataTypeWithParameter</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;VARCHAR&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">length</span><span class="p">)</span>
+</span><span id="SqlVarcharDataType-13"><a href="#SqlVarcharDataType-13"><span class="linenos">13</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents the SQL VARCHAR data type with a specified length.&quot;&quot;&quot;</span>
+</span><span id="SqlVarcharDataType-14"><a href="#SqlVarcharDataType-14"><span class="linenos">14</span></a>
+</span><span id="SqlVarcharDataType-15"><a href="#SqlVarcharDataType-15"><span class="linenos">15</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="SqlVarcharDataType-16"><a href="#SqlVarcharDataType-16"><span class="linenos">16</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a SqlVarcharDataType instance.</span>
+</span><span id="SqlVarcharDataType-17"><a href="#SqlVarcharDataType-17"><span class="linenos">17</span></a>
+</span><span id="SqlVarcharDataType-18"><a href="#SqlVarcharDataType-18"><span class="linenos">18</span></a><span class="sd">        Args:</span>
+</span><span id="SqlVarcharDataType-19"><a href="#SqlVarcharDataType-19"><span class="linenos">19</span></a><span class="sd">            length (int | str): The maximum length of the VARCHAR data type.</span>
+</span><span id="SqlVarcharDataType-20"><a href="#SqlVarcharDataType-20"><span class="linenos">20</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="SqlVarcharDataType-21"><a href="#SqlVarcharDataType-21"><span class="linenos">21</span></a>        <span class="n">SqlDataTypeWithParameter</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;VARCHAR&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">length</span><span class="p">)</span>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Represents a SQL data type.</p>
-
-<h6 id="attributes">Attributes:</h6>
-
-<ul>
-<li><strong>name (str):</strong>  The name of the data type.</li>
-<li><strong>type (type):</strong>  The Python type corresponding to the SQL data type.</li>
-<li><strong>to_database_converter (Callable[[Any], Any] | None):</strong>  Function to convert values to database format.</li>
-<li><strong>from_database_converter (Callable[[Any], Any] | None):</strong>  Function to convert values from database format.</li>
-</ul>
+            <div class="docstring"><p>Represents the SQL VARCHAR data type with a specified length.</p>
 </div>
 
 
@@ -265,20 +290,22 @@
 
     </div>
     <a class="headerlink" href="#SqlVarcharDataType.__init__"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="SqlVarcharDataType.__init__-13"><a href="#SqlVarcharDataType.__init__-13"><span class="linenos">13</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="SqlVarcharDataType.__init__-14"><a href="#SqlVarcharDataType.__init__-14"><span class="linenos">14</span></a>        <span class="n">SqlDataTypeWithParameter</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;VARCHAR&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">length</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="SqlVarcharDataType.__init__-15"><a href="#SqlVarcharDataType.__init__-15"><span class="linenos">15</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="SqlVarcharDataType.__init__-16"><a href="#SqlVarcharDataType.__init__-16"><span class="linenos">16</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a SqlVarcharDataType instance.</span>
+</span><span id="SqlVarcharDataType.__init__-17"><a href="#SqlVarcharDataType.__init__-17"><span class="linenos">17</span></a>
+</span><span id="SqlVarcharDataType.__init__-18"><a href="#SqlVarcharDataType.__init__-18"><span class="linenos">18</span></a><span class="sd">        Args:</span>
+</span><span id="SqlVarcharDataType.__init__-19"><a href="#SqlVarcharDataType.__init__-19"><span class="linenos">19</span></a><span class="sd">            length (int | str): The maximum length of the VARCHAR data type.</span>
+</span><span id="SqlVarcharDataType.__init__-20"><a href="#SqlVarcharDataType.__init__-20"><span class="linenos">20</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="SqlVarcharDataType.__init__-21"><a href="#SqlVarcharDataType.__init__-21"><span class="linenos">21</span></a>        <span class="n">SqlDataTypeWithParameter</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;VARCHAR&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">length</span><span class="p">)</span>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Initialize a SqlDataType instance.</p>
+            <div class="docstring"><p>Initialize a SqlVarcharDataType instance.</p>
 
 <h6 id="arguments">Arguments:</h6>
 
 <ul>
-<li><strong>name (str):</strong>  The name of the data type.</li>
-<li><strong>type_ (type):</strong>  The Python type corresponding to the SQL data type.</li>
-<li><strong>to_database_converter (Callable[[Any], Any] | None, optional):</strong>  Function to convert values to database format. Defaults to None.</li>
-<li><strong>from_database_converter (Callable[[Any], Any] | None, optional):</strong>  Function to convert values from database format. Defaults to None.</li>
+<li><strong>length (int | str):</strong>  The maximum length of the VARCHAR data type.</li>
 </ul>
 </div>
 
@@ -314,22 +341,20 @@
 
     </div>
     <a class="headerlink" href="#SqlNVarcharDataType"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="SqlNVarcharDataType-17"><a href="#SqlNVarcharDataType-17"><span class="linenos">17</span></a><span class="k">class</span><span class="w"> </span><span class="nc">SqlNVarcharDataType</span><span class="p">(</span><span class="n">SqlDataTypeWithParameter</span><span class="p">):</span>
-</span><span id="SqlNVarcharDataType-18"><a href="#SqlNVarcharDataType-18"><span class="linenos">18</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="SqlNVarcharDataType-19"><a href="#SqlNVarcharDataType-19"><span class="linenos">19</span></a>        <span class="n">SqlDataTypeWithParameter</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;NVARCHAR&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">length</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="SqlNVarcharDataType-24"><a href="#SqlNVarcharDataType-24"><span class="linenos">24</span></a><span class="k">class</span><span class="w"> </span><span class="nc">SqlNVarcharDataType</span><span class="p">(</span><span class="n">SqlDataTypeWithParameter</span><span class="p">):</span>
+</span><span id="SqlNVarcharDataType-25"><a href="#SqlNVarcharDataType-25"><span class="linenos">25</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents the SQL NVARCHAR data type with a specified length.&quot;&quot;&quot;</span>
+</span><span id="SqlNVarcharDataType-26"><a href="#SqlNVarcharDataType-26"><span class="linenos">26</span></a>
+</span><span id="SqlNVarcharDataType-27"><a href="#SqlNVarcharDataType-27"><span class="linenos">27</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="SqlNVarcharDataType-28"><a href="#SqlNVarcharDataType-28"><span class="linenos">28</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a SqlNVarcharDataType instance.</span>
+</span><span id="SqlNVarcharDataType-29"><a href="#SqlNVarcharDataType-29"><span class="linenos">29</span></a>
+</span><span id="SqlNVarcharDataType-30"><a href="#SqlNVarcharDataType-30"><span class="linenos">30</span></a><span class="sd">        Args:</span>
+</span><span id="SqlNVarcharDataType-31"><a href="#SqlNVarcharDataType-31"><span class="linenos">31</span></a><span class="sd">            length (int | str): The maximum length of the NVARCHAR data type.</span>
+</span><span id="SqlNVarcharDataType-32"><a href="#SqlNVarcharDataType-32"><span class="linenos">32</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="SqlNVarcharDataType-33"><a href="#SqlNVarcharDataType-33"><span class="linenos">33</span></a>        <span class="n">SqlDataTypeWithParameter</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;NVARCHAR&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">length</span><span class="p">)</span>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Represents a SQL data type.</p>
-
-<h6 id="attributes">Attributes:</h6>
-
-<ul>
-<li><strong>name (str):</strong>  The name of the data type.</li>
-<li><strong>type (type):</strong>  The Python type corresponding to the SQL data type.</li>
-<li><strong>to_database_converter (Callable[[Any], Any] | None):</strong>  Function to convert values to database format.</li>
-<li><strong>from_database_converter (Callable[[Any], Any] | None):</strong>  Function to convert values from database format.</li>
-</ul>
+            <div class="docstring"><p>Represents the SQL NVARCHAR data type with a specified length.</p>
 </div>
 
 
@@ -343,20 +368,22 @@
 
     </div>
     <a class="headerlink" href="#SqlNVarcharDataType.__init__"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="SqlNVarcharDataType.__init__-18"><a href="#SqlNVarcharDataType.__init__-18"><span class="linenos">18</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="SqlNVarcharDataType.__init__-19"><a href="#SqlNVarcharDataType.__init__-19"><span class="linenos">19</span></a>        <span class="n">SqlDataTypeWithParameter</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;NVARCHAR&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">length</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="SqlNVarcharDataType.__init__-27"><a href="#SqlNVarcharDataType.__init__-27"><span class="linenos">27</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="SqlNVarcharDataType.__init__-28"><a href="#SqlNVarcharDataType.__init__-28"><span class="linenos">28</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a SqlNVarcharDataType instance.</span>
+</span><span id="SqlNVarcharDataType.__init__-29"><a href="#SqlNVarcharDataType.__init__-29"><span class="linenos">29</span></a>
+</span><span id="SqlNVarcharDataType.__init__-30"><a href="#SqlNVarcharDataType.__init__-30"><span class="linenos">30</span></a><span class="sd">        Args:</span>
+</span><span id="SqlNVarcharDataType.__init__-31"><a href="#SqlNVarcharDataType.__init__-31"><span class="linenos">31</span></a><span class="sd">            length (int | str): The maximum length of the NVARCHAR data type.</span>
+</span><span id="SqlNVarcharDataType.__init__-32"><a href="#SqlNVarcharDataType.__init__-32"><span class="linenos">32</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="SqlNVarcharDataType.__init__-33"><a href="#SqlNVarcharDataType.__init__-33"><span class="linenos">33</span></a>        <span class="n">SqlDataTypeWithParameter</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;NVARCHAR&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">length</span><span class="p">)</span>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Initialize a SqlDataType instance.</p>
+            <div class="docstring"><p>Initialize a SqlNVarcharDataType instance.</p>
 
 <h6 id="arguments">Arguments:</h6>
 
 <ul>
-<li><strong>name (str):</strong>  The name of the data type.</li>
-<li><strong>type_ (type):</strong>  The Python type corresponding to the SQL data type.</li>
-<li><strong>to_database_converter (Callable[[Any], Any] | None, optional):</strong>  Function to convert values to database format. Defaults to None.</li>
-<li><strong>from_database_converter (Callable[[Any], Any] | None, optional):</strong>  Function to convert values from database format. Defaults to None.</li>
+<li><strong>length (int | str):</strong>  The maximum length of the NVARCHAR data type.</li>
 </ul>
 </div>
 
@@ -392,35 +419,27 @@
 
     </div>
     <a class="headerlink" href="#SqlServerDataTypes"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="SqlServerDataTypes-22"><a href="#SqlServerDataTypes-22"><span class="linenos">22</span></a><span class="k">class</span><span class="w"> </span><span class="nc">SqlServerDataTypes</span><span class="p">(</span><span class="n">SqlDataTypes</span><span class="p">):</span>
-</span><span id="SqlServerDataTypes-23"><a href="#SqlServerDataTypes-23"><span class="linenos">23</span></a>    <span class="n">NVARCHAR</span> <span class="o">=</span> <span class="n">SqlNVarcharDataType</span>
-</span><span id="SqlServerDataTypes-24"><a href="#SqlServerDataTypes-24"><span class="linenos">24</span></a>    <span class="n">VARCHAR</span> <span class="o">=</span> <span class="n">SqlVarcharDataType</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="SqlServerDataTypes-36"><a href="#SqlServerDataTypes-36"><span class="linenos">36</span></a><span class="k">class</span><span class="w"> </span><span class="nc">SqlServerDataTypes</span><span class="p">(</span><span class="n">SqlDataTypes</span><span class="p">):</span>
+</span><span id="SqlServerDataTypes-37"><a href="#SqlServerDataTypes-37"><span class="linenos">37</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents SQL Server-specific data types.</span>
+</span><span id="SqlServerDataTypes-38"><a href="#SqlServerDataTypes-38"><span class="linenos">38</span></a>
+</span><span id="SqlServerDataTypes-39"><a href="#SqlServerDataTypes-39"><span class="linenos">39</span></a><span class="sd">    Attributes:</span>
+</span><span id="SqlServerDataTypes-40"><a href="#SqlServerDataTypes-40"><span class="linenos">40</span></a><span class="sd">        NVARCHAR (type): Represents the NVARCHAR data type.</span>
+</span><span id="SqlServerDataTypes-41"><a href="#SqlServerDataTypes-41"><span class="linenos">41</span></a><span class="sd">        VARCHAR (type): Represents the VARCHAR data type.</span>
+</span><span id="SqlServerDataTypes-42"><a href="#SqlServerDataTypes-42"><span class="linenos">42</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="SqlServerDataTypes-43"><a href="#SqlServerDataTypes-43"><span class="linenos">43</span></a>
+</span><span id="SqlServerDataTypes-44"><a href="#SqlServerDataTypes-44"><span class="linenos">44</span></a>    <span class="n">NVARCHAR</span> <span class="o">=</span> <span class="n">SqlNVarcharDataType</span>
+</span><span id="SqlServerDataTypes-45"><a href="#SqlServerDataTypes-45"><span class="linenos">45</span></a>    <span class="n">VARCHAR</span> <span class="o">=</span> <span class="n">SqlVarcharDataType</span>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Abstract base class for generic types.</p>
+            <div class="docstring"><p>Represents SQL Server-specific data types.</p>
 
-<p>On Python 3.12 and newer, generic classes implicitly inherit from
-Generic when they declare a parameter list after the class's name::</p>
+<h6 id="attributes">Attributes:</h6>
 
-<pre><code>class Mapping[KT, VT]:
-    def __getitem__(self, key: KT) -&gt; VT:
-        ...
-    # Etc.
-</code></pre>
-
-<p>On older versions of Python, however, generic classes have to
-explicitly inherit from Generic.</p>
-
-<p>After a class has been declared to be generic, it can then be used as
-follows::</p>
-
-<pre><code>def lookup_name[KT, VT](mapping: Mapping[KT, VT], key: KT, default: VT) -&gt; VT:
-    try:
-        return mapping[key]
-    except KeyError:
-        return default
-</code></pre>
+<ul>
+<li><strong>NVARCHAR (type):</strong>  Represents the NVARCHAR data type.</li>
+<li><strong>VARCHAR (type):</strong>  Represents the VARCHAR data type.</li>
+</ul>
 </div>
 
 
@@ -477,82 +496,88 @@ follows::</p>
 
     </div>
     <a class="headerlink" href="#SqlServerDatabase"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="SqlServerDatabase-27"><a href="#SqlServerDatabase-27"><span class="linenos"> 27</span></a><span class="k">class</span><span class="w"> </span><span class="nc">SqlServerDatabase</span><span class="p">(</span><span class="n">SqlDatabase</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
-</span><span id="SqlServerDatabase-28"><a href="#SqlServerDatabase-28"><span class="linenos"> 28</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="SqlServerDatabase-29"><a href="#SqlServerDatabase-29"><span class="linenos"> 29</span></a><span class="sd">    Represents a SQL Server database.</span>
-</span><span id="SqlServerDatabase-30"><a href="#SqlServerDatabase-30"><span class="linenos"> 30</span></a>
-</span><span id="SqlServerDatabase-31"><a href="#SqlServerDatabase-31"><span class="linenos"> 31</span></a><span class="sd">    Attributes:</span>
-</span><span id="SqlServerDatabase-32"><a href="#SqlServerDatabase-32"><span class="linenos"> 32</span></a><span class="sd">        data_types (SqlServerDataTypes): The data types supported by SQL Server.</span>
-</span><span id="SqlServerDatabase-33"><a href="#SqlServerDatabase-33"><span class="linenos"> 33</span></a><span class="sd">        dialect (ESqlDialect): The SQL dialect for SQL Server.</span>
-</span><span id="SqlServerDatabase-34"><a href="#SqlServerDatabase-34"><span class="linenos"> 34</span></a><span class="sd">        default_schema_name (str): The default schema name (e.g., &quot;dbo&quot;).</span>
-</span><span id="SqlServerDatabase-35"><a href="#SqlServerDatabase-35"><span class="linenos"> 35</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="SqlServerDatabase-36"><a href="#SqlServerDatabase-36"><span class="linenos"> 36</span></a>    <span class="n">dialect</span> <span class="o">=</span> <span class="n">ESqlDialect</span><span class="o">.</span><span class="n">SQLSERVER</span>
-</span><span id="SqlServerDatabase-37"><a href="#SqlServerDatabase-37"><span class="linenos"> 37</span></a>    <span class="n">default_schema_name</span> <span class="o">=</span> <span class="s2">&quot;dbo&quot;</span>
-</span><span id="SqlServerDatabase-38"><a href="#SqlServerDatabase-38"><span class="linenos"> 38</span></a>
-</span><span id="SqlServerDatabase-39"><a href="#SqlServerDatabase-39"><span class="linenos"> 39</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-</span><span id="SqlServerDatabase-40"><a href="#SqlServerDatabase-40"><span class="linenos"> 40</span></a>        <span class="bp">self</span><span class="p">,</span>
-</span><span id="SqlServerDatabase-41"><a href="#SqlServerDatabase-41"><span class="linenos"> 41</span></a>        <span class="n">server</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-</span><span id="SqlServerDatabase-42"><a href="#SqlServerDatabase-42"><span class="linenos"> 42</span></a>        <span class="n">database</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-</span><span id="SqlServerDatabase-43"><a href="#SqlServerDatabase-43"><span class="linenos"> 43</span></a>        <span class="n">driver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ODBC Driver 17 for SQL Server&quot;</span><span class="p">,</span>
-</span><span id="SqlServerDatabase-44"><a href="#SqlServerDatabase-44"><span class="linenos"> 44</span></a>        <span class="n">trusted_connection</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-</span><span id="SqlServerDatabase-45"><a href="#SqlServerDatabase-45"><span class="linenos"> 45</span></a>        <span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="SqlServerDatabase-46"><a href="#SqlServerDatabase-46"><span class="linenos"> 46</span></a>        <span class="n">password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="SqlServerDatabase-47"><a href="#SqlServerDatabase-47"><span class="linenos"> 47</span></a>        <span class="n">autocommit</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span id="SqlServerDatabase-48"><a href="#SqlServerDatabase-48"><span class="linenos"> 48</span></a>    <span class="p">):</span>
-</span><span id="SqlServerDatabase-49"><a href="#SqlServerDatabase-49"><span class="linenos"> 49</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="SqlServerDatabase-50"><a href="#SqlServerDatabase-50"><span class="linenos"> 50</span></a><span class="sd">        Initialize a SqlServerDatabase instance.</span>
-</span><span id="SqlServerDatabase-51"><a href="#SqlServerDatabase-51"><span class="linenos"> 51</span></a>
-</span><span id="SqlServerDatabase-52"><a href="#SqlServerDatabase-52"><span class="linenos"> 52</span></a><span class="sd">        Args:</span>
-</span><span id="SqlServerDatabase-53"><a href="#SqlServerDatabase-53"><span class="linenos"> 53</span></a><span class="sd">            server (str): The server address.</span>
-</span><span id="SqlServerDatabase-54"><a href="#SqlServerDatabase-54"><span class="linenos"> 54</span></a><span class="sd">            database (str): The database name.</span>
-</span><span id="SqlServerDatabase-55"><a href="#SqlServerDatabase-55"><span class="linenos"> 55</span></a><span class="sd">            driver (str, optional): The ODBC driver. Defaults to &quot;ODBC Driver 17 for SQL Server&quot;.</span>
-</span><span id="SqlServerDatabase-56"><a href="#SqlServerDatabase-56"><span class="linenos"> 56</span></a><span class="sd">            trusted_connection (bool, optional): Whether to use a trusted connection. Defaults to True.</span>
-</span><span id="SqlServerDatabase-57"><a href="#SqlServerDatabase-57"><span class="linenos"> 57</span></a><span class="sd">            user_id (str | None, optional): The user ID for authentication. Defaults to None.</span>
-</span><span id="SqlServerDatabase-58"><a href="#SqlServerDatabase-58"><span class="linenos"> 58</span></a><span class="sd">            password (str | None, optional): The password for authentication. Defaults to None.</span>
-</span><span id="SqlServerDatabase-59"><a href="#SqlServerDatabase-59"><span class="linenos"> 59</span></a><span class="sd">            autocommit (bool, optional): Whether to enable autocommit. Defaults to False.</span>
-</span><span id="SqlServerDatabase-60"><a href="#SqlServerDatabase-60"><span class="linenos"> 60</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="SqlServerDatabase-61"><a href="#SqlServerDatabase-61"><span class="linenos"> 61</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="n">server</span>
-</span><span id="SqlServerDatabase-62"><a href="#SqlServerDatabase-62"><span class="linenos"> 62</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">database</span> <span class="o">=</span> <span class="n">database</span>
-</span><span id="SqlServerDatabase-63"><a href="#SqlServerDatabase-63"><span class="linenos"> 63</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">driver</span> <span class="o">=</span> <span class="n">driver</span>
-</span><span id="SqlServerDatabase-64"><a href="#SqlServerDatabase-64"><span class="linenos"> 64</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">trusted_connection</span> <span class="o">=</span> <span class="n">trusted_connection</span>
-</span><span id="SqlServerDatabase-65"><a href="#SqlServerDatabase-65"><span class="linenos"> 65</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span> <span class="o">=</span> <span class="n">user_id</span>
-</span><span id="SqlServerDatabase-66"><a href="#SqlServerDatabase-66"><span class="linenos"> 66</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">password</span>
-</span><span id="SqlServerDatabase-67"><a href="#SqlServerDatabase-67"><span class="linenos"> 67</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">connection_string</span> <span class="o">=</span> <span class="p">(</span>
-</span><span id="SqlServerDatabase-68"><a href="#SqlServerDatabase-68"><span class="linenos"> 68</span></a>            <span class="sa">f</span><span class="s2">&quot;Driver=</span><span class="se">{{</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="si">}</span><span class="se">}}</span><span class="s2">;&quot;</span>
-</span><span id="SqlServerDatabase-69"><a href="#SqlServerDatabase-69"><span class="linenos"> 69</span></a>            <span class="sa">f</span><span class="s2">&quot;Server=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="si">}</span><span class="s2">;&quot;</span>
-</span><span id="SqlServerDatabase-70"><a href="#SqlServerDatabase-70"><span class="linenos"> 70</span></a>            <span class="sa">f</span><span class="s2">&quot;Database=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">database</span><span class="si">}</span><span class="s2">;&quot;</span>
-</span><span id="SqlServerDatabase-71"><a href="#SqlServerDatabase-71"><span class="linenos"> 71</span></a>        <span class="p">)</span>
-</span><span id="SqlServerDatabase-72"><a href="#SqlServerDatabase-72"><span class="linenos"> 72</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trusted_connection</span><span class="p">:</span>
-</span><span id="SqlServerDatabase-73"><a href="#SqlServerDatabase-73"><span class="linenos"> 73</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">connection_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;Trusted_Connection=</span><span class="si">{</span><span class="s1">&#39;Yes&#39;</span><span class="si">}</span><span class="s2">;&quot;</span>
-</span><span id="SqlServerDatabase-74"><a href="#SqlServerDatabase-74"><span class="linenos"> 74</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span><span class="p">:</span>
-</span><span id="SqlServerDatabase-75"><a href="#SqlServerDatabase-75"><span class="linenos"> 75</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">connection_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;UID=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">user_id</span><span class="si">}</span><span class="s2">;&quot;</span>
-</span><span id="SqlServerDatabase-76"><a href="#SqlServerDatabase-76"><span class="linenos"> 76</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span><span class="p">:</span>
-</span><span id="SqlServerDatabase-77"><a href="#SqlServerDatabase-77"><span class="linenos"> 77</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">connection_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;PWD=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">password</span><span class="si">}</span><span class="s2">;&quot;</span>
-</span><span id="SqlServerDatabase-78"><a href="#SqlServerDatabase-78"><span class="linenos"> 78</span></a>
-</span><span id="SqlServerDatabase-79"><a href="#SqlServerDatabase-79"><span class="linenos"> 79</span></a>        <span class="n">connection</span> <span class="o">=</span> <span class="n">pyodbc</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connection_string</span><span class="p">,</span> <span class="n">autocommit</span><span class="o">=</span><span class="n">autocommit</span><span class="p">)</span>
-</span><span id="SqlServerDatabase-80"><a href="#SqlServerDatabase-80"><span class="linenos"> 80</span></a>        <span class="n">SqlDatabase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database</span><span class="p">,</span> <span class="n">connection</span><span class="p">)</span>
-</span><span id="SqlServerDatabase-81"><a href="#SqlServerDatabase-81"><span class="linenos"> 81</span></a>
-</span><span id="SqlServerDatabase-82"><a href="#SqlServerDatabase-82"><span class="linenos"> 82</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_table_fully_qualified_name</span><span class="p">(</span>
-</span><span id="SqlServerDatabase-83"><a href="#SqlServerDatabase-83"><span class="linenos"> 83</span></a>        <span class="bp">self</span><span class="p">,</span> <span class="n">table_fully_qualified_name</span><span class="p">:</span> <span class="nb">str</span>
-</span><span id="SqlServerDatabase-84"><a href="#SqlServerDatabase-84"><span class="linenos"> 84</span></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
-</span><span id="SqlServerDatabase-85"><a href="#SqlServerDatabase-85"><span class="linenos"> 85</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="SqlServerDatabase-86"><a href="#SqlServerDatabase-86"><span class="linenos"> 86</span></a><span class="sd">        Parse a fully qualified table name into its components.</span>
-</span><span id="SqlServerDatabase-87"><a href="#SqlServerDatabase-87"><span class="linenos"> 87</span></a>
-</span><span id="SqlServerDatabase-88"><a href="#SqlServerDatabase-88"><span class="linenos"> 88</span></a><span class="sd">        Args:</span>
-</span><span id="SqlServerDatabase-89"><a href="#SqlServerDatabase-89"><span class="linenos"> 89</span></a><span class="sd">            table_fully_qualified_name (str): The fully qualified table name.</span>
-</span><span id="SqlServerDatabase-90"><a href="#SqlServerDatabase-90"><span class="linenos"> 90</span></a>
-</span><span id="SqlServerDatabase-91"><a href="#SqlServerDatabase-91"><span class="linenos"> 91</span></a><span class="sd">        Returns:</span>
-</span><span id="SqlServerDatabase-92"><a href="#SqlServerDatabase-92"><span class="linenos"> 92</span></a><span class="sd">            tuple[str | None, str | None, str | None]: The database name, schema name, and table name.</span>
-</span><span id="SqlServerDatabase-93"><a href="#SqlServerDatabase-93"><span class="linenos"> 93</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="SqlServerDatabase-94"><a href="#SqlServerDatabase-94"><span class="linenos"> 94</span></a>        <span class="n">table_fully_qualified_name_parts</span> <span class="o">=</span> <span class="n">table_fully_qualified_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
-</span><span id="SqlServerDatabase-95"><a href="#SqlServerDatabase-95"><span class="linenos"> 95</span></a>        <span class="k">assert</span> <span class="p">(</span>
-</span><span id="SqlServerDatabase-96"><a href="#SqlServerDatabase-96"><span class="linenos"> 96</span></a>            <span class="nb">len</span><span class="p">(</span><span class="n">table_fully_qualified_name_parts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span>
-</span><span id="SqlServerDatabase-97"><a href="#SqlServerDatabase-97"><span class="linenos"> 97</span></a>        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Unexpected table fully qualified name: </span><span class="si">{</span><span class="n">table_fully_qualified_name</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span id="SqlServerDatabase-98"><a href="#SqlServerDatabase-98"><span class="linenos"> 98</span></a>        <span class="n">database_name</span><span class="p">,</span> <span class="n">schema_name</span><span class="p">,</span> <span class="n">table_name</span> <span class="o">=</span> <span class="n">table_fully_qualified_name_parts</span>
-</span><span id="SqlServerDatabase-99"><a href="#SqlServerDatabase-99"><span class="linenos"> 99</span></a>        <span class="k">return</span> <span class="n">database_name</span><span class="p">,</span> <span class="n">schema_name</span><span class="p">,</span> <span class="n">table_name</span>
-</span><span id="SqlServerDatabase-100"><a href="#SqlServerDatabase-100"><span class="linenos">100</span></a>
-</span><span id="SqlServerDatabase-101"><a href="#SqlServerDatabase-101"><span class="linenos">101</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_table_fully_qualified_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="p">:</span> <span class="n">SqlTable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span id="SqlServerDatabase-102"><a href="#SqlServerDatabase-102"><span class="linenos">102</span></a>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">table</span><span class="o">.</span><span class="n">schema_name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">table</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="SqlServerDatabase-48"><a href="#SqlServerDatabase-48"><span class="linenos"> 48</span></a><span class="k">class</span><span class="w"> </span><span class="nc">SqlServerDatabase</span><span class="p">(</span><span class="n">SqlDatabase</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+</span><span id="SqlServerDatabase-49"><a href="#SqlServerDatabase-49"><span class="linenos"> 49</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents a SQL Server database.</span>
+</span><span id="SqlServerDatabase-50"><a href="#SqlServerDatabase-50"><span class="linenos"> 50</span></a>
+</span><span id="SqlServerDatabase-51"><a href="#SqlServerDatabase-51"><span class="linenos"> 51</span></a><span class="sd">    Attributes:</span>
+</span><span id="SqlServerDatabase-52"><a href="#SqlServerDatabase-52"><span class="linenos"> 52</span></a><span class="sd">        dialect (ESqlDialect): The SQL dialect for SQL Server.</span>
+</span><span id="SqlServerDatabase-53"><a href="#SqlServerDatabase-53"><span class="linenos"> 53</span></a><span class="sd">        default_schema_name (str): The default schema name (e.g., &quot;dbo&quot;).</span>
+</span><span id="SqlServerDatabase-54"><a href="#SqlServerDatabase-54"><span class="linenos"> 54</span></a><span class="sd">        connection_string (str): The connection string used to connect to the database.</span>
+</span><span id="SqlServerDatabase-55"><a href="#SqlServerDatabase-55"><span class="linenos"> 55</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="SqlServerDatabase-56"><a href="#SqlServerDatabase-56"><span class="linenos"> 56</span></a>
+</span><span id="SqlServerDatabase-57"><a href="#SqlServerDatabase-57"><span class="linenos"> 57</span></a>    <span class="n">dialect</span> <span class="o">=</span> <span class="n">ESqlDialect</span><span class="o">.</span><span class="n">SQLSERVER</span>
+</span><span id="SqlServerDatabase-58"><a href="#SqlServerDatabase-58"><span class="linenos"> 58</span></a>    <span class="n">default_schema_name</span> <span class="o">=</span> <span class="s2">&quot;dbo&quot;</span>
+</span><span id="SqlServerDatabase-59"><a href="#SqlServerDatabase-59"><span class="linenos"> 59</span></a>
+</span><span id="SqlServerDatabase-60"><a href="#SqlServerDatabase-60"><span class="linenos"> 60</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+</span><span id="SqlServerDatabase-61"><a href="#SqlServerDatabase-61"><span class="linenos"> 61</span></a>        <span class="bp">self</span><span class="p">,</span>
+</span><span id="SqlServerDatabase-62"><a href="#SqlServerDatabase-62"><span class="linenos"> 62</span></a>        <span class="n">server</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span id="SqlServerDatabase-63"><a href="#SqlServerDatabase-63"><span class="linenos"> 63</span></a>        <span class="n">database</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span id="SqlServerDatabase-64"><a href="#SqlServerDatabase-64"><span class="linenos"> 64</span></a>        <span class="n">driver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ODBC Driver 17 for SQL Server&quot;</span><span class="p">,</span>
+</span><span id="SqlServerDatabase-65"><a href="#SqlServerDatabase-65"><span class="linenos"> 65</span></a>        <span class="n">trusted_connection</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+</span><span id="SqlServerDatabase-66"><a href="#SqlServerDatabase-66"><span class="linenos"> 66</span></a>        <span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="SqlServerDatabase-67"><a href="#SqlServerDatabase-67"><span class="linenos"> 67</span></a>        <span class="n">password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="SqlServerDatabase-68"><a href="#SqlServerDatabase-68"><span class="linenos"> 68</span></a>        <span class="n">autocommit</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span id="SqlServerDatabase-69"><a href="#SqlServerDatabase-69"><span class="linenos"> 69</span></a>    <span class="p">):</span>
+</span><span id="SqlServerDatabase-70"><a href="#SqlServerDatabase-70"><span class="linenos"> 70</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a SqlServerDatabase instance.</span>
+</span><span id="SqlServerDatabase-71"><a href="#SqlServerDatabase-71"><span class="linenos"> 71</span></a>
+</span><span id="SqlServerDatabase-72"><a href="#SqlServerDatabase-72"><span class="linenos"> 72</span></a><span class="sd">        Args:</span>
+</span><span id="SqlServerDatabase-73"><a href="#SqlServerDatabase-73"><span class="linenos"> 73</span></a><span class="sd">            server (str): The server address.</span>
+</span><span id="SqlServerDatabase-74"><a href="#SqlServerDatabase-74"><span class="linenos"> 74</span></a><span class="sd">            database (str): The database name.</span>
+</span><span id="SqlServerDatabase-75"><a href="#SqlServerDatabase-75"><span class="linenos"> 75</span></a><span class="sd">            driver (str, optional): The ODBC driver. Defaults to &quot;ODBC Driver 17 for SQL Server&quot;.</span>
+</span><span id="SqlServerDatabase-76"><a href="#SqlServerDatabase-76"><span class="linenos"> 76</span></a><span class="sd">            trusted_connection (bool, optional): Whether to use a trusted connection. Defaults to True.</span>
+</span><span id="SqlServerDatabase-77"><a href="#SqlServerDatabase-77"><span class="linenos"> 77</span></a><span class="sd">            user_id (str | None, optional): The user ID for authentication. Defaults to None.</span>
+</span><span id="SqlServerDatabase-78"><a href="#SqlServerDatabase-78"><span class="linenos"> 78</span></a><span class="sd">            password (str | None, optional): The password for authentication. Defaults to None.</span>
+</span><span id="SqlServerDatabase-79"><a href="#SqlServerDatabase-79"><span class="linenos"> 79</span></a><span class="sd">            autocommit (bool, optional): Whether to enable autocommit. Defaults to False.</span>
+</span><span id="SqlServerDatabase-80"><a href="#SqlServerDatabase-80"><span class="linenos"> 80</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="SqlServerDatabase-81"><a href="#SqlServerDatabase-81"><span class="linenos"> 81</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="n">server</span>
+</span><span id="SqlServerDatabase-82"><a href="#SqlServerDatabase-82"><span class="linenos"> 82</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">database</span> <span class="o">=</span> <span class="n">database</span>
+</span><span id="SqlServerDatabase-83"><a href="#SqlServerDatabase-83"><span class="linenos"> 83</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">driver</span> <span class="o">=</span> <span class="n">driver</span>
+</span><span id="SqlServerDatabase-84"><a href="#SqlServerDatabase-84"><span class="linenos"> 84</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">trusted_connection</span> <span class="o">=</span> <span class="n">trusted_connection</span>
+</span><span id="SqlServerDatabase-85"><a href="#SqlServerDatabase-85"><span class="linenos"> 85</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span> <span class="o">=</span> <span class="n">user_id</span>
+</span><span id="SqlServerDatabase-86"><a href="#SqlServerDatabase-86"><span class="linenos"> 86</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">password</span>
+</span><span id="SqlServerDatabase-87"><a href="#SqlServerDatabase-87"><span class="linenos"> 87</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">connection_string</span> <span class="o">=</span> <span class="p">(</span>
+</span><span id="SqlServerDatabase-88"><a href="#SqlServerDatabase-88"><span class="linenos"> 88</span></a>            <span class="sa">f</span><span class="s2">&quot;Driver=</span><span class="se">{{</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="si">}</span><span class="se">}}</span><span class="s2">;&quot;</span>
+</span><span id="SqlServerDatabase-89"><a href="#SqlServerDatabase-89"><span class="linenos"> 89</span></a>            <span class="sa">f</span><span class="s2">&quot;Server=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="si">}</span><span class="s2">;&quot;</span>
+</span><span id="SqlServerDatabase-90"><a href="#SqlServerDatabase-90"><span class="linenos"> 90</span></a>            <span class="sa">f</span><span class="s2">&quot;Database=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">database</span><span class="si">}</span><span class="s2">;&quot;</span>
+</span><span id="SqlServerDatabase-91"><a href="#SqlServerDatabase-91"><span class="linenos"> 91</span></a>        <span class="p">)</span>
+</span><span id="SqlServerDatabase-92"><a href="#SqlServerDatabase-92"><span class="linenos"> 92</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trusted_connection</span><span class="p">:</span>
+</span><span id="SqlServerDatabase-93"><a href="#SqlServerDatabase-93"><span class="linenos"> 93</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">connection_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;Trusted_Connection=</span><span class="si">{</span><span class="s1">&#39;Yes&#39;</span><span class="si">}</span><span class="s2">;&quot;</span>
+</span><span id="SqlServerDatabase-94"><a href="#SqlServerDatabase-94"><span class="linenos"> 94</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span><span class="p">:</span>
+</span><span id="SqlServerDatabase-95"><a href="#SqlServerDatabase-95"><span class="linenos"> 95</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">connection_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;UID=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">user_id</span><span class="si">}</span><span class="s2">;&quot;</span>
+</span><span id="SqlServerDatabase-96"><a href="#SqlServerDatabase-96"><span class="linenos"> 96</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span><span class="p">:</span>
+</span><span id="SqlServerDatabase-97"><a href="#SqlServerDatabase-97"><span class="linenos"> 97</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">connection_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;PWD=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">password</span><span class="si">}</span><span class="s2">;&quot;</span>
+</span><span id="SqlServerDatabase-98"><a href="#SqlServerDatabase-98"><span class="linenos"> 98</span></a>
+</span><span id="SqlServerDatabase-99"><a href="#SqlServerDatabase-99"><span class="linenos"> 99</span></a>        <span class="n">connection</span> <span class="o">=</span> <span class="n">pyodbc</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connection_string</span><span class="p">,</span> <span class="n">autocommit</span><span class="o">=</span><span class="n">autocommit</span><span class="p">)</span>
+</span><span id="SqlServerDatabase-100"><a href="#SqlServerDatabase-100"><span class="linenos">100</span></a>        <span class="n">SqlDatabase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database</span><span class="p">,</span> <span class="n">connection</span><span class="p">)</span>
+</span><span id="SqlServerDatabase-101"><a href="#SqlServerDatabase-101"><span class="linenos">101</span></a>
+</span><span id="SqlServerDatabase-102"><a href="#SqlServerDatabase-102"><span class="linenos">102</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_table_fully_qualified_name</span><span class="p">(</span>
+</span><span id="SqlServerDatabase-103"><a href="#SqlServerDatabase-103"><span class="linenos">103</span></a>        <span class="bp">self</span><span class="p">,</span> <span class="n">table_fully_qualified_name</span><span class="p">:</span> <span class="nb">str</span>
+</span><span id="SqlServerDatabase-104"><a href="#SqlServerDatabase-104"><span class="linenos">104</span></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
+</span><span id="SqlServerDatabase-105"><a href="#SqlServerDatabase-105"><span class="linenos">105</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse a fully qualified table name into its components.</span>
+</span><span id="SqlServerDatabase-106"><a href="#SqlServerDatabase-106"><span class="linenos">106</span></a>
+</span><span id="SqlServerDatabase-107"><a href="#SqlServerDatabase-107"><span class="linenos">107</span></a><span class="sd">        Args:</span>
+</span><span id="SqlServerDatabase-108"><a href="#SqlServerDatabase-108"><span class="linenos">108</span></a><span class="sd">            table_fully_qualified_name (str): The fully qualified table name.</span>
+</span><span id="SqlServerDatabase-109"><a href="#SqlServerDatabase-109"><span class="linenos">109</span></a>
+</span><span id="SqlServerDatabase-110"><a href="#SqlServerDatabase-110"><span class="linenos">110</span></a><span class="sd">        Returns:</span>
+</span><span id="SqlServerDatabase-111"><a href="#SqlServerDatabase-111"><span class="linenos">111</span></a><span class="sd">            tuple[str | None, str | None, str | None]: The database name, schema name, and table name.</span>
+</span><span id="SqlServerDatabase-112"><a href="#SqlServerDatabase-112"><span class="linenos">112</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="SqlServerDatabase-113"><a href="#SqlServerDatabase-113"><span class="linenos">113</span></a>        <span class="n">table_fully_qualified_name_parts</span> <span class="o">=</span> <span class="n">table_fully_qualified_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+</span><span id="SqlServerDatabase-114"><a href="#SqlServerDatabase-114"><span class="linenos">114</span></a>        <span class="k">assert</span> <span class="p">(</span>
+</span><span id="SqlServerDatabase-115"><a href="#SqlServerDatabase-115"><span class="linenos">115</span></a>            <span class="nb">len</span><span class="p">(</span><span class="n">table_fully_qualified_name_parts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span>
+</span><span id="SqlServerDatabase-116"><a href="#SqlServerDatabase-116"><span class="linenos">116</span></a>        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Unexpected table fully qualified name: </span><span class="si">{</span><span class="n">table_fully_qualified_name</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="SqlServerDatabase-117"><a href="#SqlServerDatabase-117"><span class="linenos">117</span></a>        <span class="n">database_name</span><span class="p">,</span> <span class="n">schema_name</span><span class="p">,</span> <span class="n">table_name</span> <span class="o">=</span> <span class="n">table_fully_qualified_name_parts</span>
+</span><span id="SqlServerDatabase-118"><a href="#SqlServerDatabase-118"><span class="linenos">118</span></a>        <span class="k">return</span> <span class="n">database_name</span><span class="p">,</span> <span class="n">schema_name</span><span class="p">,</span> <span class="n">table_name</span>
+</span><span id="SqlServerDatabase-119"><a href="#SqlServerDatabase-119"><span class="linenos">119</span></a>
+</span><span id="SqlServerDatabase-120"><a href="#SqlServerDatabase-120"><span class="linenos">120</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_table_fully_qualified_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="p">:</span> <span class="n">SqlTable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="SqlServerDatabase-121"><a href="#SqlServerDatabase-121"><span class="linenos">121</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the fully qualified name of a table.</span>
+</span><span id="SqlServerDatabase-122"><a href="#SqlServerDatabase-122"><span class="linenos">122</span></a>
+</span><span id="SqlServerDatabase-123"><a href="#SqlServerDatabase-123"><span class="linenos">123</span></a><span class="sd">        Args:</span>
+</span><span id="SqlServerDatabase-124"><a href="#SqlServerDatabase-124"><span class="linenos">124</span></a><span class="sd">            table (SqlTable): The table for which to get the fully qualified name.</span>
+</span><span id="SqlServerDatabase-125"><a href="#SqlServerDatabase-125"><span class="linenos">125</span></a>
+</span><span id="SqlServerDatabase-126"><a href="#SqlServerDatabase-126"><span class="linenos">126</span></a><span class="sd">        Returns:</span>
+</span><span id="SqlServerDatabase-127"><a href="#SqlServerDatabase-127"><span class="linenos">127</span></a><span class="sd">            str: The fully qualified name of the table in the format &#39;&lt;database&gt;.&lt;schema&gt;.&lt;table&gt;&#39;.</span>
+</span><span id="SqlServerDatabase-128"><a href="#SqlServerDatabase-128"><span class="linenos">128</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="SqlServerDatabase-129"><a href="#SqlServerDatabase-129"><span class="linenos">129</span></a>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">table</span><span class="o">.</span><span class="n">schema_name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">table</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
 </span></pre></div>
 
 
@@ -561,9 +586,9 @@ follows::</p>
 <h6 id="attributes">Attributes:</h6>
 
 <ul>
-<li><strong>data_types (SqlServerDataTypes):</strong>  The data types supported by SQL Server.</li>
 <li><strong>dialect (ESqlDialect):</strong>  The SQL dialect for SQL Server.</li>
 <li><strong>default_schema_name (str):</strong>  The default schema name (e.g., "dbo").</li>
+<li><strong>connection_string (str):</strong>  The connection string used to connect to the database.</li>
 </ul>
 </div>
 
@@ -578,48 +603,47 @@ follows::</p>
 
     </div>
     <a class="headerlink" href="#SqlServerDatabase.__init__"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="SqlServerDatabase.__init__-39"><a href="#SqlServerDatabase.__init__-39"><span class="linenos">39</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-</span><span id="SqlServerDatabase.__init__-40"><a href="#SqlServerDatabase.__init__-40"><span class="linenos">40</span></a>        <span class="bp">self</span><span class="p">,</span>
-</span><span id="SqlServerDatabase.__init__-41"><a href="#SqlServerDatabase.__init__-41"><span class="linenos">41</span></a>        <span class="n">server</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-</span><span id="SqlServerDatabase.__init__-42"><a href="#SqlServerDatabase.__init__-42"><span class="linenos">42</span></a>        <span class="n">database</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-</span><span id="SqlServerDatabase.__init__-43"><a href="#SqlServerDatabase.__init__-43"><span class="linenos">43</span></a>        <span class="n">driver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ODBC Driver 17 for SQL Server&quot;</span><span class="p">,</span>
-</span><span id="SqlServerDatabase.__init__-44"><a href="#SqlServerDatabase.__init__-44"><span class="linenos">44</span></a>        <span class="n">trusted_connection</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-</span><span id="SqlServerDatabase.__init__-45"><a href="#SqlServerDatabase.__init__-45"><span class="linenos">45</span></a>        <span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="SqlServerDatabase.__init__-46"><a href="#SqlServerDatabase.__init__-46"><span class="linenos">46</span></a>        <span class="n">password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="SqlServerDatabase.__init__-47"><a href="#SqlServerDatabase.__init__-47"><span class="linenos">47</span></a>        <span class="n">autocommit</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span id="SqlServerDatabase.__init__-48"><a href="#SqlServerDatabase.__init__-48"><span class="linenos">48</span></a>    <span class="p">):</span>
-</span><span id="SqlServerDatabase.__init__-49"><a href="#SqlServerDatabase.__init__-49"><span class="linenos">49</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="SqlServerDatabase.__init__-50"><a href="#SqlServerDatabase.__init__-50"><span class="linenos">50</span></a><span class="sd">        Initialize a SqlServerDatabase instance.</span>
-</span><span id="SqlServerDatabase.__init__-51"><a href="#SqlServerDatabase.__init__-51"><span class="linenos">51</span></a>
-</span><span id="SqlServerDatabase.__init__-52"><a href="#SqlServerDatabase.__init__-52"><span class="linenos">52</span></a><span class="sd">        Args:</span>
-</span><span id="SqlServerDatabase.__init__-53"><a href="#SqlServerDatabase.__init__-53"><span class="linenos">53</span></a><span class="sd">            server (str): The server address.</span>
-</span><span id="SqlServerDatabase.__init__-54"><a href="#SqlServerDatabase.__init__-54"><span class="linenos">54</span></a><span class="sd">            database (str): The database name.</span>
-</span><span id="SqlServerDatabase.__init__-55"><a href="#SqlServerDatabase.__init__-55"><span class="linenos">55</span></a><span class="sd">            driver (str, optional): The ODBC driver. Defaults to &quot;ODBC Driver 17 for SQL Server&quot;.</span>
-</span><span id="SqlServerDatabase.__init__-56"><a href="#SqlServerDatabase.__init__-56"><span class="linenos">56</span></a><span class="sd">            trusted_connection (bool, optional): Whether to use a trusted connection. Defaults to True.</span>
-</span><span id="SqlServerDatabase.__init__-57"><a href="#SqlServerDatabase.__init__-57"><span class="linenos">57</span></a><span class="sd">            user_id (str | None, optional): The user ID for authentication. Defaults to None.</span>
-</span><span id="SqlServerDatabase.__init__-58"><a href="#SqlServerDatabase.__init__-58"><span class="linenos">58</span></a><span class="sd">            password (str | None, optional): The password for authentication. Defaults to None.</span>
-</span><span id="SqlServerDatabase.__init__-59"><a href="#SqlServerDatabase.__init__-59"><span class="linenos">59</span></a><span class="sd">            autocommit (bool, optional): Whether to enable autocommit. Defaults to False.</span>
-</span><span id="SqlServerDatabase.__init__-60"><a href="#SqlServerDatabase.__init__-60"><span class="linenos">60</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="SqlServerDatabase.__init__-61"><a href="#SqlServerDatabase.__init__-61"><span class="linenos">61</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="n">server</span>
-</span><span id="SqlServerDatabase.__init__-62"><a href="#SqlServerDatabase.__init__-62"><span class="linenos">62</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">database</span> <span class="o">=</span> <span class="n">database</span>
-</span><span id="SqlServerDatabase.__init__-63"><a href="#SqlServerDatabase.__init__-63"><span class="linenos">63</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">driver</span> <span class="o">=</span> <span class="n">driver</span>
-</span><span id="SqlServerDatabase.__init__-64"><a href="#SqlServerDatabase.__init__-64"><span class="linenos">64</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">trusted_connection</span> <span class="o">=</span> <span class="n">trusted_connection</span>
-</span><span id="SqlServerDatabase.__init__-65"><a href="#SqlServerDatabase.__init__-65"><span class="linenos">65</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span> <span class="o">=</span> <span class="n">user_id</span>
-</span><span id="SqlServerDatabase.__init__-66"><a href="#SqlServerDatabase.__init__-66"><span class="linenos">66</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">password</span>
-</span><span id="SqlServerDatabase.__init__-67"><a href="#SqlServerDatabase.__init__-67"><span class="linenos">67</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">connection_string</span> <span class="o">=</span> <span class="p">(</span>
-</span><span id="SqlServerDatabase.__init__-68"><a href="#SqlServerDatabase.__init__-68"><span class="linenos">68</span></a>            <span class="sa">f</span><span class="s2">&quot;Driver=</span><span class="se">{{</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="si">}</span><span class="se">}}</span><span class="s2">;&quot;</span>
-</span><span id="SqlServerDatabase.__init__-69"><a href="#SqlServerDatabase.__init__-69"><span class="linenos">69</span></a>            <span class="sa">f</span><span class="s2">&quot;Server=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="si">}</span><span class="s2">;&quot;</span>
-</span><span id="SqlServerDatabase.__init__-70"><a href="#SqlServerDatabase.__init__-70"><span class="linenos">70</span></a>            <span class="sa">f</span><span class="s2">&quot;Database=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">database</span><span class="si">}</span><span class="s2">;&quot;</span>
-</span><span id="SqlServerDatabase.__init__-71"><a href="#SqlServerDatabase.__init__-71"><span class="linenos">71</span></a>        <span class="p">)</span>
-</span><span id="SqlServerDatabase.__init__-72"><a href="#SqlServerDatabase.__init__-72"><span class="linenos">72</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trusted_connection</span><span class="p">:</span>
-</span><span id="SqlServerDatabase.__init__-73"><a href="#SqlServerDatabase.__init__-73"><span class="linenos">73</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">connection_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;Trusted_Connection=</span><span class="si">{</span><span class="s1">&#39;Yes&#39;</span><span class="si">}</span><span class="s2">;&quot;</span>
-</span><span id="SqlServerDatabase.__init__-74"><a href="#SqlServerDatabase.__init__-74"><span class="linenos">74</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span><span class="p">:</span>
-</span><span id="SqlServerDatabase.__init__-75"><a href="#SqlServerDatabase.__init__-75"><span class="linenos">75</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">connection_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;UID=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">user_id</span><span class="si">}</span><span class="s2">;&quot;</span>
-</span><span id="SqlServerDatabase.__init__-76"><a href="#SqlServerDatabase.__init__-76"><span class="linenos">76</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span><span class="p">:</span>
-</span><span id="SqlServerDatabase.__init__-77"><a href="#SqlServerDatabase.__init__-77"><span class="linenos">77</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">connection_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;PWD=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">password</span><span class="si">}</span><span class="s2">;&quot;</span>
-</span><span id="SqlServerDatabase.__init__-78"><a href="#SqlServerDatabase.__init__-78"><span class="linenos">78</span></a>
-</span><span id="SqlServerDatabase.__init__-79"><a href="#SqlServerDatabase.__init__-79"><span class="linenos">79</span></a>        <span class="n">connection</span> <span class="o">=</span> <span class="n">pyodbc</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connection_string</span><span class="p">,</span> <span class="n">autocommit</span><span class="o">=</span><span class="n">autocommit</span><span class="p">)</span>
-</span><span id="SqlServerDatabase.__init__-80"><a href="#SqlServerDatabase.__init__-80"><span class="linenos">80</span></a>        <span class="n">SqlDatabase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database</span><span class="p">,</span> <span class="n">connection</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="SqlServerDatabase.__init__-60"><a href="#SqlServerDatabase.__init__-60"><span class="linenos"> 60</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+</span><span id="SqlServerDatabase.__init__-61"><a href="#SqlServerDatabase.__init__-61"><span class="linenos"> 61</span></a>        <span class="bp">self</span><span class="p">,</span>
+</span><span id="SqlServerDatabase.__init__-62"><a href="#SqlServerDatabase.__init__-62"><span class="linenos"> 62</span></a>        <span class="n">server</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span id="SqlServerDatabase.__init__-63"><a href="#SqlServerDatabase.__init__-63"><span class="linenos"> 63</span></a>        <span class="n">database</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span id="SqlServerDatabase.__init__-64"><a href="#SqlServerDatabase.__init__-64"><span class="linenos"> 64</span></a>        <span class="n">driver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ODBC Driver 17 for SQL Server&quot;</span><span class="p">,</span>
+</span><span id="SqlServerDatabase.__init__-65"><a href="#SqlServerDatabase.__init__-65"><span class="linenos"> 65</span></a>        <span class="n">trusted_connection</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+</span><span id="SqlServerDatabase.__init__-66"><a href="#SqlServerDatabase.__init__-66"><span class="linenos"> 66</span></a>        <span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="SqlServerDatabase.__init__-67"><a href="#SqlServerDatabase.__init__-67"><span class="linenos"> 67</span></a>        <span class="n">password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="SqlServerDatabase.__init__-68"><a href="#SqlServerDatabase.__init__-68"><span class="linenos"> 68</span></a>        <span class="n">autocommit</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span id="SqlServerDatabase.__init__-69"><a href="#SqlServerDatabase.__init__-69"><span class="linenos"> 69</span></a>    <span class="p">):</span>
+</span><span id="SqlServerDatabase.__init__-70"><a href="#SqlServerDatabase.__init__-70"><span class="linenos"> 70</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a SqlServerDatabase instance.</span>
+</span><span id="SqlServerDatabase.__init__-71"><a href="#SqlServerDatabase.__init__-71"><span class="linenos"> 71</span></a>
+</span><span id="SqlServerDatabase.__init__-72"><a href="#SqlServerDatabase.__init__-72"><span class="linenos"> 72</span></a><span class="sd">        Args:</span>
+</span><span id="SqlServerDatabase.__init__-73"><a href="#SqlServerDatabase.__init__-73"><span class="linenos"> 73</span></a><span class="sd">            server (str): The server address.</span>
+</span><span id="SqlServerDatabase.__init__-74"><a href="#SqlServerDatabase.__init__-74"><span class="linenos"> 74</span></a><span class="sd">            database (str): The database name.</span>
+</span><span id="SqlServerDatabase.__init__-75"><a href="#SqlServerDatabase.__init__-75"><span class="linenos"> 75</span></a><span class="sd">            driver (str, optional): The ODBC driver. Defaults to &quot;ODBC Driver 17 for SQL Server&quot;.</span>
+</span><span id="SqlServerDatabase.__init__-76"><a href="#SqlServerDatabase.__init__-76"><span class="linenos"> 76</span></a><span class="sd">            trusted_connection (bool, optional): Whether to use a trusted connection. Defaults to True.</span>
+</span><span id="SqlServerDatabase.__init__-77"><a href="#SqlServerDatabase.__init__-77"><span class="linenos"> 77</span></a><span class="sd">            user_id (str | None, optional): The user ID for authentication. Defaults to None.</span>
+</span><span id="SqlServerDatabase.__init__-78"><a href="#SqlServerDatabase.__init__-78"><span class="linenos"> 78</span></a><span class="sd">            password (str | None, optional): The password for authentication. Defaults to None.</span>
+</span><span id="SqlServerDatabase.__init__-79"><a href="#SqlServerDatabase.__init__-79"><span class="linenos"> 79</span></a><span class="sd">            autocommit (bool, optional): Whether to enable autocommit. Defaults to False.</span>
+</span><span id="SqlServerDatabase.__init__-80"><a href="#SqlServerDatabase.__init__-80"><span class="linenos"> 80</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="SqlServerDatabase.__init__-81"><a href="#SqlServerDatabase.__init__-81"><span class="linenos"> 81</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="n">server</span>
+</span><span id="SqlServerDatabase.__init__-82"><a href="#SqlServerDatabase.__init__-82"><span class="linenos"> 82</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">database</span> <span class="o">=</span> <span class="n">database</span>
+</span><span id="SqlServerDatabase.__init__-83"><a href="#SqlServerDatabase.__init__-83"><span class="linenos"> 83</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">driver</span> <span class="o">=</span> <span class="n">driver</span>
+</span><span id="SqlServerDatabase.__init__-84"><a href="#SqlServerDatabase.__init__-84"><span class="linenos"> 84</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">trusted_connection</span> <span class="o">=</span> <span class="n">trusted_connection</span>
+</span><span id="SqlServerDatabase.__init__-85"><a href="#SqlServerDatabase.__init__-85"><span class="linenos"> 85</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span> <span class="o">=</span> <span class="n">user_id</span>
+</span><span id="SqlServerDatabase.__init__-86"><a href="#SqlServerDatabase.__init__-86"><span class="linenos"> 86</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">password</span>
+</span><span id="SqlServerDatabase.__init__-87"><a href="#SqlServerDatabase.__init__-87"><span class="linenos"> 87</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">connection_string</span> <span class="o">=</span> <span class="p">(</span>
+</span><span id="SqlServerDatabase.__init__-88"><a href="#SqlServerDatabase.__init__-88"><span class="linenos"> 88</span></a>            <span class="sa">f</span><span class="s2">&quot;Driver=</span><span class="se">{{</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="si">}</span><span class="se">}}</span><span class="s2">;&quot;</span>
+</span><span id="SqlServerDatabase.__init__-89"><a href="#SqlServerDatabase.__init__-89"><span class="linenos"> 89</span></a>            <span class="sa">f</span><span class="s2">&quot;Server=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="si">}</span><span class="s2">;&quot;</span>
+</span><span id="SqlServerDatabase.__init__-90"><a href="#SqlServerDatabase.__init__-90"><span class="linenos"> 90</span></a>            <span class="sa">f</span><span class="s2">&quot;Database=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">database</span><span class="si">}</span><span class="s2">;&quot;</span>
+</span><span id="SqlServerDatabase.__init__-91"><a href="#SqlServerDatabase.__init__-91"><span class="linenos"> 91</span></a>        <span class="p">)</span>
+</span><span id="SqlServerDatabase.__init__-92"><a href="#SqlServerDatabase.__init__-92"><span class="linenos"> 92</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trusted_connection</span><span class="p">:</span>
+</span><span id="SqlServerDatabase.__init__-93"><a href="#SqlServerDatabase.__init__-93"><span class="linenos"> 93</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">connection_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;Trusted_Connection=</span><span class="si">{</span><span class="s1">&#39;Yes&#39;</span><span class="si">}</span><span class="s2">;&quot;</span>
+</span><span id="SqlServerDatabase.__init__-94"><a href="#SqlServerDatabase.__init__-94"><span class="linenos"> 94</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span><span class="p">:</span>
+</span><span id="SqlServerDatabase.__init__-95"><a href="#SqlServerDatabase.__init__-95"><span class="linenos"> 95</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">connection_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;UID=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">user_id</span><span class="si">}</span><span class="s2">;&quot;</span>
+</span><span id="SqlServerDatabase.__init__-96"><a href="#SqlServerDatabase.__init__-96"><span class="linenos"> 96</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span><span class="p">:</span>
+</span><span id="SqlServerDatabase.__init__-97"><a href="#SqlServerDatabase.__init__-97"><span class="linenos"> 97</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">connection_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;PWD=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">password</span><span class="si">}</span><span class="s2">;&quot;</span>
+</span><span id="SqlServerDatabase.__init__-98"><a href="#SqlServerDatabase.__init__-98"><span class="linenos"> 98</span></a>
+</span><span id="SqlServerDatabase.__init__-99"><a href="#SqlServerDatabase.__init__-99"><span class="linenos"> 99</span></a>        <span class="n">connection</span> <span class="o">=</span> <span class="n">pyodbc</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connection_string</span><span class="p">,</span> <span class="n">autocommit</span><span class="o">=</span><span class="n">autocommit</span><span class="p">)</span>
+</span><span id="SqlServerDatabase.__init__-100"><a href="#SqlServerDatabase.__init__-100"><span class="linenos">100</span></a>        <span class="n">SqlDatabase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database</span><span class="p">,</span> <span class="n">connection</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -752,12 +776,34 @@ follows::</p>
 
     </div>
     <a class="headerlink" href="#SqlServerDatabase.get_table_fully_qualified_name"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="SqlServerDatabase.get_table_fully_qualified_name-101"><a href="#SqlServerDatabase.get_table_fully_qualified_name-101"><span class="linenos">101</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_table_fully_qualified_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="p">:</span> <span class="n">SqlTable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span id="SqlServerDatabase.get_table_fully_qualified_name-102"><a href="#SqlServerDatabase.get_table_fully_qualified_name-102"><span class="linenos">102</span></a>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">table</span><span class="o">.</span><span class="n">schema_name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">table</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="SqlServerDatabase.get_table_fully_qualified_name-120"><a href="#SqlServerDatabase.get_table_fully_qualified_name-120"><span class="linenos">120</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_table_fully_qualified_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="p">:</span> <span class="n">SqlTable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="SqlServerDatabase.get_table_fully_qualified_name-121"><a href="#SqlServerDatabase.get_table_fully_qualified_name-121"><span class="linenos">121</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the fully qualified name of a table.</span>
+</span><span id="SqlServerDatabase.get_table_fully_qualified_name-122"><a href="#SqlServerDatabase.get_table_fully_qualified_name-122"><span class="linenos">122</span></a>
+</span><span id="SqlServerDatabase.get_table_fully_qualified_name-123"><a href="#SqlServerDatabase.get_table_fully_qualified_name-123"><span class="linenos">123</span></a><span class="sd">        Args:</span>
+</span><span id="SqlServerDatabase.get_table_fully_qualified_name-124"><a href="#SqlServerDatabase.get_table_fully_qualified_name-124"><span class="linenos">124</span></a><span class="sd">            table (SqlTable): The table for which to get the fully qualified name.</span>
+</span><span id="SqlServerDatabase.get_table_fully_qualified_name-125"><a href="#SqlServerDatabase.get_table_fully_qualified_name-125"><span class="linenos">125</span></a>
+</span><span id="SqlServerDatabase.get_table_fully_qualified_name-126"><a href="#SqlServerDatabase.get_table_fully_qualified_name-126"><span class="linenos">126</span></a><span class="sd">        Returns:</span>
+</span><span id="SqlServerDatabase.get_table_fully_qualified_name-127"><a href="#SqlServerDatabase.get_table_fully_qualified_name-127"><span class="linenos">127</span></a><span class="sd">            str: The fully qualified name of the table in the format &#39;&lt;database&gt;.&lt;schema&gt;.&lt;table&gt;&#39;.</span>
+</span><span id="SqlServerDatabase.get_table_fully_qualified_name-128"><a href="#SqlServerDatabase.get_table_fully_qualified_name-128"><span class="linenos">128</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="SqlServerDatabase.get_table_fully_qualified_name-129"><a href="#SqlServerDatabase.get_table_fully_qualified_name-129"><span class="linenos">129</span></a>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">table</span><span class="o">.</span><span class="n">schema_name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">table</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Get the fully qualified name of a table.</p>
+
+<h6 id="arguments">Arguments:</h6>
+
+<ul>
+<li><strong>table (SqlTable):</strong>  The table for which to get the fully qualified name.</li>
+</ul>
+
+<h6 id="returns">Returns:</h6>
+
+<blockquote>
+  <p>str: The fully qualified name of the table in the format '<database>.<schema>.<table>'.</p>
+</blockquote>
+</div>
+
 
                             </div>
                             <div class="inherited">

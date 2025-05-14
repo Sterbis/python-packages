@@ -9,102 +9,182 @@ if TYPE_CHECKING:
 
 
 class SqlColumnFilter(SqlCondition):
+    """Represents a filter applied to a SQL column.
+
+    Attributes:
+        operator (ESqlComparisonOperator): The comparison operator used in the filter.
+        column (SqlColumn): The column to which the filter is applied.
+    """
+
     operator: ESqlComparisonOperator
 
     def __init__(self, column: SqlColumn, *values) -> None:
+        """Initialize a SqlColumnFilter instance.
+
+        Args:
+            column (SqlColumn): The column to which the filter is applied.
+            *values: The values used in the filter.
+        """
         SqlCondition.__init__(self, column, self.operator, *values)
         self.column = column
 
 
 class ValueColumnFilter(SqlColumnFilter):
+    """Represents a filter that uses a single value for comparison.
+
+    Attributes:
+        value (Any): The value used in the filter.
+    """
+
     def __init__(self, column: SqlColumn, value: Any) -> None:
+        """Initialize a ValueColumnFilter instance.
+
+        Args:
+            column (SqlColumn): The column to which the filter is applied.
+            value (Any): The value used in the filter.
+        """
         SqlColumnFilter.__init__(self, column, value)
         self.value = value
 
 
 class IsEqualColumnFilter(ValueColumnFilter):
+    """Represents a filter that checks for equality."""
+
     operator = ESqlComparisonOperator.IS_EQUAL
 
 
 class IsNotEqualColumnFilter(ValueColumnFilter):
+    """Represents a filter that checks for inequality."""
+
     operator = ESqlComparisonOperator.IS_NOT_EQUAL
 
 
 class IsLessThanColumnFilter(ValueColumnFilter):
+    """Represents a filter that checks if a value is less than another."""
+
     operator = ESqlComparisonOperator.IS_LESS_THAN
 
 
 class IsLessThanOrEqualColumnFilter(ValueColumnFilter):
+    """Represents a filter that checks if a value is less than or equal to another."""
+
     operator = ESqlComparisonOperator.IS_LESS_THAN_OR_EQUAL
 
 
 class IsGreaterThanColumnFilter(ValueColumnFilter):
+    """Represents a filter that checks if a value is greater than another."""
+
     operator = ESqlComparisonOperator.IS_GREATER_THAN
 
 
 class IsGreaterThanOrEqualColumnFilter(ValueColumnFilter):
+    """Represents a filter that checks if a value is greater than or equal to another."""
+
     operator = ESqlComparisonOperator.IS_GREATER_THAN_OR_EQUAL
 
 
 class IsLikeColumnFilter(ValueColumnFilter):
+    """Represents a filter that checks if a value matches a pattern."""
+
     operator = ESqlComparisonOperator.IS_LIKE
 
 
 class IsNotLikeColumnFilter(ValueColumnFilter):
+    """Represents a filter that checks if a value does not match a pattern."""
+
     operator = ESqlComparisonOperator.IS_NOT_LIKE
 
 
 class ValuesColumnFilter(SqlColumnFilter):
+    """Represents a filter that uses multiple values for comparison.
+
+    Attributes:
+        values (Iterable): The values used in the filter.
+    """
+
     def __init__(self, column: SqlColumn, values: Iterable) -> None:
+        """Initialize a ValuesColumnFilter instance.
+
+        Args:
+            column (SqlColumn): The column to which the filter is applied.
+            values (Iterable): The values used in the filter.
+        """
         SqlColumnFilter.__init__(self, column, *values)
 
 
 class IsInColumnFilter(ValuesColumnFilter):
+    """Represents a filter that checks if a value is in a set of values."""
+
     operator = ESqlComparisonOperator.IS_IN
 
 
 class IsNotInColumnFilter(ValuesColumnFilter):
+    """Represents a filter that checks if a value is not in a set of values."""
+
     operator = ESqlComparisonOperator.IS_NOT_IN
 
 
 class BetweenColumnFilter(SqlColumnFilter):
+    """Represents a filter that checks if a value is between two bounds.
+
+    Attributes:
+        lower_value (Any): The lower bound value.
+        upper_value (Any): The upper bound value.
+    """
+
     def __init__(self, column: SqlColumn, lower_value: Any, upper_value: Any):
+        """Initialize a BetweenColumnFilter instance.
+
+        Args:
+            column (SqlColumn): The column to which the filter is applied.
+            lower_value (Any): The lower bound value.
+            upper_value (Any): The upper bound value.
+        """
         SqlColumnFilter.__init__(self, column, lower_value, upper_value)
         self.lower_value = lower_value
         self.upper_value = upper_value
 
 
 class IsBetweenColumnFilter(BetweenColumnFilter):
+    """Represents a filter that checks if a value is between two bounds."""
+
     operator = ESqlComparisonOperator.IS_BETWEEN
 
 
 class IsNotBetweenColumnFilter(BetweenColumnFilter):
+    """Represents a filter that checks if a value is not between two bounds."""
+
     operator = ESqlComparisonOperator.IS_NOT_BETWEEN
 
 
 class NullColumnFilter(SqlColumnFilter):
+    """Represents a filter that checks for null values."""
+
     def __init__(self, column: SqlColumn):
         SqlColumnFilter.__init__(self, column)
 
 
 class IsNullColumnFilter(SqlColumnFilter):
+    """Represents a filter that checks if a value is null."""
+
     operator = ESqlComparisonOperator.IS_NULL
 
 
 class IsNotNullColumnFilter(SqlColumnFilter):
+    """Represents a filter that checks if a value is not null."""
+
     operator = ESqlComparisonOperator.IS_NOT_NULL
 
 
 class SqlColumnFilters:
-    """
-    Represents filters that can be applied to a SQL column.
+    """Represents filters that can be applied to a SQL column.
 
     Attributes:
         column (SqlColumn): The column to which the filters are applied.
     """
+
     def __init__(self, column: SqlColumn):
-        """
-        Initialize a SqlColumnFilters instance.
+        """Initialize a SqlColumnFilters instance.
 
         Args:
             column (SqlColumn): The column to which the filters are applied.

@@ -7,7 +7,7 @@ CREATE TABLE
     {% if column.autoincrement %}AUTOINCREMENT{% endif %}
     {% if column.not_null %}NOT NULL{% endif %}
     {% if column.unique %}UNIQUE{% endif %}
-    {% if column.default is not none %}DEFAULT {{ column.default_to_sql() }}{% endif %}
+    {% if column.default_value is not none %}DEFAULT {{ column.default_value_to_sql() }}{% endif %}
     {% if not loop.last %},{% endif %}
 {% endfor %}
 {% if not table.primary_key_column %}

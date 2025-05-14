@@ -10,7 +10,7 @@ from sqldatabase import (
 
 
 class UsersTableColumns(SqlColumnsWithID):
-    TIMESTAMP = SqlColumn("timestamp", SqlDataTypes.FLOAT, default=0.1)
+    TIMESTAMP = SqlColumn("timestamp", SqlDataTypes.FLOAT, default_value=0.1)
     USERNAME = SqlColumn("username", SqlDataTypes.TEXT, not_null=True, unique=True)
     EMAIL = SqlColumn("email", SqlDataTypes.TEXT, not_null=True, unique=True)
     PHOTO = SqlColumn("photo", SqlDataTypes.BLOB)

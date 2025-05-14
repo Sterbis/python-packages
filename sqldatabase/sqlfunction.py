@@ -19,6 +19,7 @@ class SqlAggregateFunction(SqlBase):
         name (str): The name of the aggregate function.
         column (SqlColumn | None): The column the function operates on.
     """
+
     name: str
 
     def __init__(self, column: SqlColumn | None = None):
@@ -104,27 +105,44 @@ class SqlCount(SqlAggregateFunction):
 
 
 class SqlAggregateFunctionWithMandatoryColumn(SqlAggregateFunction):
+    """Represents a SQL aggregate function that requires a column."""
+
     def __init__(self, column: SqlColumn):
+        """Initialize a SqlAggregateFunctionWithMandatoryColumn instance.
+
+        Args:
+            column (SqlColumn): The column the function operates on.
+        """
         SqlAggregateFunction.__init__(self, column)
 
 
 class SqlMin(SqlAggregateFunctionWithMandatoryColumn):
+    """Represents the SQL MIN aggregate function."""
+
     name = "min"
 
 
 class SqlMax(SqlAggregateFunctionWithMandatoryColumn):
+    """Represents the SQL MAX aggregate function."""
+
     name = "max"
 
 
 class SqlSum(SqlAggregateFunctionWithMandatoryColumn):
+    """Represents the SQL SUM aggregate function."""
+
     name = "sum"
 
 
 class SqlAvg(SqlAggregateFunctionWithMandatoryColumn):
+    """Represents the SQL AVG aggregate function."""
+
     name = "avg"
 
 
 class SqlFunctions(EnumLikeClassContainer[SqlAggregateFunction]):
+    """Container for managing multiple SQL aggregate functions."""
+
     item_type = SqlAggregateFunction
 
     AVG = SqlAvg

@@ -18,20 +18,27 @@ if TYPE_CHECKING:
 
 
 class ESqlOrderByType(SqlBaseEnum):
+    """Enumeration for SQL ORDER BY types.
+
+    Attributes:
+        ASCENDING (str): Represents ascending order.
+        DESCENDING (str): Represents descending order.
+    """
+
     ASCENDING = "ASC"
     DESCENDING = "DESC"
 
 
 class SqlStatement(SqlBase):
-    """
-    Represents a SQL statement.
+    """Represents a SQL statement.
 
     Attributes:
         dialect (ESqlDialect): The SQL dialect for the statement.
         context (dict): The context for rendering the statement.
-        _template_parameters (dict[str, Any]): Parameters for the statement template.
-        _template_sql (str): The rendered SQL template.
+        template_parameters (dict[str, Any]): Parameters for the statement template.
+        template_sql (str): The rendered SQL template.
     """
+
     _environment = Environment(
         loader=FileSystemLoader(Path(__file__).parent / "templates")
     )
@@ -44,8 +51,7 @@ class SqlStatement(SqlBase):
         parameters: dict[str, Any] | None = None,
         **context,
     ) -> None:
-        """
-        Initialize a SqlStatement instance.
+        """Initialize a SqlStatement instance.
 
         Args:
             dialect (ESqlDialect): The SQL dialect for the statement.
@@ -61,8 +67,7 @@ class SqlStatement(SqlBase):
 
     @property
     def sql(self) -> str:
-        """
-        Get the SQL representation of the statement.
+        """Get the SQL representation of the statement.
 
         Returns:
             str: The SQL representation of the statement.
@@ -75,8 +80,7 @@ class SqlStatement(SqlBase):
 
     @property
     def parameters(self) -> dict[str, Any] | Sequence:
-        """
-        Get the parameters for the statement.
+        """Get the parameters for the statement.
 
         Returns:
             dict[str, Any] | Sequence: The parameters for the statement.
@@ -87,8 +91,7 @@ class SqlStatement(SqlBase):
         )
 
     def _render_template(self) -> str:
-        """
-        Render the SQL template.
+        """Render the SQL template.
 
         Returns:
             str: The rendered SQL template.
@@ -101,8 +104,7 @@ class SqlStatement(SqlBase):
         return template_sql
 
     def to_sql(self) -> str:
-        """
-        Get the SQL representation of the statement.
+        """Get the SQL representation of the statement.
 
         Returns:
             str: The SQL representation of the statement.
@@ -111,24 +113,44 @@ class SqlStatement(SqlBase):
 
 
 class SqlCreateTableStatement(SqlStatement):
+    """Represents a SQL CREATE TABLE statement."""
+
     template_file = "create_table_statement.sql.j2"
 
     def __init__(
         self, dialect: ESqlDialect, table: SqlTable, if_not_exists: bool = False
     ) -> None:
+        """Initialize a SqlCreateTableStatement instance.
+
+        Args:
+            dialect (ESqlDialect): The SQL dialect for the statement.
+            table (SqlTable): The table to create.
+            if_not_exists (bool, optional): Whether to include IF NOT EXISTS. Defaults to False.
+        """
         SqlStatement.__init__(self, dialect, table=table, if_not_exists=if_not_exists)
 
 
 class SqlDropTableStatement(SqlStatement):
+    """Represents a SQL DROP TABLE statement."""
+
     template_file = "drop_table_statement.sql.j2"
 
     def __init__(
         self, dialect: ESqlDialect, table: SqlTable, if_exists: bool = False
     ) -> None:
+        """Initialize a SqlDropTableStatement instance.
+
+        Args:
+            dialect (ESqlDialect): The SQL dialect for the statement.
+            table (SqlTable): The table to drop.
+            if_exists (bool, optional): Whether to include IF EXISTS. Defaults to False.
+        """
         SqlStatement.__init__(self, dialect, table=table, if_exists=if_exists)
 
 
 class SqlInsertIntoStatement(SqlStatement):
+    """Represents a SQL INSERT INTO statement."""
+
     template_file = "insert_into_statement.sql.j2"
 
     def __init__(
@@ -137,6 +159,13 @@ class SqlInsertIntoStatement(SqlStatement):
         table: SqlTable,
         record: SqlRecord,
     ) -> None:
+        """Initialize a SqlInsertIntoStatement instance.
+
+        Args:
+            dialect (ESqlDialect): The SQL dialect for the statement.
+            table (SqlTable): The table to insert into.
+            record (SqlRecord): The record to insert.
+        """
         parameters = record.to_database_parameters()
         columns = list(record.keys())
         SqlStatement.__init__(
@@ -149,6 +178,8 @@ class SqlInsertIntoStatement(SqlStatement):
 
 
 class SqlSelectStatement(SqlStatement):
+    """Represents a SQL SELECT statement."""
+
     template_file = "select_statement.sql.j2"
 
     def __init__(
@@ -168,6 +199,22 @@ class SqlSelectStatement(SqlStatement):
         offset: int | None = None,
         is_subquery: bool = False,
     ) -> None:
+        """Initialize a SqlSelectStatement instance.
+
+        Args:
+            dialect (ESqlDialect): The SQL dialect for the statement.
+            table (SqlTable): The table to select from.
+            *items (SqlColumn | SqlAggregateFunction): The columns or aggregate functions to select.
+            where_condition (SqlCondition | None, optional): The WHERE condition. Defaults to None.
+            joins (list[SqlJoin] | None, optional): The JOIN clauses. Defaults to None.
+            group_by_columns (list[SqlColumn] | None, optional): The GROUP BY columns. Defaults to None.
+            having_condition (SqlCondition | None, optional): The HAVING condition. Defaults to None.
+            order_by_items (list[SqlColumn | SqlAggregateFunction | ESqlOrderByType] | None, optional): The ORDER BY items. Defaults to None.
+            distinct (bool, optional): Whether to include DISTINCT. Defaults to False.
+            limit (int | None, optional): The LIMIT value. Defaults to None.
+            offset (int | None, optional): The OFFSET value. Defaults to None.
+            is_subquery (bool, optional): Whether the statement is a subquery. Defaults to False.
+        """
         parameters = {}
         if where_condition:
             parameters.update(where_condition.parameters)
@@ -197,6 +244,15 @@ class SqlSelectStatement(SqlStatement):
     def _preprocess_items(
         table: SqlTable, *items: SqlColumn | SqlAggregateFunction
     ) -> list[SqlColumn | SqlAggregateFunction]:
+        """Preprocess the items to select.
+
+        Args:
+            table (SqlTable): The table to select from.
+            *items (SqlColumn | SqlAggregateFunction): The columns or aggregate functions to select.
+
+        Returns:
+            list[SqlColumn | SqlAggregateFunction]: The preprocessed items.
+        """
         if len(items) == 0:
             preprocessed_items = list(table.columns)
         else:
@@ -207,6 +263,14 @@ class SqlSelectStatement(SqlStatement):
     def _preprocess_order_by_items(
         order_by_items: list[SqlColumn | SqlAggregateFunction | ESqlOrderByType] | None,
     ) -> list[tuple[SqlColumn | SqlAggregateFunction, ESqlOrderByType | None]] | None:
+        """Preprocess the ORDER BY items.
+
+        Args:
+            order_by_items (list[SqlColumn | SqlAggregateFunction | ESqlOrderByType] | None): The ORDER BY items.
+
+        Returns:
+            list[tuple[SqlColumn | SqlAggregateFunction, ESqlOrderByType | None]] | None: The preprocessed ORDER BY items.
+        """
         if order_by_items is not None:
             preprocessed_order_by_items: list[
                 tuple[SqlColumn | SqlAggregateFunction, ESqlOrderByType | None]
@@ -229,6 +293,11 @@ class SqlSelectStatement(SqlStatement):
         return None
 
     def generate_parameter_name(self) -> str:
+        """Generate a unique parameter name for the SELECT statement.
+
+        Returns:
+            str: The generated parameter name.
+        """
         assert (
             len(self.context["items"]) == 1
         ), "Select statement must return exactly one value when compared with parameter value."
@@ -236,6 +305,8 @@ class SqlSelectStatement(SqlStatement):
 
 
 class SqlUpdateStatement(SqlStatement):
+    """Represents a SQL UPDATE statement."""
+
     template_file = "update_statement.sql.j2"
 
     def __init__(
@@ -245,6 +316,14 @@ class SqlUpdateStatement(SqlStatement):
         record: SqlRecord,
         where_condition: SqlCondition,
     ) -> None:
+        """Initialize a SqlUpdateStatement instance.
+
+        Args:
+            dialect (ESqlDialect): The SQL dialect for the statement.
+            table (SqlTable): The table to update.
+            record (SqlRecord): The record with updated values.
+            where_condition (SqlCondition): The WHERE condition.
+        """
         parameters = record.to_database_parameters()
         parameters.update(where_condition.parameters)
         columns_and_parameters = list(zip(record.keys(), parameters))
@@ -259,6 +338,8 @@ class SqlUpdateStatement(SqlStatement):
 
 
 class SqlDeleteStatement(SqlStatement):
+    """Represents a SQL DELETE statement."""
+
     template_file = "delete_statement.sql.j2"
 
     def __init__(
@@ -267,6 +348,13 @@ class SqlDeleteStatement(SqlStatement):
         table: SqlTable,
         where_condition: SqlCondition,
     ) -> None:
+        """Initialize a SqlDeleteStatement instance.
+
+        Args:
+            dialect (ESqlDialect): The SQL dialect for the statement.
+            table (SqlTable): The table to delete from.
+            where_condition (SqlCondition): The WHERE condition.
+        """
         parameters = where_condition.parameters
         SqlStatement.__init__(
             self,

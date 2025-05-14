@@ -31,6 +31,7 @@ class SqlColumn(SqlBase):
         from_database_converter (Callable[[Any], Any] | None): Function to convert values from database format.
         values (type[Enum] | None): Enum values for the column.
     """
+
     def __init__(
         self,
         name: str,
@@ -39,7 +40,7 @@ class SqlColumn(SqlBase):
         autoincrement: bool = False,
         not_null: bool = False,
         unique: bool = False,
-        default: Any = None,
+        default_value: Any = None,
         reference: SqlColumn | None = None,
         to_database_converter: Callable[[Any], Any] | None = None,
         from_database_converter: Callable[[Any], Any] | None = None,
@@ -67,7 +68,7 @@ class SqlColumn(SqlBase):
         self.autoincrement = autoincrement
         self.not_null = not_null
         self.unique = unique
-        self.default = default
+        self.default_value = default_value
         self.reference = reference
         self.values = values
         if self.values is None:
@@ -86,6 +87,14 @@ class SqlColumn(SqlBase):
         self.table: SqlTable | None = None
 
     def __deepcopy__(self, memo) -> SqlColumn:
+        """Create a deep copy of the SqlColumn instance.
+
+        Args:
+            memo (dict): A dictionary to keep track of already copied objects.
+
+        Returns:
+            SqlColumn: A deep copy of the current SqlColumn instance.
+        """
         if id(self) in memo:
             return memo[id(self)]
 
@@ -117,13 +126,28 @@ class SqlColumn(SqlBase):
         return f"{self.table.fully_qualified_name}.{self.name}"
 
     def generate_parameter_name(self) -> str:
+        """Generate a unique parameter name for the column.
+
+        Returns:
+            str: A unique parameter name in the format '<fully_qualified_name>_<uuid>'.
+        """
         return f"{self.fully_qualified_name.replace('.', '_')}_{uuid.uuid4().hex[:8]}"
 
     def to_sql(self) -> str:
+        """Convert the column to its SQL representation.
+
+        Returns:
+            str: The SQL representation of the column name.
+        """
         return self.name
 
-    def default_to_sql(self) -> str:
-        value = self.default
+    def default_value_to_sql(self) -> str:
+        """Convert the default value of the column to its SQL representation.
+
+        Returns:
+            str: The SQL representation of the default value.
+        """
+        value = self.default_value
         if self.to_database_converter is not None:
             value = self.to_database_converter(value)
         if self.data_type.to_database_converter is not None:
@@ -132,8 +156,12 @@ class SqlColumn(SqlBase):
 
 
 class SqlColumns(EnumLikeContainer[SqlColumn]):
+    """Container for managing multiple SqlColumn instances."""
+
     item_type = SqlColumn
 
 
 class SqlColumnsWithID(SqlColumns):
+    """Specialized SqlColumns container with a predefined 'ID' column."""
+
     ID = SqlColumn("id", SqlDataTypes.INTEGER, primary_key=True, autoincrement=True)
